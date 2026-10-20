@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../README.md" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/OncoMatch.Api/OncoMatch.Api.csproj" Id="e6143bd0-8b37-4e9d-b11c-899d0403ef1e" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OncoMatch.IntegrationTests/OncoMatch.IntegrationTests.csproj" Id="1e144d8c-7494-4c57-a482-7d1b2df3150d" />
+    <Project Path="tests/OncoMatch.UnitTests/OncoMatch.UnitTests.csproj" Id="796f5cc1-a9d3-4e4e-baaf-d6d5c43719a9" />
+  </Folder>
+</Solution>
