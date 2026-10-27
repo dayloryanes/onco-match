@@ -18,4 +18,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../../src/OncoMatch.Api/OncoMatch.Api.csproj" />
+    <Content Include="../../src/OncoMatch.Api/Features/Patients/patients.json" Link="patients.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
