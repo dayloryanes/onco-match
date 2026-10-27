@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <Content Update="Features/Patients/patients.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

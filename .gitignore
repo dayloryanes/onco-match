@@ -488,3 +488,7 @@ $RECYCLE.BIN/
 .env.*
 !.env.example
 **/appsettings.*.local.json
+
+# Local HTTPS private key/certificate and browser test reports
+.certs/
+playwright-report/

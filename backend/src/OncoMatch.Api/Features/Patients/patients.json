@@ -1,0 +1,12 @@
+[
+  { "id": "P001", "ageYears": 7, "sex": "female", "cancerType": "Acute lymphoblastic leukemia", "stage": { "status": "notApplicable", "value": null, "classificationSystem": null }, "diseaseState": { "status": "known", "value": "newlyDiagnosed" } },
+  { "id": "P002", "ageYears": 15, "sex": "male", "cancerType": "Acute myeloid leukemia", "stage": { "status": "notApplicable", "value": null, "classificationSystem": null }, "diseaseState": { "status": "known", "value": "refractory" } },
+  { "id": "P003", "ageYears": 12, "sex": "female", "cancerType": "Hodgkin lymphoma", "stage": { "status": "unknown", "value": null, "classificationSystem": null }, "diseaseState": { "status": "known", "value": "newlyDiagnosed" } },
+  { "id": "P004", "ageYears": 17, "sex": "male", "cancerType": "Osteosarcoma", "stage": { "status": "unknown", "value": null, "classificationSystem": null }, "diseaseState": { "status": "known", "value": "recurrent" } },
+  { "id": "P005", "ageYears": 42, "sex": "female", "cancerType": "Breast cancer", "stage": { "status": "known", "value": "II", "classificationSystem": "TNM stage group; edition unspecified" }, "diseaseState": { "status": "known", "value": "newlyDiagnosed" } },
+  { "id": "P006", "ageYears": 68, "sex": "male", "cancerType": "Non-small cell lung cancer", "stage": { "status": "known", "value": "IV", "classificationSystem": "TNM stage group; edition unspecified" }, "diseaseState": { "status": "known", "value": "newlyDiagnosed" } },
+  { "id": "P007", "ageYears": 56, "sex": "female", "cancerType": "Colon cancer", "stage": { "status": "known", "value": "III", "classificationSystem": "TNM stage group; edition unspecified" }, "diseaseState": { "status": "known", "value": "recurrent" } },
+  { "id": "P008", "ageYears": 73, "sex": "male", "cancerType": "Prostate cancer", "stage": { "status": "known", "value": "II", "classificationSystem": "TNM stage group; edition unspecified" }, "diseaseState": { "status": "unknown", "value": null } },
+  { "id": "P009", "ageYears": null, "sex": "unknown", "cancerType": "Melanoma", "stage": { "status": "known", "value": "III", "classificationSystem": "TNM stage group; edition unspecified" }, "diseaseState": { "status": "known", "value": "recurrent" } },
+  { "id": "P010", "ageYears": 61, "sex": "female", "cancerType": "Ovarian cancer", "stage": { "status": "unknown", "value": null, "classificationSystem": null }, "diseaseState": { "status": "unknown", "value": null } }
+]

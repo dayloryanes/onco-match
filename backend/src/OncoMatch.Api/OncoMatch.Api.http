@@ -1,6 +1,6 @@
-@OncoMatch.Api_HostAddress = http://localhost:5048
+@OncoMatch.Api_HostAddress = https://localhost:7132
 
-GET {{OncoMatch.Api_HostAddress}}/weatherforecast/
+GET {{OncoMatch.Api_HostAddress}}/api/auth/csrf
 Accept: application/json
 
 ###
