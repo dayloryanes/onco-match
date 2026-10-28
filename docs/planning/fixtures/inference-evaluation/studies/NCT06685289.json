@@ -1,0 +1,268 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT06685289",
+      "orgStudyIdInfo": {
+        "id": "2024-SR-727"
+      },
+      "organization": {
+        "fullName": "The First Affiliated Hospital with Nanjing Medical University",
+        "class": "OTHER"
+      },
+      "briefTitle": "Donafenib Combined With Capecitabine for Postoperative Adjuvant Therapy of Biliary Malignant Tumors With High-risk Recurrence Risk",
+      "officialTitle": "Donafenib Combined With Capecitabine for Postoperative Adjuvant Therapy of Biliary Malignant Tumors With High-risk Recurrence Risk: a Multi-center, Randomized Controlled, Phase II Study"
+    },
+    "statusModule": {
+      "statusVerifiedDate": "2025-01",
+      "overallStatus": "RECRUITING",
+      "expandedAccessInfo": {
+        "hasExpandedAccess": false
+      },
+      "startDateStruct": {
+        "date": "2024-11-15",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2026-11-15",
+        "type": "ESTIMATED"
+      },
+      "completionDateStruct": {
+        "date": "2027-11-15",
+        "type": "ESTIMATED"
+      },
+      "studyFirstSubmitDate": "2024-11-06",
+      "studyFirstSubmitQcDate": "2024-11-10",
+      "studyFirstPostDateStruct": {
+        "date": "2024-11-12",
+        "type": "ACTUAL"
+      },
+      "lastUpdateSubmitDate": "2025-01-25",
+      "lastUpdatePostDateStruct": {
+        "date": "2025-01-28",
+        "type": "ACTUAL"
+      }
+    },
+    "sponsorCollaboratorsModule": {
+      "responsibleParty": {
+        "type": "SPONSOR"
+      },
+      "leadSponsor": {
+        "name": "The First Affiliated Hospital with Nanjing Medical University",
+        "class": "OTHER"
+      }
+    },
+    "oversightModule": {
+      "isFdaRegulatedDrug": false,
+      "isFdaRegulatedDevice": false
+    },
+    "descriptionModule": {
+      "briefSummary": "This study is a randomized, open label, parallel controlled trial aimed at evaluating and observing the efficacy and safety of the combination of donafenib and capecitabine as adjuvant therapy for postoperative treatment of biliary malignancies with high risk of recurrence.\n\nThe study selected patients with biliary malignant tumors who are at high risk of postoperative recurrence as the research subjects.\n\nAfter the subjects sign the informed consent and pass the screening, they will be randomly divided into 1:1 groups. The experimental group consisted of Donafenib (200mg, bid) combined with capecitabine (1250mg/m2, bid, treated for 2 weeks and stopped for 1 week). The control group was capecitabine (1250mg/m2, bid, treated for 2 weeks and stopped for 1 week). Stop treatment until the subject experiences disease recurrence or intolerable toxic side effects.\n\nThe primary endpoint of the study was the 1y RFS rate. Plan to include 70 participants."
+    },
+    "conditionsModule": {
+      "conditions": [
+        "Biliary Malignant Tumors"
+      ]
+    },
+    "designModule": {
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "PHASE2"
+      ],
+      "designInfo": {
+        "allocation": "RANDOMIZED",
+        "interventionModel": "PARALLEL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "enrollmentInfo": {
+        "count": 70,
+        "type": "ESTIMATED"
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        {
+          "label": "donafenib combined with capecitabine",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Drug: Donafenib",
+            "Drug: capecitabine"
+          ]
+        },
+        {
+          "label": "capecitabine",
+          "type": "ACTIVE_COMPARATOR",
+          "interventionNames": [
+            "Drug: capecitabine"
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "Donafenib",
+          "description": "200mg, oral, twice daily, continuous medication for 6 months",
+          "armGroupLabels": [
+            "donafenib combined with capecitabine"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "capecitabine",
+          "description": "1250mg/m2, oral, twice daily, treatment for 2 weeks with 1 week off, with 3 weeks as a treatment cycle (a total of 8 treatment cycles)",
+          "armGroupLabels": [
+            "capecitabine",
+            "donafenib combined with capecitabine"
+          ]
+        }
+      ]
+    },
+    "outcomesModule": {
+      "primaryOutcomes": [
+        {
+          "measure": "1-year disease free survival rate",
+          "description": "After receiving treatment, the patient did not experience any disease recurrence within one year",
+          "timeFrame": "1 year"
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "measure": "2-year disease free survival rate",
+          "description": "After receiving treatment, the patient did not experience any disease recurrence within 2 years",
+          "timeFrame": "2 year"
+        },
+        {
+          "measure": "RFS(Recurrence-free Survival)",
+          "description": "The time elapsed from the date of enrollment to tumor recurrence or death from any cause (if the subject dies before disease recurrence).",
+          "timeFrame": "3 year"
+        },
+        {
+          "measure": "OS(Overall Survival)",
+          "description": "The time elapsed from the date of enrollment to the date of death caused by any reason.",
+          "timeFrame": "5 year"
+        },
+        {
+          "measure": "Safety assessment",
+          "description": "Incidence, severity, and relationship to study drugs of all adverse events (AEs), treatment-related adverse events (TRAEs), and serious adverse events (SAEs).",
+          "timeFrame": "1 year"
+        }
+      ]
+    },
+    "eligibilityModule": {
+      "eligibilityCriteria": "Inclusion Criteria:\n\n1. Patients must sign an informed consent form;\n2. Age range: 18-75 years old, both male and female are welcome;\n3. ECOG Physical Status Score (PS Score) 0 or 1;\n4. Patients with BTC (intrahepatic cholangiocarcinoma ICC; extrahepatic cholangiocarcinoma ECC gallbladder cancer\\&hilar cholangiocarcinoma\\&distal cholangiocarcinoma) diagnosed by histopathology after resection of specimens, R0 resection and having at least one of the following high-risk recurrence factors;\n\n   1. According to the UICC/AJCC TNM 8th edition staging system: T2-4, N0, M0 or T1-4, N1, M0 (applicable to ECC subjects); T1b-4, N0-1, M0 or T1a, N1, M0 (applicable to ICC subjects); - Please refer to the screenshot level PDF file at the end of the article for the installment standards\n   2. Vascular invasion;\n   3. Neurophilic invasion (PNI);\n5. No recurrence or metastasis on imaging within the first 28 days of randomization;\n6. Prior to radical resection, no anti-tumor systemic therapy (including radiotherapy, chemotherapy, targeted therapy, immunotherapy) was received;\n7. The laboratory test values within 7 days before the first medication meet the requirements:\n8. Expected survival period greater than 6 months;\n9. Women with fertility must agree to abstain from sexual intercourse (avoid heterosexual intercourse) or use reliable and effective methods of contraception for at least 120 days from the date of signing the informed consent form until the last administration of the study drug. And the serum HCG test must be negative within 72 hours before randomization; And it must be non lactating.\n\n   If a woman has already menstruated, has not yet reached postmenopausal status (continuous absence of menstruation for ≥ 12 months, no other reasons found besides menopause), and has not undergone sterilization surgery (such as hysterectomy, bilateral tubal ligation, or bilateral oophorectomy), she is considered to have fertility.\n10. For male participants whose partners are fertile women, they must agree to abstain from sexual activity for at least 120 days from the signing of the informed consent form until the last administration of the study drug, or to use reliable and effective methods of contraception. Male participants must also agree not to donate sperm during the same time period. Male participants whose partners are already pregnant are required to use condoms and do not need to use other contraceptive methods.\n\nExclusion Criteria:\n\n1. Pathological diagnosis of mixed hepatocellular carcinoma and other non cholangiocarcinoma malignant tumor components;\n2. Previously received systemic treatment;\n3. Previous or concurrent malignant tumors, excluding fully treated non melanoma skin cancer, cervical carcinoma in situ, and papillary thyroid carcinoma;\n4. Active tuberculosis infection. Patients with active pulmonary tuberculosis infection within the year prior to enrollment; Having a history of active pulmonary tuberculosis infection more than one year prior to enrollment, not receiving formal anti tuberculosis treatment, or having active tuberculosis;\n5. History of autoimmune diseases or immunodeficiency, including but not limited to myasthenia gravis, myositis, autoimmune hepatitis, systemic lupus erythematosus, rheumatoid arthritis, inflammatory bowel disease, antiphospholipid antibody syndrome, Wegener's granulomatosis, Sjogren's syndrome, Guillain Barr é syndrome, or multiple sclerosis;\n6. Long term systemic hormone therapy (equivalent to\\>10mg prednisone/day) or any other form of immunosuppressive therapy is required. Subjects who use inhaled or topical corticosteroids may be included;\n7. Severe heart, lung, and kidney dysfunction;\n8. Insufficient control of arterial hypertension (systolic blood pressure ≥ 140 mmHg or diastolic blood pressure ≥ 90 mmHg) (based on the average of BP readings obtained from ≥ 2 measurements), allowing for the use of antihypertensive therapy to achieve the above parameters; Previously experienced hypertensive crisis or hypertensive encephalopathy;\n9. Within the first 3 months of enrollment, there have been significant clinical bleeding symptoms or clear bleeding tendencies; Abnormal coagulation function (PT\\>14s), with a tendency towards bleeding or currently undergoing thrombolytic or anticoagulant therapy;\n10. HBV DNA\\>2000IU/ml, HCV active infection (HCV antibody positive and HCV-RNA level above the detection limit);\n11. Active infections that require systemic treatment;\n12. Positive for human immunodeficiency virus (HIV, HIV1/2 antibody);\n13. Have a history of substance abuse, alcoholism, or drug use;\n14. Have a history of researching drug allergies;\n15. Other factors that may affect subject safety or trial compliance, as determined by researchers. Serious illnesses (including mental illnesses) that require combined treatment, severe laboratory abnormalities, or other family or social factors.",
+      "healthyVolunteers": false,
+      "sex": "ALL",
+      "minimumAge": "18 Years",
+      "maximumAge": "75 Years",
+      "stdAges": [
+        "ADULT",
+        "OLDER_ADULT"
+      ]
+    },
+    "contactsLocationsModule": {
+      "centralContacts": [
+        {
+          "name": "Jianhua Rao",
+          "role": "CONTACT",
+          "phone": "18262637266",
+          "email": "raojh@njmu.edu.cn"
+        }
+      ],
+      "locations": [
+        {
+          "facility": "The First Affiliated Hospital with Nanjing Medical University",
+          "status": "RECRUITING",
+          "city": "Nanjing",
+          "state": "Jiangsu",
+          "zip": "210029",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Jianhua Rao",
+              "role": "CONTACT",
+              "phone": "+8618262637266",
+              "email": "raojh@njmu.edu.cn"
+            }
+          ],
+          "geoPoint": {
+            "lat": 32.06167,
+            "lon": 118.77778
+          }
+        }
+      ]
+    },
+    "ipdSharingStatementModule": {
+      "ipdSharing": "UNDECIDED"
+    }
+  },
+  "derivedSection": {
+    "miscInfoModule": {
+      "versionHolder": "2026-10-27"
+    },
+    "interventionBrowseModule": {
+      "meshes": [
+        {
+          "id": "C000710249",
+          "term": "donafenib"
+        },
+        {
+          "id": "D000069287",
+          "term": "Capecitabine"
+        }
+      ],
+      "ancestors": [
+        {
+          "id": "D003841",
+          "term": "Deoxycytidine"
+        },
+        {
+          "id": "D003562",
+          "term": "Cytidine"
+        },
+        {
+          "id": "D011741",
+          "term": "Pyrimidine Nucleosides"
+        },
+        {
+          "id": "D011743",
+          "term": "Pyrimidines"
+        },
+        {
+          "id": "D006573",
+          "term": "Heterocyclic Compounds, 1-Ring"
+        },
+        {
+          "id": "D006571",
+          "term": "Heterocyclic Compounds"
+        },
+        {
+          "id": "D005472",
+          "term": "Fluorouracil"
+        },
+        {
+          "id": "D014498",
+          "term": "Uracil"
+        },
+        {
+          "id": "D011744",
+          "term": "Pyrimidinones"
+        },
+        {
+          "id": "D003853",
+          "term": "Deoxyribonucleosides"
+        },
+        {
+          "id": "D009705",
+          "term": "Nucleosides"
+        },
+        {
+          "id": "D009706",
+          "term": "Nucleic Acids, Nucleotides, and Nucleosides"
+        }
+      ]
+    }
+  },
+  "hasResults": false
+}
