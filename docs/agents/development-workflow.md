@@ -82,6 +82,14 @@ problem. Automated review is not human approval.
 - Commit subjects, PR titles, issue titles, and branch names have no trailing
   period. Description prose uses normal capitalization and punctuation.
 
+### Merge recommendations
+
+Before recommending a merge method, inspect the branch's commits and explain
+the resulting history. Base the recommendation on the desired history and the
+purpose of the commits. Commit count or a previous merge choice alone does not
+determine the method. Clearly distinguish branch names, commit titles, PR titles,
+and merge-commit titles.
+
 ## Implementation and review expectations
 
 Prefer small, explicit, reviewable changes and familiar C# syntax initially;
@@ -95,8 +103,11 @@ a first-slice requirement. Retain useful configuration and infrastructure.
 
 Introduce meaningful tests with features. Use deterministic fixtures and mock
 external services in automated tests; live inference evaluation is separate.
-Record actual validation and limitations. In PRs, identify AI assistance and
-human-review status accurately; do not claim review that has not occurred.
+Record automated tests, automated code review, and maintainer manual validation
+separately. State the scope, result, and limitations of each. Use standard
+validation terminology. Describe application smoke testing and source-code
+review as distinct activities. In PRs, identify AI assistance and review status
+accurately; claim only review that has occurred.
 Use the installed pr skill for its visual summary, evidence, and risk format.
 
 ## Documentation and release
