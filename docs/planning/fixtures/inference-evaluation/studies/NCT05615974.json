@@ -1,0 +1,586 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT05615974",
+      "orgStudyIdInfo": {
+        "id": "LM101-01-103"
+      },
+      "organization": {
+        "fullName": "LaNova Medicines Limited",
+        "class": "INDUSTRY"
+      },
+      "briefTitle": "A Phase I/II Study of LM-101 Injection in Patients With Advanced Malignant Tumors",
+      "officialTitle": "A Phase I/II, Open-label, Dose Escalation, and Dose Expansion Study to Evaluate the Safety, Tolerability, Pharmacokinetics, Immunogenicity, and Preliminary Efficacy of LM-101 Injection as a Single Agent or Combination Therapy in Patients With Advanced Malignant Tumors"
+    },
+    "statusModule": {
+      "statusVerifiedDate": "2024-12",
+      "overallStatus": "RECRUITING",
+      "expandedAccessInfo": {
+        "hasExpandedAccess": false
+      },
+      "startDateStruct": {
+        "date": "2023-01-11",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2027-01-11",
+        "type": "ESTIMATED"
+      },
+      "completionDateStruct": {
+        "date": "2028-01-11",
+        "type": "ESTIMATED"
+      },
+      "studyFirstSubmitDate": "2022-10-18",
+      "studyFirstSubmitQcDate": "2022-11-08",
+      "studyFirstPostDateStruct": {
+        "date": "2022-11-14",
+        "type": "ACTUAL"
+      },
+      "lastUpdateSubmitDate": "2024-12-16",
+      "lastUpdatePostDateStruct": {
+        "date": "2024-12-19",
+        "type": "ACTUAL"
+      }
+    },
+    "sponsorCollaboratorsModule": {
+      "responsibleParty": {
+        "type": "SPONSOR"
+      },
+      "leadSponsor": {
+        "name": "LaNova Medicines Limited",
+        "class": "INDUSTRY"
+      }
+    },
+    "oversightModule": {
+      "oversightHasDmc": false,
+      "isFdaRegulatedDrug": false,
+      "isFdaRegulatedDevice": false
+    },
+    "descriptionModule": {
+      "briefSummary": "This study is to assess the safety and tolerability, obtain Maximum Tolerated Dose (MTD) and/or the recommended phase 2 dose (RP2D) of LM-101 as a single agent or in combination in patients with advanced malignant tumors"
+    },
+    "conditionsModule": {
+      "conditions": [
+        "Malignant Tumors"
+      ]
+    },
+    "designModule": {
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "PHASE1",
+        "PHASE2"
+      ],
+      "designInfo": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "SINGLE_GROUP",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "enrollmentInfo": {
+        "count": 139,
+        "type": "ESTIMATED"
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        {
+          "label": "LM101 Dose Escalation",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Drug: LM101"
+          ]
+        },
+        {
+          "label": "LM101 combination therapy exploratory",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Drug: LM101",
+            "Drug: Toripalimab",
+            "Drug: Rituximab"
+          ]
+        },
+        {
+          "label": "LM101 combination expansion",
+          "type": "EXPERIMENTAL",
+          "interventionNames": [
+            "Drug: LM101",
+            "Drug: Toripalimab",
+            "Drug: Rituximab"
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "type": "DRUG",
+          "name": "LM101",
+          "description": "Administered intravenously",
+          "armGroupLabels": [
+            "LM101 Dose Escalation",
+            "LM101 combination expansion",
+            "LM101 combination therapy exploratory"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Toripalimab",
+          "description": "Administered intravenously",
+          "armGroupLabels": [
+            "LM101 combination expansion",
+            "LM101 combination therapy exploratory"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Rituximab",
+          "description": "Administered intravenously",
+          "armGroupLabels": [
+            "LM101 combination expansion",
+            "LM101 combination therapy exploratory"
+          ]
+        }
+      ]
+    },
+    "outcomesModule": {
+      "primaryOutcomes": [
+        {
+          "measure": "Incidence of adverse events (AEs)",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Incidence of dose-limitingtoxicity (DLT)",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Incidence of serious adverse event (SAE)",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Temperature in ℃",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Pulse in BPM(Beat per Minute)",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Blood Pressure in mmHg",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Weight in Kg",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Height in centimeter",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Blood Routine examination",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Urine Routine test",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Blood biochemistry",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Laboratory tests- Coangulation function",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Echocardiography- LVEF(Left Ventricular Ejection Fraction) in percentage",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in QTcF.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in QT.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in QRS.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in HR.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in RR.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in PR.",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "ECOG(Eastern Cooperative Oncology Group) score",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Overall Response Rate (ORR)",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "measure": "Pharmacokinetic (PK) Parameter: Maximum Observed Concentration (Cmax)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter:Time of Maximum Observed Concentration (Tmax)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Area Under the Concentration-time Curve(AUC)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Steady State Maximum Concentration(Cmax,ss)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Steady State Minimum Concentration(Cmin,ss)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Systemic Clearance at Steady State (CLss)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Accumulation Ratio (Rac)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "PK Parameter: Elimination Half-life (t1/2)",
+          "description": "Phase 1",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Volume of Distribution at Steady-State (Vss)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "PK Parameter: Degree of Fluctuation (DF)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "Immunogenicity of LM-101",
+          "description": "Phase 1 and 2; Anti-Drug antibody and Nab (if neccessary) will be tested.",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "Receptor Occupancy of LM-101",
+          "description": "Phase 1",
+          "timeFrame": "48 weeks"
+        },
+        {
+          "measure": "Biomarker correlation (CD8/CD47/CD68/CD163/PD-L1)",
+          "description": "Phase 1 and 2",
+          "timeFrame": "112 weeks"
+        },
+        {
+          "measure": "Duration of Response (DOR) in Month",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Disease control rate (DCR) in percentage",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "progression-free survival (PFS) in Month",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Overall survival (OS) in Month",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Changes of target lesions from baseline in Millimeter.",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Safety: AE/SAE (Number of participants with treatment-related adverse events as assessed by CTCAE v5.0)",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Temperature in ℃",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Pulse in BPM(Beat per Minute)",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Blood Pressure in mmHg",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Weight in Kg",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Height in centimeter",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Blood Routine examination",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Urine Routine test",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Laboratory tests-Blood biochemistry",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "Laboratory tests- Coangulation function",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "12-lead electrocardiogram (ECG) in RR, PR, QRS, QT, QTcF etc.",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        },
+        {
+          "measure": "ECOG(Eastern Cooperative Oncology Group) score",
+          "description": "Phase 2",
+          "timeFrame": "64 weeks"
+        }
+      ]
+    },
+    "eligibilityModule": {
+      "eligibilityCriteria": "Inclusion Criteria:\n\n1. Subjects who are willing to participate in the study and sign the informed consent form (ICF) prior to any procedure.\n2. Aged ≥18 years old, male or female.\n3. Eastern Cooperative Oncology Group (ECOG) performance status of 0-1.\n4. Life expectancy ≥ 3 months.\n5. Subjects must have histological or cytological confirmation of recurrent or refractory advanced solid tumors, and have progressed on standard therapy.\n6. At least one evaluable lesion.\n7. Subjects in the combination therapy group must have Archived Samples or fresh tumor tissue specimens are required for testing.\n8. Subjects must show appropriate organ and marrow function in laboratory examinations within 7 days prior to the first dose:\n9. Women of childbearing potential (WOCBP) must agree to use highly effective methods of contraception prior to study entry, during the study and for 6 months after the last dose of study drug.\n10. Subjects who can communicate well with investigators and understand and adhere to the requirements of this study.\n\nExclusion Criteria:\n\n1. Subject has received prior investigational therapy directed at the same target therapy.\n2. Subjects has participated in any other interventional clinical trial within 21 days prior to the first dosing of LM-101.\n3. Subjects with anti-tumor treatment within 21 days prior to the first dosing of LM-101, including radiotherapy, chemotherapy, endocrine therapy, and immunotherapy, etc.\n4. Any adverse event from prior anti-tumor therapy has not yet recovered to ≤ grade 1 of CTCAE v5.0.\n5. Poorly controlled tumor-related pain.\n6. Subjects with symptomatic/active central nervous system (CNS) metastases.\n7. Subjects who have uncontrolled pleural effusion, pericardial effusion, or ascites requiring recurrent drainage procedures.\n8. Subjects with known hypersensitivity to antibody therapy.\n9. Subjects who take systemic corticosteroids (\\> 10 mg daily prednisone equivalents) or other systemic immunosuppressive medicationswithin 2 weeks prior to the first dosing of LM-101.\n10. Subjects with the known history of autoimmune disease with the exception of subjects with a history of autoimmune-related hypothyroidism on a stable dose of thyroid-replacement hormone.\n11. Subject who has interstitial lung disease or a history of pneumonitis that required oral or intravenous glucocorticoids to assist with management.\n12. Use of any live attenuated vaccines within 28 days prior to the first dosing of LM-101.\n13. Subjects who are using therapeutic doses of anticoagulants such as heparin or vitamin K antagonists.\n14. Subjects who received major surgery or interventional treatment within 28 days prior to the first dosing of LM-101 (excluding tumor biopsy, puncture, etc.).\n15. Subjects who have history of severe cardiovascular disease.\n16. Subjects who have uncontrolled or severe illness.\n17. Subjects who have a history of immunodeficiency disease.\n18. HIV infection, active tuberculosis or active HBV and HCV infection.\n19. Subjects who have Known history of active tuberculosis.\n20. Subjects who have other active invasive cancers, other than the one treated in this trial, within 5 years prior to screening.\n21. Child-bearing potential female who have positive results in pregnancy test or are lactating.\n22. Subject who have a known psychiatric diseases or disorders that may affect compliance with the trial.\n23. Subject who is judged as not eligible to participate in this study by the investigator.",
+      "healthyVolunteers": false,
+      "sex": "ALL",
+      "minimumAge": "18 Years",
+      "stdAges": [
+        "ADULT",
+        "OLDER_ADULT"
+      ]
+    },
+    "contactsLocationsModule": {
+      "centralContacts": [
+        {
+          "name": "Alex Yuan",
+          "role": "CONTACT",
+          "phone": "+8615901815211",
+          "email": "alexyuan@lanovamed.com"
+        }
+      ],
+      "locations": [
+        {
+          "facility": "Sun Yat-sen University Cancer Center",
+          "status": "RECRUITING",
+          "city": "Guangzhou",
+          "state": "Guangdong",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Yi Xia",
+              "role": "CONTACT"
+            }
+          ],
+          "geoPoint": {
+            "lat": 23.11667,
+            "lon": 113.25
+          }
+        },
+        {
+          "facility": "Zhongnan Hospital of Wuhan University",
+          "status": "RECRUITING",
+          "city": "Wuhan",
+          "state": "Hubei",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Fuling Zhou",
+              "role": "CONTACT"
+            }
+          ],
+          "geoPoint": {
+            "lat": 30.58333,
+            "lon": 114.26667
+          }
+        },
+        {
+          "facility": "Linyi Cancer Hospital",
+          "status": "NOT_YET_RECRUITING",
+          "city": "Linyi",
+          "state": "Shandong",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Jianhua Shi",
+              "role": "CONTACT"
+            }
+          ],
+          "geoPoint": {
+            "lat": 35.06306,
+            "lon": 118.34278
+          }
+        },
+        {
+          "facility": "Beijing Tongren Hospital, CMU",
+          "status": "TERMINATED",
+          "city": "Beijing",
+          "country": "China",
+          "geoPoint": {
+            "lat": 39.9075,
+            "lon": 116.39723
+          }
+        },
+        {
+          "facility": "Fudan University Shanghai Cancer Center",
+          "status": "RECRUITING",
+          "city": "Shanghai",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Dongmei Ji",
+              "role": "CONTACT"
+            }
+          ],
+          "geoPoint": {
+            "lat": 31.22222,
+            "lon": 121.45806
+          }
+        }
+      ]
+    },
+    "referencesModule": {
+      "references": [
+        {
+          "pmid": "41910591",
+          "type": "DERIVED",
+          "citation": "Cai J, Zhao B, Ji D, Zhou F, Bai S, Fang X, Nie M, Bai B, Zhang Y, Li J, Li H, Li Y, Fei D, Qin X, Qin C, Zhao S, Xia Y, Cai Q. LM-101, an Anti-SIRPalpha Antibody, in Patients with Relapsed/Refractory Lymphoma and Advanced Head and Neck Cancer: An Open-Label, Multicenter, Phase I Trial. Clin Cancer Res. 2026 Jun 15;32(12):2391-2402. doi: 10.1158/1078-0432.CCR-25-2357."
+        }
+      ]
+    },
+    "ipdSharingStatementModule": {
+      "ipdSharing": "NO"
+    }
+  },
+  "derivedSection": {
+    "miscInfoModule": {
+      "versionHolder": "2026-10-27"
+    },
+    "conditionBrowseModule": {
+      "meshes": [
+        {
+          "id": "D009369",
+          "term": "Neoplasms"
+        }
+      ]
+    },
+    "interventionBrowseModule": {
+      "meshes": [
+        {
+          "id": "C000656314",
+          "term": "toripalimab"
+        },
+        {
+          "id": "D000069283",
+          "term": "Rituximab"
+        }
+      ],
+      "ancestors": [
+        {
+          "id": "D058846",
+          "term": "Antibodies, Monoclonal, Murine-Derived"
+        },
+        {
+          "id": "D000911",
+          "term": "Antibodies, Monoclonal"
+        },
+        {
+          "id": "D000906",
+          "term": "Antibodies"
+        },
+        {
+          "id": "D007136",
+          "term": "Immunoglobulins"
+        },
+        {
+          "id": "D007162",
+          "term": "Immunoproteins"
+        },
+        {
+          "id": "D001798",
+          "term": "Blood Proteins"
+        },
+        {
+          "id": "D011506",
+          "term": "Proteins"
+        },
+        {
+          "id": "D000602",
+          "term": "Amino Acids, Peptides, and Proteins"
+        },
+        {
+          "id": "D012712",
+          "term": "Serum Globulins"
+        },
+        {
+          "id": "D005916",
+          "term": "Globulins"
+        }
+      ]
+    }
+  },
+  "hasResults": false
+}

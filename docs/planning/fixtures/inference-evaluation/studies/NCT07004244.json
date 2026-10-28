@@ -1,0 +1,321 @@
+{
+  "protocolSection": {
+    "identificationModule": {
+      "nctId": "NCT07004244",
+      "orgStudyIdInfo": {
+        "id": "KRAS ST-2025"
+      },
+      "organization": {
+        "fullName": "Sichuan University",
+        "class": "OTHER"
+      },
+      "briefTitle": "Application of KRAS Vaccine in the Treatment of KRAS-mutated Malignancies",
+      "officialTitle": "Safety and Efficacy of KRAS Vaccine in the Treatment of KRAS-mutant Malignancies"
+    },
+    "statusModule": {
+      "statusVerifiedDate": "2025-06",
+      "overallStatus": "RECRUITING",
+      "expandedAccessInfo": {
+        "hasExpandedAccess": false
+      },
+      "startDateStruct": {
+        "date": "2025-06-05",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2027-12-31",
+        "type": "ESTIMATED"
+      },
+      "completionDateStruct": {
+        "date": "2027-12-31",
+        "type": "ESTIMATED"
+      },
+      "studyFirstSubmitDate": "2025-05-26",
+      "studyFirstSubmitQcDate": "2025-05-26",
+      "studyFirstPostDateStruct": {
+        "date": "2025-06-04",
+        "type": "ACTUAL"
+      },
+      "lastUpdateSubmitDate": "2025-06-17",
+      "lastUpdatePostDateStruct": {
+        "date": "2025-06-24",
+        "type": "ACTUAL"
+      }
+    },
+    "sponsorCollaboratorsModule": {
+      "responsibleParty": {
+        "type": "PRINCIPAL_INVESTIGATOR",
+        "investigatorFullName": "Zhen-Yu Ding",
+        "investigatorTitle": "Professor",
+        "investigatorAffiliation": "Sichuan University"
+      },
+      "leadSponsor": {
+        "name": "Sichuan University",
+        "class": "OTHER"
+      },
+      "collaborators": [
+        {
+          "name": "West China Hospital",
+          "class": "OTHER"
+        }
+      ]
+    },
+    "oversightModule": {
+      "oversightHasDmc": true,
+      "isFdaRegulatedDrug": false,
+      "isFdaRegulatedDevice": false
+    },
+    "descriptionModule": {
+      "briefSummary": "The goal of this study is to evaluate the safety and efficacy of mRNA vaccine for the KRAS mutation malignant tumors.",
+      "detailedDescription": "The Kirsten rat sarcoma viral oncogene homolog (KRAS) is one of the most prevalent oncogenes in humans and plays a pivotal role in tumor initiation and progression. KRAS mutations are observed in various cancers, particularly in non-small cell lung cancer, colorectal cancer, and pancreatic cancer. Mutations in the KRAS gene activate multiple signaling pathways, such as MAPK/ERK and PI3K/AKT, which regulate cell proliferation, survival, and migration, thereby driving tumor progression and the development of drug resistance. Due to its critical role in cancer, KRAS has emerged as a key therapeutic target. However, the structural characteristics of KRAS mutants have historically rendered direct inhibition of the KRAS protein extremely challenging, leading to its designation as an \"undruggable\" target over the past decades. Consequently, patients with KRAS-mutated malignancies face limited treatment efficacy and a lack of precision therapeutic options. In recent years, advances in scientific technologies have enabled the successful development and marketing of several drugs targeting specific KRAS mutations. Nevertheless, most existing therapies exhibit suboptimal efficacy, necessitating further exploration of treatments for broader mutation types and larger cancer populations.\n\nmRNA vaccines represent a highly promising novel approach in oncology. Preliminary reviews of global clinical trials investigating tumor-related mRNA therapeutics reveal that current research primarily focuses on malignancies such as melanoma, prostate cancer, colorectal cancer, acute myeloid leukemia, and breast cancer, with most studies in Phase I/II. Published data demonstrate that mRNA-based cancer therapies exhibit significant potential in anticancer immunotherapy and favorable safety profiles. Given the promising antitumor efficacy of mRNA therapeutic vaccines targeting KRAS mutations in KRAS-mutated tumors, coupled with the limited treatment options and poor outcomes for most KRAS-mutated cancer patients, monotherapy with mRNA therapeutic vaccines or their combination with immune checkpoint inhibitors may offer substantial clinical benefits. Accordingly, the research team plans to conduct an \"Exploratory Study on the Application of mRNA Vaccines Targeting KRAS Mutations in KRAS-Mutated Malignancies.\""
+    },
+    "conditionsModule": {
+      "conditions": [
+        "Malignant Tumors"
+      ],
+      "keywords": [
+        "KRAS-mutated malignancies",
+        "mRNA vaccines",
+        "treatment",
+        "safety",
+        "efficacy"
+      ]
+    },
+    "designModule": {
+      "studyType": "INTERVENTIONAL",
+      "phases": [
+        "PHASE1"
+      ],
+      "designInfo": {
+        "allocation": "NON_RANDOMIZED",
+        "interventionModel": "SEQUENTIAL",
+        "primaryPurpose": "TREATMENT",
+        "maskingInfo": {
+          "masking": "NONE"
+        }
+      },
+      "enrollmentInfo": {
+        "count": 20,
+        "type": "ESTIMATED"
+      }
+    },
+    "armsInterventionsModule": {
+      "armGroups": [
+        {
+          "label": "Cohort 1",
+          "type": "EXPERIMENTAL",
+          "description": "From the initial dose, the dose was increased using a dose escalation scheme. Each subject only received one corresponding dose.",
+          "interventionNames": [
+            "Biological: KRAS-mutated mRNA vaccine"
+          ]
+        },
+        {
+          "label": "Cohort 2",
+          "type": "EXPERIMENTAL",
+          "description": "KRAS-mutated mRNA vaccine+ Toripalimab + pemetrexed + carboplatin as neo-adjuvant treatment followed by surgery",
+          "interventionNames": [
+            "Biological: KRAS-mutated mRNA vaccine",
+            "Biological: TORIPALIMAB",
+            "Drug: Pemetrexed+carboplatin"
+          ]
+        }
+      ],
+      "interventions": [
+        {
+          "type": "BIOLOGICAL",
+          "name": "KRAS-mutated mRNA vaccine",
+          "description": "Cohort 1:From the initial dose, the dose was increased using a dose escalation scheme. Each subject only received one corresponding dose.\n\nCohort 2:KRAS-mutated mRNA vaccine+ Toripalimab + pemetrexed + carboplatin as neo-adjuvant treatment followed by surgery",
+          "armGroupLabels": [
+            "Cohort 1",
+            "Cohort 2"
+          ]
+        },
+        {
+          "type": "BIOLOGICAL",
+          "name": "TORIPALIMAB",
+          "description": "intravenous injection",
+          "armGroupLabels": [
+            "Cohort 2"
+          ]
+        },
+        {
+          "type": "DRUG",
+          "name": "Pemetrexed+carboplatin",
+          "description": "intravenous injection",
+          "armGroupLabels": [
+            "Cohort 2"
+          ]
+        }
+      ]
+    },
+    "outcomesModule": {
+      "primaryOutcomes": [
+        {
+          "measure": "Adverse events",
+          "description": "Adverse events defined as the number of participants with adverse events according to CTCAE v5.0.",
+          "timeFrame": "up to 12 months"
+        },
+        {
+          "measure": "Immunogenicity of the mRNA vaccine",
+          "description": "Measure vaccine-induced immune response (e.g., antigen-specific T-cell/B-cell responses or seroconversion rates).",
+          "timeFrame": "up to 7 months"
+        }
+      ],
+      "secondaryOutcomes": [
+        {
+          "measure": "Objective response rate",
+          "description": "ORR is defined as the percentage of patients who achieve a response, which can either be complete response (complete disappearance of lesions) or partial response (reduction in the sum of maximal tumor diameters by at least 30% or more)",
+          "timeFrame": "up to 12 months"
+        },
+        {
+          "measure": "Progress-Free Survival",
+          "description": "PFS is defined as the time from the administration of the first dose to first disease",
+          "timeFrame": "up to 12 months"
+        },
+        {
+          "measure": "Overall Survival",
+          "description": "OS is defined as the time from the administration of the first dose to death.",
+          "timeFrame": "up to 12 months"
+        },
+        {
+          "measure": "Pathological response rates",
+          "description": "Major pathological response (MPR, defined as ≤10% residual viable tumor); Pathological complete response (pCR)",
+          "timeFrame": "up to 7 months"
+        },
+        {
+          "measure": "Surgical feasibility",
+          "description": "R0 resection rate; Incidence of surgery delay or cancellation",
+          "timeFrame": "up to 7 months"
+        }
+      ]
+    },
+    "eligibilityModule": {
+      "eligibilityCriteria": "Key Inclusion Criteria:\n\n* Male or female participants ≥18 years of age.\n* Participants with solid tumors confirmed to carry KRAS mutations.\n* At least one measurable lesion according to RECIST 1.1 criteria.\n* ECOG physical condition score: 0-1 point.\n* Adequate organ and bone marrow function.\n* Ability to understand and voluntarily provide written informed consent before trial participation.\n\nCohort-specific Inclusion Criteria:\n\nCohort 1:\n\n* Failure of prior standard therapy, intolerance to standard therapy, ineligibility for standard therapy, or absence of a standard treatment regimen.\n* Life expectancy ≥3 months.\n\nCohort 2:\n\n* Newly diagnosed, treatment-naïve lung adenocarcinoma confirmed by pathology (histology/cytology).\n* Resectable disease classified as stage IB-IIIA per AJCC 9th edition criteria.\n* KRAS G12C/G12D/G12V/G13D mutation-positive by genomic testing.\n\nExclusion Criteria:\n\n* Patients with a history of other malignancies.\n* Presence of primary central nervous system (CNS) tumors, active CNS metastatic tumors, or carcinomatous meningitis, either historically or identified during screening.\n* Uncontrolled moderate to massive serous cavity effusion.\n* Confirmed presence of other classic gene variants.\n* Known cardiac clinical symptoms or diseases that are poorly controlled.\n* Unstable thrombotic events (e.g., deep vein thrombosis, arterial thrombosis, pulmonary embolism) requiring therapeutic intervention within 6 months prior to screening.\n* Any active autoimmune disease or a history of autoimmune disease.\n* Uncontrolled clinical disorders, psychiatric illnesses, or other significant diseases as assessed by the investigator that may interfere with informed consent, compromise interpretation of trial results, pose risks to participants, or otherwise hinder the achievement of trial objectives.\n* History of interstitial pneumonia or suspected interstitial pneumonia; or pulmonary abnormalities that may interfere with the detection or management of suspected drug-related pulmonary toxicity during the trial.\n* Hypersensitivity to the investigational drug (including any excipients).\n* Patients who received anti-tumor therapy within 4 weeks prior to the first dose, or those with unresolved adverse reactions (except alopecia) from prior anti-tumor therapy (NCI CTCAE \\> grade 1).\n* Systemic use of corticosteroids (\\>10 mg/day prednisone or equivalent) or other immunosuppressants within 14 days prior to the first dose.\n* Participants who received drugs of the same class within 6 months prior to the first dose.\n* Prior organ transplantation or allogeneic hematopoietic stem cell transplantation.\n* Active hepatitis B virus (HBV), hepatitis C virus (HCV), human immunodeficiency virus (HIV), or syphilis infection.\n* Active tuberculosis (TB) or a history of active TB; or severe acute/chronic infections requiring systemic treatment.\n* Pregnant or lactating women.\n* Any other factors deemed by the investigator to render the participant unsuitable for trial participation.",
+      "healthyVolunteers": false,
+      "sex": "ALL",
+      "minimumAge": "18 Years",
+      "stdAges": [
+        "ADULT",
+        "OLDER_ADULT"
+      ]
+    },
+    "contactsLocationsModule": {
+      "locations": [
+        {
+          "facility": "West China Hospital, Sichuan University",
+          "status": "RECRUITING",
+          "city": "Chengdu",
+          "state": "Sichuan",
+          "zip": "610041",
+          "country": "China",
+          "contacts": [
+            {
+              "name": "Huashan Shi, Doctor",
+              "role": "CONTACT",
+              "phone": "+86 18980606519",
+              "email": "shijin825@163.com"
+            }
+          ],
+          "geoPoint": {
+            "lat": 30.66667,
+            "lon": 104.06667
+          }
+        }
+      ]
+    },
+    "referencesModule": {
+      "references": [
+        {
+          "pmid": "39267685",
+          "type": "BACKGROUND",
+          "citation": "Wang B, Peng X, Li J, Wang Y, Chen L, Wu M, Zhang Y, Wang W, Feng D, Tang S, Zhang L, Zhan X. Personalized mRNA vaccine combined with PD-1 inhibitor therapy in a patient with advanced esophageal squamous cell carcinoma. Am J Cancer Res. 2024 Aug 25;14(8):3896-3904. doi: 10.62347/NVFB3780. eCollection 2024."
+        },
+        {
+          "pmid": "38246194",
+          "type": "BACKGROUND",
+          "citation": "Weber JS, Carlino MS, Khattak A, Meniawy T, Ansstas G, Taylor MH, Kim KB, McKean M, Long GV, Sullivan RJ, Faries M, Tran TT, Cowey CL, Pecora A, Shaheen M, Segar J, Medina T, Atkinson V, Gibney GT, Luke JJ, Thomas S, Buchbinder EI, Healy JA, Huang M, Morrissey M, Feldman I, Sehgal V, Robert-Tissot C, Hou P, Zhu L, Brown M, Aanur P, Meehan RS, Zaks T. Individualised neoantigen therapy mRNA-4157 (V940) plus pembrolizumab versus pembrolizumab monotherapy in resected melanoma (KEYNOTE-942): a randomised, phase 2b study. Lancet. 2024 Feb 17;403(10427):632-644. doi: 10.1016/S0140-6736(23)02268-7. Epub 2024 Jan 18."
+        },
+        {
+          "pmid": "38914844",
+          "type": "BACKGROUND",
+          "citation": "Wang X, Wang W, Zou S, Xu Z, Cao D, Zhang S, Wei M, Zhan Q, Wen C, Li F, Chen H, Fu D, Jiang L, Zhao M, Shen B. Combination therapy of KRAS G12V mRNA vaccine and pembrolizumab: clinical benefit in patients with advanced solid tumors. Cell Res. 2024 Sep;34(9):661-664. doi: 10.1038/s41422-024-00990-9. Epub 2024 Jun 24. No abstract available."
+        },
+        {
+          "pmid": "31907443",
+          "type": "BACKGROUND",
+          "citation": "Hou X, Zhang X, Zhao W, Zeng C, Deng B, McComb DW, Du S, Zhang C, Li W, Dong Y. Vitamin lipid nanoparticles enable adoptive macrophage transfer for the treatment of multidrug-resistant bacterial sepsis. Nat Nanotechnol. 2020 Jan;15(1):41-46. doi: 10.1038/s41565-019-0600-1. Epub 2020 Jan 6."
+        },
+        {
+          "pmid": "31570898",
+          "type": "BACKGROUND",
+          "citation": "Miao L, Li L, Huang Y, Delcassian D, Chahal J, Han J, Shi Y, Sadtler K, Gao W, Lin J, Doloff JC, Langer R, Anderson DG. Delivery of mRNA vaccines with heterocyclic lipids increases anti-tumor efficacy by STING-mediated immune cell activation. Nat Biotechnol. 2019 Oct;37(10):1174-1185. doi: 10.1038/s41587-019-0247-3. Epub 2019 Sep 30."
+        },
+        {
+          "pmid": "30112821",
+          "type": "BACKGROUND",
+          "citation": "Fenton OS, Kauffman KJ, McClellan RL, Kaczmarek JC, Zeng MD, Andresen JL, Rhym LH, Heartlein MW, DeRosa F, Anderson DG. Customizable Lipid Nanoparticle Materials for the Delivery of siRNAs and mRNAs. Angew Chem Int Ed Engl. 2018 Oct 8;57(41):13582-13586. doi: 10.1002/anie.201809056. Epub 2018 Sep 14."
+        },
+        {
+          "pmid": "31246328",
+          "type": "BACKGROUND",
+          "citation": "Wang F, Qin Z, Lu H, He S, Luo J, Jin C, Song X. Clinical translation of gene medicine. J Gene Med. 2019 Jul;21(7):e3108. doi: 10.1002/jgm.3108. Epub 2019 Jul 15."
+        },
+        {
+          "pmid": "31896660",
+          "type": "BACKGROUND",
+          "citation": "Reinhard K, Rengstl B, Oehm P, Michel K, Billmeier A, Hayduk N, Klein O, Kuna K, Ouchan Y, Woll S, Christ E, Weber D, Suchan M, Bukur T, Birtel M, Jahndel V, Mroz K, Hobohm K, Kranz L, Diken M, Kuhlcke K, Tureci O, Sahin U. An RNA vaccine drives expansion and efficacy of claudin-CAR-T cells against solid tumors. Science. 2020 Jan 24;367(6476):446-453. doi: 10.1126/science.aay5967. Epub 2020 Jan 2."
+        },
+        {
+          "pmid": "25386788",
+          "type": "BACKGROUND",
+          "citation": "Nishikawa J, Yoshiyama H, Iizasa H, Kanehiro Y, Nakamura M, Nishimura J, Saito M, Okamoto T, Sakai K, Suehiro Y, Yamasaki T, Oga A, Yanai H, Sakaida I. Epstein-barr virus in gastric carcinoma. Cancers (Basel). 2014 Nov 7;6(4):2259-74. doi: 10.3390/cancers6042259."
+        },
+        {
+          "pmid": "25323927",
+          "type": "BACKGROUND",
+          "citation": "Cox AD, Fesik SW, Kimmelman AC, Luo J, Der CJ. Drugging the undruggable RAS: Mission possible? Nat Rev Drug Discov. 2014 Nov;13(11):828-51. doi: 10.1038/nrd4389. Epub 2014 Oct 17."
+        },
+        {
+          "pmid": "31666701",
+          "type": "BACKGROUND",
+          "citation": "Canon J, Rex K, Saiki AY, Mohr C, Cooke K, Bagal D, Gaida K, Holt T, Knutson CG, Koppada N, Lanman BA, Werner J, Rapaport AS, San Miguel T, Ortiz R, Osgood T, Sun JR, Zhu X, McCarter JD, Volak LP, Houk BE, Fakih MG, O'Neil BH, Price TJ, Falchook GS, Desai J, Kuo J, Govindan R, Hong DS, Ouyang W, Henary H, Arvedson T, Cee VJ, Lipford JR. The clinical KRAS(G12C) inhibitor AMG 510 drives anti-tumour immunity. Nature. 2019 Nov;575(7781):217-223. doi: 10.1038/s41586-019-1694-1. Epub 2019 Oct 30."
+        },
+        {
+          "pmid": "25855536",
+          "type": "BACKGROUND",
+          "citation": "Witkiewicz AK, McMillan EA, Balaji U, Baek G, Lin WC, Mansour J, Mollaee M, Wagner KU, Koduru P, Yopp A, Choti MA, Yeo CJ, McCue P, White MA, Knudsen ES. Whole-exome sequencing of pancreatic cancer defines genetic diversity and therapeutic targets. Nat Commun. 2015 Apr 9;6:6744. doi: 10.1038/ncomms7744."
+        },
+        {
+          "pmid": "28666118",
+          "type": "BACKGROUND",
+          "citation": "Simanshu DK, Nissley DV, McCormick F. RAS Proteins and Their Regulators in Human Disease. Cell. 2017 Jun 29;170(1):17-33. doi: 10.1016/j.cell.2017.06.009."
+        }
+      ]
+    },
+    "ipdSharingStatementModule": {
+      "ipdSharing": "NO"
+    }
+  },
+  "derivedSection": {
+    "miscInfoModule": {
+      "versionHolder": "2026-10-27"
+    },
+    "conditionBrowseModule": {
+      "meshes": [
+        {
+          "id": "D009369",
+          "term": "Neoplasms"
+        }
+      ]
+    },
+    "interventionBrowseModule": {
+      "meshes": [
+        {
+          "id": "C000656314",
+          "term": "toripalimab"
+        }
+      ]
+    }
+  },
+  "hasResults": false
+}
