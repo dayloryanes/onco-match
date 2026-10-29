@@ -1,0 +1,206 @@
+using System.Net;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
+
+internal static class OfflineChecks
+{
+    internal static async Task RunAsync(string root, JsonNode config, JsonArray fixtures, string prompt, JsonNode schema)
+    {
+        var count = 0;
+        void Check(string name, Action test)
+        {
+            test(); count++; Console.WriteLine($"PASS {name}");
+        }
+        void Assert(bool value) { if (!value) throw new InvalidOperationException("Offline assertion failed"); }
+        void Reject(string name, Action test, string? code = null) => Check(name, () =>
+        {
+            try { test(); }
+            catch (EvaluationFailure ex) when (code is null || ex.Code == code) { return; }
+            catch (Exception ex) when (code is null && ex is JsonException or InvalidDataException) { return; }
+            throw new InvalidOperationException($"Expected rejection: {name}");
+        });
+        var fixture = fixtures[0]!;
+        var answer = SampleAnswer(fixture);
+        var design = File.ReadAllText(Path.Combine(root, "../../docs/planning/inference-evaluation-design.md"));
+        Check("six inputs and expected outcomes match approved design", () =>
+        {
+            var letters = new Dictionary<string, string> { ["S"] = "satisfied", ["E"] = "excluded", ["U"] = "undetermined", ["N"] = "noRestrictionIdentified" };
+            foreach (var item in fixtures)
+            {
+                var id = Evaluation.Text(item!["id"]);
+                var section = Regex.Match(design, $@"(?ms)^### {id}\r?\n(.*?)(?=^### |^## |\z)").Groups[1].Value;
+                Assert(section.Length > 0);
+                var quoted = Regex.Match(section, @"(?m)^> (.+)").Groups[1].Value.TrimEnd('\r');
+                Assert(quoted.Length == 0 ? item["study"]!["eligibilityCriteria"] is null : quoted == Evaluation.Text(item["study"]!["eligibilityCriteria"]));
+                var expected = Regex.Match(section, @"\*\*([SEUN]) / ([SEUN]) / ([SEUN])\*\*");
+                for (var i = 0; i < 3; i++) Assert(Evaluation.Text(item["expected"]![Evaluation.Criteria[i]]) == letters[expected.Groups[i + 1].Value]);
+                var outcome = Evaluation.Text(item["expected"]!["outcome"]);
+                Assert(section.Contains(outcome switch { "potentialMatch" => "**Potential match**", "nonmatch" => "**Nonmatch**", _ => "**Insufficient information**" }, StringComparison.Ordinal));
+                Assert(Evaluation.Text(item["patient"]!["cancerType"]) == (id == "D9" ? "Fictional cancer B" : "Fictional cancer A"));
+                Assert(Evaluation.Text(item["patient"]!["diseaseState"]!["value"]) == (id == "D3" ? "newlyDiagnosed" : "refractory"));
+                var expectedPatient = Evaluation.Parse("""
+                    {"id":"placeholder","ageYears":52,"sex":"male","cancerType":"Fictional cancer A","stage":{"status":"known","value":"I","classificationSystem":"Development staging system"},"diseaseState":{"status":"known","value":"refractory"}}
+                    """);
+                expectedPatient["id"] = $"evaluation-{id}";
+                if (id == "D9") expectedPatient["cancerType"] = "Fictional cancer B";
+                if (id == "D3") expectedPatient["diseaseState"]!["value"] = "newlyDiagnosed";
+                if (id == "D13") expectedPatient["stage"] = Evaluation.Parse("""{"status":"unknown","value":null,"classificationSystem":null}""");
+                Assert(JsonNode.DeepEquals(expectedPatient, item["patient"]));
+                foreach (var field in new[] { "officialTitle", "briefSummary", "detailedDescription", "studyPopulation" }) Assert(item["study"]![field] is null);
+                Assert(Evaluation.Text(item["study"]!["briefTitle"]) == "Fictional cancer A development study");
+                Assert(JsonNode.DeepEquals(item["study"]!["conditions"], new JsonArray("Fictional cancer A")));
+            }
+        });
+        Check("D13 unknown stage preserves null value/classification", () =>
+        {
+            var stage = fixtures[5]!["patient"]!["stage"]!;
+            Assert(Evaluation.Text(stage["status"]) == "unknown" && stage["value"] is null && stage["classificationSystem"] is null);
+        });
+        Check("missing study source differs from present patient null", () =>
+        {
+            Assert(Evaluation.Catalog(fixtures[2]!)["study.eligibilityCriteria"]!["present"]!.GetValue<bool>() == false);
+            Assert(Evaluation.Catalog(fixtures[5]!)["patient.stage.value"]!["present"]!.GetValue<bool>());
+        });
+        Check("valid answer is mechanically valid but semantic review remains pending", () =>
+        {
+            var validated = Evaluation.ValidateAnswer(answer.ToJsonString(), fixture);
+            Assert(Evaluation.Text(validated["semanticReview"]) == "pending" && validated["overallPass"] is null);
+        });
+        Reject("malformed JSON", () => Evaluation.ValidateAnswer("{", fixture), "invalidResponse");
+        Reject("duplicate criterion including escaped duplicate key", () => Evaluation.Parse("{\"stage\":1,\"st\\u0061ge\":2}"));
+        var missing = answer.DeepClone(); missing.AsObject().Remove("stage");
+        Reject("missing criterion", () => Evaluation.ValidateAnswer(missing.ToJsonString(), fixture), "invalidResponse");
+        var extra = answer.DeepClone(); extra["outcome"] = "potentialMatch";
+        Reject("model-owned overall outcome", () => Evaluation.ValidateAnswer(extra.ToJsonString(), fixture), "invalidResponse");
+        var badResult = answer.DeepClone(); badResult["stage"]!["result"] = "probably";
+        Reject("invalid criterion result", () => Evaluation.ValidateAnswer(badResult.ToJsonString(), fixture), "invalidResponse");
+        var altered = answer.DeepClone(); altered["stage"]!["studyEvidence"]![0]!["quote"] = "invented quotation";
+        Reject("altered quotation invalidates whole answer", () => Evaluation.ValidateAnswer(altered.ToJsonString(), fixture), "invalidEvidence");
+        var fakeValue = answer.DeepClone(); fakeValue["stage"]!["patientEvidence"]![0]!["value"] = "III";
+        Reject("invented patient value", () => Evaluation.ValidateAnswer(fakeValue.ToJsonString(), fixture), "invalidEvidence");
+        var fakeSource = answer.DeepClone(); fakeSource["stage"]!["studyEvidence"]![0]!["sourceId"] = "study.otherPair";
+        Reject("unknown source reference", () => Evaluation.ValidateAnswer(fakeSource.ToJsonString(), fixture), "invalidEvidence");
+        var wrongType = answer.DeepClone(); wrongType["stage"]!["patientEvidence"]![0]!["value"] = 1;
+        Reject("JSON types not coerced", () => Evaluation.ValidateAnswer(wrongType.ToJsonString(), fixture), "invalidEvidence");
+        var absentQuote = answer.DeepClone(); absentQuote["stage"]!["studyEvidence"]![0]!["sourceId"] = "study.officialTitle";
+        Reject("absent source cannot supply evidence", () => Evaluation.ValidateAnswer(absentQuote.ToJsonString(), fixture), "invalidEvidence");
+        var wrongLogic = answer.DeepClone(); wrongLogic["stage"]!["result"] = "excluded";
+        Check("authentic evidence does not prove OR interpretation", () =>
+        {
+            var result = Evaluation.ValidateAnswer(wrongLogic.ToJsonString(), fixture);
+            Assert(result["expectedLabelDifferences"]!.AsArray().Select(Evaluation.Text).Contains("stage"));
+            Assert(Evaluation.Text(result["outcome"]) == "nonmatch" && result["overallPass"] is null);
+        });
+        var noRestriction = answer.DeepClone(); noRestriction["stage"]!["result"] = "noRestrictionIdentified";
+        noRestriction["stage"]!["examinedSources"] = new JsonArray();
+        Reject("absence claim without examined eligibility", () => Evaluation.ValidateAnswer(noRestriction.ToJsonString(), fixture), "invalidEvidence");
+        var native = Evaluation.Request(fixture, config, prompt, schema, "native");
+        var compatible = Evaluation.Request(fixture, config, prompt, schema, "compatible");
+        Check("both adapters preserve messages/schema and shared settings", () =>
+        {
+            Assert(JsonNode.DeepEquals(native["messages"], compatible["messages"]));
+            Assert(JsonNode.DeepEquals(native["format"], compatible["response_format"]!["json_schema"]!["schema"]));
+            Assert(JsonNode.DeepEquals(native["options"]!["temperature"], compatible["temperature"]));
+            Assert(JsonNode.DeepEquals(native["options"]!["top_p"], compatible["top_p"]));
+            Assert(JsonNode.DeepEquals(native["options"]!["num_predict"], compatible["max_tokens"]));
+            Assert(JsonNode.DeepEquals(native["options"]!["seed"], compatible["seed"]));
+        });
+        Check("answers/expectations are not supplied as model examples", () =>
+        {
+            var messages = native["messages"]!.ToJsonString();
+            Assert(!messages.Contains("reviewGuidance", StringComparison.Ordinal) && !messages.Contains("expected", StringComparison.Ordinal));
+            Assert(native["stream"]!.GetValue<bool>() == false);
+        });
+        var shortContext = config.DeepClone(); shortContext["contextTokens"] = 1;
+        Check("oversized input is detected without changing input", () =>
+            Assert(!Evaluation.Sizing(native, shortContext)["withinConservativeBound"]!.GetValue<bool>()));
+        Reject("remote inference endpoint rejected", () =>
+        {
+            var remote = config.DeepClone(); remote["baseUrl"] = "https://example.com/";
+            Evaluation.ValidatePreparation(remote, fixtures);
+        });
+        Reject("unapproved seventh case rejected", () =>
+        {
+            var more = fixtures.DeepClone().AsArray(); more.Add(fixtures[0]!.DeepClone());
+            Evaluation.ValidatePreparation(config, more);
+        });
+        var nativeEnvelope = new JsonObject { ["done"] = true, ["done_reason"] = "stop", ["message"] = new JsonObject { ["content"] = answer.ToJsonString(), ["thinking"] = "not retained" }, ["load_duration"] = 1000 };
+        var compatibleEnvelope = new JsonObject { ["choices"] = new JsonArray(new JsonObject { ["finish_reason"] = "stop", ["message"] = new JsonObject { ["content"] = answer.ToJsonString() } }) };
+        Check("both response adapters extract assessment without raw thinking", () =>
+        {
+            var a = Evaluation.Unpack(nativeEnvelope.ToJsonString(), "native");
+            var b = Evaluation.Unpack(compatibleEnvelope.ToJsonString(), "compatible");
+            Assert(a.Content == b.Content && !a.Metrics.ToJsonString().Contains("thinking", StringComparison.Ordinal));
+            Assert(b.Metrics["loadTimingAvailable"]!.GetValue<bool>() == false);
+        });
+        var truncated = nativeEnvelope.DeepClone(); truncated["done_reason"] = "length";
+        Reject("output-limited native response fails", () => Evaluation.Unpack(truncated.ToJsonString(), "native"), "invalidResponse");
+        var refused = compatibleEnvelope.DeepClone(); refused["choices"]![0]!["finish_reason"] = "length";
+        Reject("output-limited compatible response fails", () => Evaluation.Unpack(refused.ToJsonString(), "compatible"), "invalidResponse");
+        var fingerprint = Evaluation.Fingerprint(root);
+        Reject("committed example cannot grant execution", () => Evaluation.ValidateApproval(Evaluation.Read(Path.Combine(root, "execution-approval.example.json")), fingerprint));
+        var approval = Approval(fingerprint);
+        Check("exact run approval accepted offline", () => Evaluation.ValidateApproval(approval, fingerprint));
+        var notApproved = approval.DeepClone(); notApproved["approved"] = false;
+        Reject("preparation is not execution approval", () => Evaluation.ValidateApproval(notApproved, fingerprint));
+        var changed = approval.DeepClone(); changed["fingerprintSha256"] = new string('0', 64);
+        Reject("changed candidate invalidates run approval", () => Evaluation.ValidateApproval(changed, fingerprint));
+        var otherRoute = approval.DeepClone(); otherRoute["route"] = "compatible";
+        Reject("compatible preview is not initial execution authorization", () => Evaluation.ValidateApproval(otherRoute, fingerprint));
+        var traversal = approval.DeepClone(); traversal["runId"] = "../outside";
+        Reject("run output cannot escape results directory", () => Evaluation.ValidateApproval(traversal, fingerprint));
+
+        // In-memory handlers only: no sockets, server, Ollama, downloads, or model loading.
+        using var fake = new FakeHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(nativeEnvelope.ToJsonString()) }));
+        using var client = new HttpClient(fake) { BaseAddress = new Uri("http://127.0.0.1:1/") };
+        var reply = await Evaluation.SendAsync(client, "api/chat", native, TimeSpan.FromSeconds(1), CancellationToken.None);
+        Check("HTTP transport against in-memory handler", () => Assert(reply.Contains("done_reason", StringComparison.Ordinal) && fake.Calls == 1));
+        using var bad = new HttpClient(new FakeHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)))) { BaseAddress = client.BaseAddress };
+        try { await Evaluation.SendAsync(bad, "api/chat", native, TimeSpan.FromSeconds(1), CancellationToken.None); throw new Exception("Expected HTTP failure"); }
+        catch (EvaluationFailure ex) when (ex.Code == "inferenceError") { count++; Console.WriteLine("PASS HTTP error is execution failure"); }
+        using var slow = new FakeHandler(async (_, token) => { await Task.Delay(Timeout.InfiniteTimeSpan, token); return new HttpResponseMessage(HttpStatusCode.OK); });
+        using var slowClient = new HttpClient(slow) { BaseAddress = client.BaseAddress };
+        try { await Evaluation.SendAsync(slowClient, "api/chat", native, TimeSpan.FromMilliseconds(30), CancellationToken.None); throw new Exception("Expected deadline"); }
+        catch (EvaluationFailure ex) when (ex.Code == "inferenceTimeout") { count++; Console.WriteLine("PASS deadline cancels transport without retry"); }
+        using var cancel = new CancellationTokenSource(); cancel.Cancel();
+        try { await Evaluation.SendAsync(slowClient, "api/chat", native, TimeSpan.FromSeconds(1), cancel.Token); throw new Exception("Expected cancellation"); }
+        catch (OperationCanceledException) { count++; Console.WriteLine("PASS explicit cancellation remains interruption"); }
+        Console.WriteLine($"{count} offline checks passed. No network requests or inference performed.");
+    }
+
+    private static JsonObject Approval(JsonNode fingerprint) => new()
+    {
+        ["approved"] = true, ["contextAndOutputLimitsReviewed"] = true, ["templateAndTokenizerReviewed"] = true,
+        ["fingerprintSha256"] = fingerprint["sha256"]!.DeepClone(), ["route"] = "native", ["maxRequests"] = 6,
+        ["runId"] = "offline-only", ["modelDigest"] = new string('a', 64), ["templateSha256"] = new string('b', 64),
+        ["ollamaVersion"] = "offline-fake", ["humanApprovalReference"] = "offline fixture, never used for execution"
+    };
+
+    private static JsonObject SampleAnswer(JsonNode fixture)
+    {
+        var answer = new JsonObject();
+        foreach (var name in Evaluation.Criteria)
+        {
+            var field = name == "cancerType" ? "patient.cancerType" : name == "stage" ? "patient.stage.value" : "patient.diseaseState.value";
+            var catalog = Evaluation.Catalog(fixture);
+            answer[name] = new JsonObject
+            {
+                ["assessmentStatus"] = "assessed", ["result"] = "satisfied",
+                ["requirementSummary"] = "Offline response fixture; not an observed model answer",
+                ["patientEvidence"] = new JsonArray(new JsonObject { ["kind"] = "value", ["sourceId"] = field, ["value"] = catalog[field]!["value"]!.DeepClone() }),
+                ["studyEvidence"] = new JsonArray(new JsonObject { ["kind"] = "text", ["sourceId"] = "study.eligibilityCriteria", ["quote"] = fixture["study"]!["eligibilityCriteria"]!.DeepClone() }),
+                ["examinedSources"] = new JsonArray("study.eligibilityCriteria"),
+                ["explanation"] = "Authentic references alone do not establish semantic correctness."
+            };
+        }
+        return answer;
+    }
+
+    private sealed class FakeHandler(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> respond) : HttpMessageHandler
+    {
+        public int Calls { get; private set; }
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        { Calls++; return respond(request, cancellationToken); }
+    }
+}

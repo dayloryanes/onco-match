@@ -1,0 +1,44 @@
+[
+  {
+    "id": "D1",
+    "patient": { "id": "evaluation-D1", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer A", "stage": { "status": "known", "value": "I", "classificationSystem": "Development staging system" }, "diseaseState": { "status": "known", "value": "refractory" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": "Patients with Fictional cancer A must have stage III disease or refractory disease.", "studyPopulation": null },
+    "expected": { "cancerType": "satisfied", "stage": "satisfied", "diseaseState": "satisfied", "outcome": "potentialMatch" },
+    "reviewGuidance": "Satisfaction is through refractory disease, without inventing stage III."
+  },
+  {
+    "id": "D3",
+    "patient": { "id": "evaluation-D3", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer A", "stage": { "status": "known", "value": "I", "classificationSystem": "Development staging system" }, "diseaseState": { "status": "known", "value": "newlyDiagnosed" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": "Patients with Fictional cancer A must have stage III disease or refractory disease.", "studyPopulation": null },
+    "expected": { "cancerType": "satisfied", "stage": "excluded", "diseaseState": "excluded", "outcome": "nonmatch" },
+    "reviewGuidance": "Neither alternative is satisfied."
+  },
+  {
+    "id": "D5",
+    "patient": { "id": "evaluation-D5", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer A", "stage": { "status": "known", "value": "I", "classificationSystem": "Development staging system" }, "diseaseState": { "status": "known", "value": "refractory" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": null, "studyPopulation": null },
+    "expected": { "cancerType": "satisfied", "stage": "undetermined", "diseaseState": "undetermined", "outcome": "insufficientInformation" },
+    "reviewGuidance": "Cancer alignment is supported; relevant eligibility content is missing."
+  },
+  {
+    "id": "D6",
+    "patient": { "id": "evaluation-D6", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer A", "stage": { "status": "known", "value": "I", "classificationSystem": "Development staging system" }, "diseaseState": { "status": "known", "value": "refractory" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": "Only patients with Fictional cancer A are eligible. Fictional cancer B is excluded. Patients with biomarker Y present must have stage III disease. Patients with biomarker Y absent must have refractory disease.", "studyPopulation": null },
+    "expected": { "cancerType": "satisfied", "stage": "undetermined", "diseaseState": "undetermined", "outcome": "insufficientInformation" },
+    "reviewGuidance": "Applicable cohort is unknown. No biomarker fact is supplied."
+  },
+  {
+    "id": "D9",
+    "patient": { "id": "evaluation-D9", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer B", "stage": { "status": "known", "value": "I", "classificationSystem": "Development staging system" }, "diseaseState": { "status": "known", "value": "refractory" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": "Only patients with Fictional cancer A are eligible. Fictional cancer B is excluded. There are no stage or disease-state restrictions.", "studyPopulation": null },
+    "expected": { "cancerType": "excluded", "stage": "noRestrictionIdentified", "diseaseState": "noRestrictionIdentified", "outcome": "nonmatch" },
+    "reviewGuidance": "Reference the actual cancer restriction."
+  },
+  {
+    "id": "D13",
+    "patient": { "id": "evaluation-D13", "ageYears": 52, "sex": "male", "cancerType": "Fictional cancer A", "stage": { "status": "unknown", "value": null, "classificationSystem": null }, "diseaseState": { "status": "known", "value": "refractory" } },
+    "study": { "briefTitle": "Fictional cancer A development study", "conditions": ["Fictional cancer A"], "minimumAge": "21 Years", "maximumAge": "75 Years", "sex": "ALL", "officialTitle": null, "briefSummary": null, "detailedDescription": null, "eligibilityCriteria": "Patients with Fictional cancer A must have stage III under the Development staging system. No disease-state restriction applies.", "studyPopulation": null },
+    "expected": { "cancerType": "satisfied", "stage": "undetermined", "diseaseState": "noRestrictionIdentified", "outcome": "insufficientInformation" },
+    "reviewGuidance": "Missing patient stage prevents a conclusion; the study label does not supply it."
+  }
+]
