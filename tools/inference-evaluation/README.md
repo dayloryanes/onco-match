@@ -40,9 +40,33 @@ approved local configuration preparation and offline checks. After reviewing the
 comparison scope and clarifying the prior results, the human approved proceeding
 with the local Phi commit and one native six-case batch. Use the frozen revised
 prompt and unchanged explicit settings, no retries, then stop for review. Further
-changes, reruns, and publication remain unauthorized. At this commit checkpoint
-the Phi evaluation batch has not started. Previous run approvals are consumed
-records; this batch requires its own exact fingerprint/model/scope record.
+changes, reruns, and publication require separate approval. That Phi batch has
+now completed: all six responses failed evidence validation, with additional
+interpretation problems found during AI inspection and reviewed through chat.
+The retained local report is `results/native-phi4mini-20261029-051929/REVIEW.md`.
+Previous run approvals are consumed records.
+
+The human approved a read-only audit, then approved local request corrections and
+offline checks: explain evidence fields and missing/null sources, derive allowed
+source IDs from each supplied catalog, and include the same request schema in the
+system message and API schema field. No answer keys enter schema construction.
+The validator, fixtures, expected labels, model, and inference settings remain
+unchanged. This approval does not authorize a commit, inference, or publication.
+
+The schema-grounding revision initially exceeded the old whole-request byte
+guard (native maximum 17,368; compatible 17,401), which counted the schema twice
+and included HTTP JSON escaping and API options. The human then approved provider
+verification, correction to message-content sizing, and offline checks only.
+That correction is prepared locally: the largest decoded message content is
+8,761 UTF-8 bytes, giving a conservative total bound of 11,833 with the existing
+1,024 framing reserve and 2,048 output allowance. All six cases clear the unchanged
+12,288 context limit in both previews. This is not measured token usage or memory.
+No context increase, truncation, commit, inference, or publication is authorized
+by this sizing-correction approval.
+
+The request and sizing corrections passed offline checks. Live inference with
+this revision has not run. The next proposed step is a native six-case Phi rerun,
+awaiting approval.
 
 The current proposed comparison candidate is `phi4-mini:3.8b-q4_K_M`.
 The earlier candidate was `qwen3:4b-instruct-2507-q4_K_M`; its exact inputs and
@@ -71,7 +95,7 @@ are retained and the remaining agreed cases continue.
 The six fixtures are direct serializations of selected approved development
 cases. Study nulls in this fixture format represent absent fields; explicit
 patient null values remain present in the source catalog. No biomarker or
-treatment fields are added. The model sees the catalog and general instructions,
+treatment fields are added. The model sees the catalog, instructions, and schema,
 not expected answers, review guidance, case labels, or acceptance examples.
 Existing frozen real-study snapshots remain in the planning documents; they
 are neither copied nor submitted by this tool. No acceptance cases run here.
@@ -174,14 +198,32 @@ and a 1,024-token chat-framing reserve. An initial
 context can increase memory use/offloading. A tokenizer-based count could justify
 a smaller context later, but no tokenizer dependency/download is added here.
 
-Sizing counts UTF-8 bytes in the entire serialized request, including schema
-and API-only fields, then adds framing reserve and maximum output allowance.
+Sizing sums UTF-8 bytes in decoded system/user message content, then adds framing
+reserve and maximum output allowance. The response schema in the system message
+counts once. API-only schema/format fields, options, and HTTP JSON escaping are
+excluded from the token bound. `requestUtf8Bytes` still records whole-request
+bytes for diagnostics; `messageContentUtf8Bytes` records the input to the bound.
 This overcounts content tokens for the candidate's byte-level tokenizer; it is
 not an exact token count, a memory estimate, or a universal tokenization method.
+Sizing rejects message fields beyond role/content, conversations beyond system
+then user, and supplied tools; those paths require their own framing review.
 Before execution, inspect the installed tokenizer/chat template and approve its
 fit within the framing reserve. The execution gate also verifies tokenizer type
 and template hash. Input above the bound stops the run without truncation.
 Output-limited answers fail; they are never completed assessments.
+
+On 2026-10-29, read-only metadata verification confirmed Ollama 0.40.13 and Phi's
+gpt2 byte-level tokenizer with gpt-4o pretokenization, `go_template` source, no
+embedded messages/default system prompt, and the previously recorded template
+SHA-256 `813f53fdc6e58d35bb1c3853c93266380e9ca918a993e8eab193e8ede5d3a603`.
+For the selected two-message path without tools, the template inserts role/end
+markers and an assistant prefix within the 1,024 reserve; it does not repeat the
+contents. Ollama's [prompt renderer](https://github.com/ollama/ollama/blob/v0.40.13/server/prompt.go)
+renders messages/tools/thinking values, while the [completion transport](https://github.com/ollama/ollama/blob/v0.40.13/llm/llama_server.go)
+passes JSON schema separately from the rendered prompt. The API format copy
+therefore does not add a second schema to this candidate's input. This review
+does not establish equivalent live settings for the compatible endpoint or a
+framing guarantee for another model/provider/template.
 
 ## API comparison limits
 
@@ -295,9 +337,9 @@ them. A changed configuration/prompt/fixture is a new fingerprint and requires a
 new reviewed run. Keep all scheduled attempts; no cherry-picking or silent retries.
 Reviewed findings may later be committed with approval. Raw answers, timings, and
 model downloads are not proposed for Git. Raw evidence can be separately reviewed
-for publication/archive/deletion when no longer needed. First-trial findings and
-the offline diagnosis remain local under results/ for review; no revised candidate
-has been evaluated with inference.
+for publication/archive/deletion when no longer needed. All trial findings and
+the offline diagnosis remain local under results/ for review. The latest evidence
+field/schema grounding revision has not been evaluated with inference.
 
 ## Official references
 
@@ -313,7 +355,19 @@ has been evaluated with inference.
 This preparation is AI-assisted. Offline tool checks are distinct from model
 evaluation, independent automated code review, and maintainer manual validation.
 
-Current local validation: 48 deterministic offline checks passed. This includes
+Current local validation: 61 deterministic offline checks passed. Six sizing
+checks cover decoded Unicode byte counts and reserves, API packaging versus added
+message text, exact-limit acceptance/overflow rejection without truncation,
+matching adapter bounds/all six inputs fitting, and rejection of unreviewed media
+or tools. Seven earlier additions
+exercise schema grounding in both adapters, per-input source-ID categories and
+presence, reusable-schema isolation, answer-key independence, and continued
+rejection of misattributed quotations, patient examined-source IDs, and positive
+claims without patient evidence. These establish request construction and guard
+behavior; they do not establish improved model interpretation. The installed
+native schema converter also processed request-specific D5/D6 schemas offline
+without forcing duplicate result fields; this does not establish model quality.
+Earlier coverage includes
 the 36 checks after the schema/build fixes plus D1 selection, payload identity,
 scope/count approval guards, and single-request fake transport. Earlier coverage
 includes standalone schema regression and actual MSBuild result source exclusion,
@@ -327,5 +381,6 @@ exercised offline: saved old
 schema fails the duplicate-result assertion; revised schema passes. No inference
 was performed for these fixes; no application test rerun, independent automated
 code-review run, or maintainer manual validation is claimed. Previously reviewed
-context/output settings are unchanged. Fresh explicit execution approval and
-verification of installed metadata are required before further inference.
+context/output settings are unchanged. The latest previews clear the corrected
+conservative sizing guard as documented above. Fresh explicit execution approval
+and verification of installed metadata are required before further inference.

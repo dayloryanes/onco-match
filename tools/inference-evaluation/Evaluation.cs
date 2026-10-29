@@ -80,14 +80,28 @@ internal static class Evaluation
 
     internal static JsonObject Request(JsonNode fixture, JsonNode config, string prompt, JsonNode schema, string route)
     {
+        // Derive allowed IDs from supplied inputs only, never the answer key.
+        var catalog = Catalog(fixture);
+        var requestSchema = schema.DeepClone();
+        JsonArray Ids(Func<KeyValuePair<string, JsonNode?>, bool> include) =>
+            new(catalog.Where(include).Select(p => (JsonNode?)JsonValue.Create(p.Key)).ToArray());
+        requestSchema["$defs"]!["valueEvidence"]!["properties"]!["sourceId"]!["enum"] =
+            Ids(p => p.Key.StartsWith("patient.", StringComparison.Ordinal) && p.Value!["present"]!.GetValue<bool>());
+        requestSchema["$defs"]!["textEvidence"]!["properties"]!["sourceId"]!["enum"] =
+            Ids(p => p.Key.StartsWith("study.", StringComparison.Ordinal) && p.Value!["present"]!.GetValue<bool>()
+                && p.Value["value"] is JsonValue value && value.TryGetValue<string>(out var text) && text.Length > 0);
+        foreach (var definition in new[] { "criterion", "cancerCriterion" })
+            requestSchema["$defs"]![definition]!["properties"]!["examinedSources"]!["items"]!["enum"] =
+                Ids(p => p.Key.StartsWith("study.", StringComparison.Ordinal));
         var body = new JsonObject
         {
-            ["model"] = config["model"]!.DeepClone(), ["messages"] = Messages(fixture, prompt), ["stream"] = false
+            ["model"] = config["model"]!.DeepClone(),
+            ["messages"] = Messages(fixture, prompt.TrimEnd() + "\nResponse schema:\n" + requestSchema.ToJsonString()), ["stream"] = false
         };
         if (route == "native")
         {
-            body["format"] = schema.DeepClone();
-            // Instruct-2507 has no thinking mode; do not send unsupported think controls.
+            body["format"] = requestSchema;
+            // No separate thinking control is part of this experiment.
             body["keep_alive"] = "5m";
             body["options"] = new JsonObject
             {
@@ -106,7 +120,7 @@ internal static class Evaluation
             body["response_format"] = new JsonObject
             {
                 ["type"] = "json_schema", ["json_schema"] = new JsonObject
-                { ["name"] = "oncomatch_assessment", ["strict"] = true, ["schema"] = schema.DeepClone() }
+                { ["name"] = "oncomatch_assessment", ["strict"] = true, ["schema"] = requestSchema }
             };
         }
         else throw new InvalidDataException("Route must be native or compatible");
@@ -115,17 +129,33 @@ internal static class Evaluation
 
     internal static JsonObject Sizing(JsonObject request, JsonNode config)
     {
-        // Qwen byte-level BPE: UTF-8 bytes conservatively bound content tokens.
-        // Entire serialized request includes the schema and overcounts API-only fields.
-        // Fixed chat-template overhead is separately reserved; verify installed template before execution.
-        var bytes = Encoding.UTF8.GetByteCount(request.ToJsonString());
-        var bound = bytes + config["framingReserveTokens"]!.GetValue<int>() + config["maxOutputTokens"]!.GetValue<int>();
+        // Reviewed byte-level BPE models: decoded message bytes bound content tokens.
+        // The schema embedded in the system message counts once. API-only format/schema,
+        // HTTP JSON escaping, and inference options are not rendered into the prompt.
+        // This bound covers only the reviewed two-message, text-only, no-tools path.
+        if (request["messages"] is not JsonArray messages || messages.Count != 2 || request["tools"] is not null)
+            throw new InvalidDataException("Sizing requires two text-only messages and no tools");
+        var contentBytes = 0;
+        for (var i = 0; i < messages.Count; i++)
+        {
+            var message = messages[i] ?? throw new InvalidDataException("Missing message");
+            ExactKeys(message, "role", "content");
+            if (Text(message["role"]) != (i == 0 ? "system" : "user"))
+                throw new InvalidDataException("Sizing requires system then user messages");
+            contentBytes = checked(contentBytes + Encoding.UTF8.GetByteCount(Text(message["content"])));
+        }
+        var framing = config["framingReserveTokens"]!.GetValue<int>();
+        var output = config["maxOutputTokens"]!.GetValue<int>();
+        if (framing <= 0 || output <= 0) throw new InvalidDataException("Sizing reserves must be positive");
+        var bound = checked(contentBytes + framing + output);
         return new JsonObject
         {
-            ["requestUtf8Bytes"] = bytes, ["conservativeTotalTokenBound"] = bound,
+            ["requestUtf8Bytes"] = Encoding.UTF8.GetByteCount(request.ToJsonString()),
+            ["messageContentUtf8Bytes"] = contentBytes, ["framingReserveTokens"] = framing,
+            ["maxOutputTokens"] = output, ["conservativeTotalTokenBound"] = bound,
             ["contextTokens"] = config["contextTokens"]!.DeepClone(),
             ["withinConservativeBound"] = bound <= config["contextTokens"]!.GetValue<int>(),
-            ["method"] = "UTF-8 byte bound plus chat framing reserve and output allowance; not an exact token count or VRAM estimate"
+            ["method"] = "Decoded message-content UTF-8 byte bound plus reviewed chat framing reserve and output allowance; API-only fields excluded; not an exact token count or VRAM estimate"
         };
     }
 

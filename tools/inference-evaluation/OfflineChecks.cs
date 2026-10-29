@@ -24,6 +24,51 @@ internal static class OfflineChecks
         });
         var fixture = fixtures[0]!;
         var answer = SampleAnswer(fixture);
+        Check("request grounds the model with the same schema used for constrained output", () =>
+        {
+            foreach (var route in new[] { "native", "compatible" })
+            {
+                var request = Evaluation.Request(fixture, config, prompt, schema, route);
+                var sentSchema = route == "native" ? request["format"]! : request["response_format"]!["json_schema"]!["schema"]!;
+                var system = Evaluation.Text(request["messages"]![0]!["content"]);
+                Assert(system.EndsWith(sentSchema.ToJsonString(), StringComparison.Ordinal));
+            }
+        });
+        Check("request evidence IDs are restricted to present sources of the correct category", () =>
+        {
+            foreach (var item in fixtures)
+            {
+                var catalog = Evaluation.Catalog(item!);
+                var sent = Evaluation.Request(item!, config, prompt, schema, "native")["format"]!;
+                foreach (var (definition, prefix) in new[] { ("valueEvidence", "patient."), ("textEvidence", "study.") })
+                {
+                    var ids = sent["$defs"]![definition]!["properties"]!["sourceId"]!["enum"]!.AsArray().Select(Evaluation.Text).ToArray();
+                    var allowed = catalog.Where(p => p.Key.StartsWith(prefix, StringComparison.Ordinal)
+                        && p.Value!["present"]!.GetValue<bool>()
+                        && (prefix == "patient." || p.Value["value"] is JsonValue value && value.TryGetValue<string>(out var text) && text.Length > 0))
+                        .Select(p => p.Key);
+                    Assert(ids.SequenceEqual(allowed));
+                }
+                var examined = sent["$defs"]!["criterion"]!["properties"]!["examinedSources"]!["items"]!["enum"]!;
+                Assert(examined.AsArray().Select(Evaluation.Text).SequenceEqual(catalog.Where(p => p.Key.StartsWith("study.", StringComparison.Ordinal)).Select(p => p.Key)));
+                Assert(JsonNode.DeepEquals(examined, sent["$defs"]!["cancerCriterion"]!["properties"]!["examinedSources"]!["items"]!["enum"]));
+            }
+        });
+        Check("request schema specialization does not mutate the reusable schema", () =>
+        {
+            var before = schema.ToJsonString();
+            Evaluation.Request(fixtures[2]!, config, prompt, schema, "native");
+            Evaluation.Request(fixtures[5]!, config, prompt, schema, "compatible");
+            Assert(schema.ToJsonString() == before);
+        });
+        Check("request construction ignores answer keys and review guidance", () =>
+        {
+            var changed = fixture.DeepClone();
+            changed["expected"] = new JsonObject { ["stage"] = "LEAK-MARKER" };
+            changed["reviewGuidance"] = "LEAK-MARKER";
+            Assert(JsonNode.DeepEquals(Evaluation.Request(fixture, config, prompt, schema, "native"),
+                Evaluation.Request(changed, config, prompt, schema, "native")));
+        });
         Check("cancer schema uses a standalone object with one narrowed result definition", () =>
         {
             var cancer = schema["$defs"]!["cancerCriterion"]!;
@@ -122,6 +167,12 @@ internal static class OfflineChecks
         Reject("invalid criterion result", () => Evaluation.ValidateAnswer(badResult.ToJsonString(), fixture), "invalidResponse");
         var altered = answer.DeepClone(); altered["stage"]!["studyEvidence"]![0]!["quote"] = "invented quotation";
         Reject("altered quotation invalidates whole answer", () => Evaluation.ValidateAnswer(altered.ToJsonString(), fixture), "invalidEvidence");
+        var misattributed = answer.DeepClone(); misattributed["stage"]!["studyEvidence"]![0]!["sourceId"] = "study.briefTitle";
+        Reject("authentic eligibility quotation cannot be attributed to the title", () => Evaluation.ValidateAnswer(misattributed.ToJsonString(), fixture), "invalidEvidence");
+        var examinedPatient = answer.DeepClone(); examinedPatient["stage"]!["examinedSources"] = new JsonArray("patient.stage.value");
+        Reject("examined sources cannot contain patient IDs", () => Evaluation.ValidateAnswer(examinedPatient.ToJsonString(), fixture), "invalidEvidence");
+        var unsupported = answer.DeepClone(); unsupported["cancerType"]!["patientEvidence"] = new JsonArray();
+        Reject("positive cancer alignment still requires patient evidence", () => Evaluation.ValidateAnswer(unsupported.ToJsonString(), fixture), "invalidEvidence");
         var fakeValue = answer.DeepClone(); fakeValue["stage"]!["patientEvidence"]![0]!["value"] = "III";
         Reject("invented patient value", () => Evaluation.ValidateAnswer(fakeValue.ToJsonString(), fixture), "invalidEvidence");
         var fakeSource = answer.DeepClone(); fakeSource["stage"]!["studyEvidence"]![0]!["sourceId"] = "study.otherPair";
@@ -160,6 +211,53 @@ internal static class OfflineChecks
         var shortContext = config.DeepClone(); shortContext["contextTokens"] = 1;
         Check("oversized input is detected without changing input", () =>
             Assert(!Evaluation.Sizing(native, shortContext)["withinConservativeBound"]!.GetValue<bool>()));
+        Check("sizing counts decoded Unicode message content and both reserves", () =>
+        {
+            var request = new JsonObject { ["messages"] = new JsonArray(
+                new JsonObject { ["role"] = "system", ["content"] = "a" },
+                new JsonObject { ["role"] = "user", ["content"] = "é😀" }) };
+            var size = Evaluation.Sizing(request, config);
+            Assert(size["messageContentUtf8Bytes"]!.GetValue<int>() == 7);
+            Assert(size["conservativeTotalTokenBound"]!.GetValue<int>() == 7
+                + config["framingReserveTokens"]!.GetValue<int>() + config["maxOutputTokens"]!.GetValue<int>());
+        });
+        Check("API packaging does not add prompt tokens or hide added message content", () =>
+        {
+            var changed = native.DeepClone().AsObject();
+            var originalBound = Evaluation.Sizing(native, config)["conservativeTotalTokenBound"]!.GetValue<int>();
+            changed["format"]!["description"] = new string('x', 20000);
+            var size = Evaluation.Sizing(changed, config);
+            Assert(size["conservativeTotalTokenBound"]!.GetValue<int>() == originalBound);
+            Assert(size["requestUtf8Bytes"]!.GetValue<int>() > Evaluation.Sizing(native, config)["requestUtf8Bytes"]!.GetValue<int>());
+            changed["messages"]![0]!["content"] = Evaluation.Text(changed["messages"]![0]!["content"]) + new string('x', 20000);
+            Assert(!Evaluation.Sizing(changed, config)["withinConservativeBound"]!.GetValue<bool>());
+            Assert(Evaluation.Sizing(changed, config)["conservativeTotalTokenBound"]!.GetValue<int>() == originalBound + 20000);
+        });
+        Check("sizing accepts the exact limit and rejects one token less without truncation", () =>
+        {
+            var before = native.ToJsonString();
+            var boundary = config.DeepClone();
+            var bound = Evaluation.Sizing(native, config)["conservativeTotalTokenBound"]!.GetValue<int>();
+            boundary["contextTokens"] = bound;
+            Assert(Evaluation.Sizing(native, boundary)["withinConservativeBound"]!.GetValue<bool>());
+            boundary["contextTokens"] = bound - 1;
+            Assert(!Evaluation.Sizing(native, boundary)["withinConservativeBound"]!.GetValue<bool>());
+            Assert(native.ToJsonString() == before);
+        });
+        Check("both adapters have the same input bound and all six revised inputs fit", () =>
+        {
+            foreach (var item in fixtures)
+            {
+                var a = Evaluation.Sizing(Evaluation.Request(item!, config, prompt, schema, "native"), config);
+                var b = Evaluation.Sizing(Evaluation.Request(item!, config, prompt, schema, "compatible"), config);
+                Assert(a["withinConservativeBound"]!.GetValue<bool>() && b["withinConservativeBound"]!.GetValue<bool>());
+                Assert(JsonNode.DeepEquals(a["conservativeTotalTokenBound"], b["conservativeTotalTokenBound"]));
+            }
+        });
+        var withImages = native.DeepClone().AsObject(); withImages["messages"]![1]!["images"] = new JsonArray("image");
+        Reject("message sizing rejects unreviewed media fields", () => Evaluation.Sizing(withImages, config));
+        var withTools = native.DeepClone().AsObject(); withTools["tools"] = new JsonArray();
+        Reject("message sizing rejects unreviewed tools", () => Evaluation.Sizing(withTools, config));
         Reject("remote inference endpoint rejected", () =>
         {
             var remote = config.DeepClone(); remote["baseUrl"] = "https://example.com/";
