@@ -1,0 +1,14 @@
+{
+  "approved": false,
+  "humanApprovalReference": "Set only after explicit approval of this reviewed D1-only diagnostic request",
+  "fingerprintSha256": "REPLACE_FROM_FINAL_D1_MANIFEST_AFTER_REVIEW",
+  "runId": "native-d1-diagnostic-1",
+  "route": "native",
+  "maxRequests": 1,
+  "caseIds": ["D1"],
+  "contextAndOutputLimitsReviewed": false,
+  "templateAndTokenizerReviewed": false,
+  "modelDigest": "REPLACE_WITH_FULL_INSTALLED_MODEL_DIGEST",
+  "templateSha256": "REPLACE_WITH_REVIEWED_CHAT_TEMPLATE_HASH",
+  "ollamaVersion": "REPLACE_WITH_INSTALLED_VERSION"
+}

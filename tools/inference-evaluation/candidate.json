@@ -1,0 +1,19 @@
+{
+  "id": "qwen3-4b-thinking-1",
+  "baseUrl": "http://127.0.0.1:11434/",
+  "model": "qwen3:4b-q4_K_M",
+  "route": "native",
+  "caseIds": ["D1", "D3", "D5", "D6", "D9", "D13"],
+  "requestTimeoutSeconds": 300,
+  "think": true,
+  "temperature": 0.6,
+  "topP": 0.95,
+  "topK": 20,
+  "minP": 0,
+  "seed": 42,
+  "contextTokens": 12288,
+  "maxOutputTokens": 2048,
+  "framingReserveTokens": 1024,
+  "limitsStatus": "reviewed baseline: 12288 context and 2048 output; inference requires separate approval",
+  "allowCpuOffload": true
+}

@@ -1,0 +1,14 @@
+{
+  "approved": false,
+  "humanApprovalReference": "Set only after explicit approval of the reviewed candidate and this six-request run",
+  "fingerprintSha256": "REPLACE_FROM_FINAL_NATIVE_MANIFEST_AFTER_REVIEW",
+  "runId": "native-feasibility-1",
+  "route": "native",
+  "maxRequests": 6,
+  "caseIds": ["D1", "D3", "D5", "D6", "D9", "D13"],
+  "contextAndOutputLimitsReviewed": false,
+  "templateAndTokenizerReviewed": false,
+  "modelDigest": "REPLACE_WITH_FULL_INSTALLED_MODEL_DIGEST",
+  "templateSha256": "REPLACE_WITH_REVIEWED_CHAT_TEMPLATE_HASH",
+  "ollamaVersion": "REPLACE_WITH_INSTALLED_VERSION"
+}

@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cancerType", "stage", "diseaseState"],
+  "properties": {
+    "cancerType": { "$ref": "#/$defs/cancerCriterion" },
+    "stage": { "$ref": "#/$defs/criterion" },
+    "diseaseState": { "$ref": "#/$defs/criterion" }
+  },
+  "$defs": {
+    "valueEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "sourceId", "value"],
+      "properties": { "kind": { "const": "value" }, "sourceId": { "type": "string", "minLength": 1 }, "value": {} }
+    },
+    "textEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "sourceId", "quote"],
+      "properties": { "kind": { "const": "text" }, "sourceId": { "type": "string", "minLength": 1 }, "quote": { "type": "string", "minLength": 1 } }
+    },
+    "criterion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["assessmentStatus", "result", "requirementSummary", "patientEvidence", "studyEvidence", "examinedSources", "explanation"],
+      "properties": {
+        "assessmentStatus": { "const": "assessed" },
+        "result": { "enum": ["satisfied", "excluded", "undetermined", "noRestrictionIdentified"] },
+        "requirementSummary": { "type": "string", "minLength": 1 },
+        "patientEvidence": { "type": "array", "items": { "$ref": "#/$defs/valueEvidence" } },
+        "studyEvidence": { "type": "array", "items": { "$ref": "#/$defs/textEvidence" } },
+        "examinedSources": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "cancerCriterion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["assessmentStatus", "result", "requirementSummary", "patientEvidence", "studyEvidence", "examinedSources", "explanation"],
+      "properties": {
+        "assessmentStatus": { "const": "assessed" },
+        "result": { "enum": ["satisfied", "excluded", "undetermined"] },
+        "requirementSummary": { "type": "string", "minLength": 1 },
+        "patientEvidence": { "type": "array", "items": { "$ref": "#/$defs/valueEvidence" } },
+        "studyEvidence": { "type": "array", "items": { "$ref": "#/$defs/textEvidence" } },
+        "examinedSources": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
