@@ -24,11 +24,36 @@ internal static class OfflineChecks
         });
         var fixture = fixtures[0]!;
         var answer = SampleAnswer(fixture);
+        // Keep legacy compatible-adapter coverage separate from native-only thinking.
+        var compatibleConfig = config.DeepClone(); compatibleConfig.AsObject().Remove("think");
+        Check("native request explicitly preserves thinking on and off", () =>
+        {
+            foreach (var enabled in new[] { true, false })
+            {
+                var selected = config.DeepClone(); selected["think"] = enabled;
+                Assert(Evaluation.Request(fixture, selected, prompt, schema, "native")["think"]!.GetValue<bool>() == enabled);
+            }
+        });
+        var thinkingForCompatible = config.DeepClone(); thinkingForCompatible["think"] = true;
+        Reject("compatible preview cannot silently drop an explicit thinking control", () =>
+            Evaluation.Request(fixture, thinkingForCompatible, prompt, schema, "compatible"));
+        Check("reviewed 120 and 300 second configurations are accepted", () =>
+        {
+            foreach (var seconds in new[] { 120, 300 })
+            {
+                var selected = config.DeepClone(); selected["requestTimeoutSeconds"] = seconds;
+                Evaluation.ValidatePreparation(selected, fixtures);
+            }
+        });
+        var excessiveDeadline = config.DeepClone(); excessiveDeadline["requestTimeoutSeconds"] = 301;
+        Reject("unreviewed request deadline rejected", () => Evaluation.ValidatePreparation(excessiveDeadline, fixtures));
+        var textThinking = config.DeepClone(); textThinking["think"] = "true";
+        Reject("thinking control must be a JSON boolean", () => Evaluation.ValidatePreparation(textThinking, fixtures));
         Check("request grounds the model with the same schema used for constrained output", () =>
         {
             foreach (var route in new[] { "native", "compatible" })
             {
-                var request = Evaluation.Request(fixture, config, prompt, schema, route);
+                var request = Evaluation.Request(fixture, route == "native" ? config : compatibleConfig, prompt, schema, route);
                 var sentSchema = route == "native" ? request["format"]! : request["response_format"]!["json_schema"]!["schema"]!;
                 var system = Evaluation.Text(request["messages"]![0]!["content"]);
                 Assert(system.EndsWith(sentSchema.ToJsonString(), StringComparison.Ordinal));
@@ -58,7 +83,7 @@ internal static class OfflineChecks
         {
             var before = schema.ToJsonString();
             Evaluation.Request(fixtures[2]!, config, prompt, schema, "native");
-            Evaluation.Request(fixtures[5]!, config, prompt, schema, "compatible");
+            Evaluation.Request(fixtures[5]!, compatibleConfig, prompt, schema, "compatible");
             Assert(schema.ToJsonString() == before);
         });
         Check("request construction ignores answer keys and review guidance", () =>
@@ -192,7 +217,7 @@ internal static class OfflineChecks
         noRestriction["stage"]!["examinedSources"] = new JsonArray();
         Reject("absence claim without examined eligibility", () => Evaluation.ValidateAnswer(noRestriction.ToJsonString(), fixture), "invalidEvidence");
         var native = Evaluation.Request(fixture, config, prompt, schema, "native");
-        var compatible = Evaluation.Request(fixture, config, prompt, schema, "compatible");
+        var compatible = Evaluation.Request(fixture, compatibleConfig, prompt, schema, "compatible");
         Check("both adapters preserve messages/schema and shared settings", () =>
         {
             Assert(JsonNode.DeepEquals(native["messages"], compatible["messages"]));
@@ -249,7 +274,7 @@ internal static class OfflineChecks
             foreach (var item in fixtures)
             {
                 var a = Evaluation.Sizing(Evaluation.Request(item!, config, prompt, schema, "native"), config);
-                var b = Evaluation.Sizing(Evaluation.Request(item!, config, prompt, schema, "compatible"), config);
+                var b = Evaluation.Sizing(Evaluation.Request(item!, compatibleConfig, prompt, schema, "compatible"), config);
                 Assert(a["withinConservativeBound"]!.GetValue<bool>() && b["withinConservativeBound"]!.GetValue<bool>());
                 Assert(JsonNode.DeepEquals(a["conservativeTotalTokenBound"], b["conservativeTotalTokenBound"]));
             }
@@ -275,10 +300,14 @@ internal static class OfflineChecks
             var a = Evaluation.Unpack(nativeEnvelope.ToJsonString(), "native");
             var b = Evaluation.Unpack(compatibleEnvelope.ToJsonString(), "compatible");
             Assert(a.Content == b.Content && !a.Metrics.ToJsonString().Contains("thinking", StringComparison.Ordinal));
+            Assert(a.Metrics["reasoningObserved"]!.GetValue<bool>() && !a.Metrics.ToJsonString().Contains("not retained", StringComparison.Ordinal));
             Assert(b.Metrics["loadTimingAvailable"]!.GetValue<bool>() == false);
         });
         var truncated = nativeEnvelope.DeepClone(); truncated["done_reason"] = "length";
         Reject("output-limited native response fails", () => Evaluation.Unpack(truncated.ToJsonString(), "native"), "invalidResponse");
+        var reasoningOnly = nativeEnvelope.DeepClone(); reasoningOnly["message"]!["content"] = "";
+        Reject("reasoning without final JSON cannot become a completed assessment", () =>
+            Evaluation.ValidateAnswer(Evaluation.Unpack(reasoningOnly.ToJsonString(), "native").Content, fixture));
         var refused = compatibleEnvelope.DeepClone(); refused["choices"]![0]!["finish_reason"] = "length";
         Reject("output-limited compatible response fails", () => Evaluation.Unpack(refused.ToJsonString(), "compatible"), "invalidResponse");
         var fingerprint = Evaluation.Fingerprint(root);

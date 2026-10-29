@@ -101,7 +101,7 @@ internal static class Evaluation
         if (route == "native")
         {
             body["format"] = requestSchema;
-            // No separate thinking control is part of this experiment.
+            if (config["think"] is not null) body["think"] = config["think"]!.GetValue<bool>();
             body["keep_alive"] = "5m";
             body["options"] = new JsonObject
             {
@@ -113,6 +113,8 @@ internal static class Evaluation
         }
         else if (route == "compatible")
         {
+            if (config["think"] is not null)
+                throw new InvalidDataException("Explicit thinking controls are reviewed for native requests only; compatible mapping needs separate review");
             body["temperature"] = config["temperature"]!.DeepClone();
             body["top_p"] = config["topP"]!.DeepClone();
             body["seed"] = config["seed"]!.DeepClone();
@@ -208,11 +210,13 @@ internal static class Evaluation
 
     internal static void ValidatePreparation(JsonNode config, JsonArray fixtures)
     {
+        if (config["think"] is not null && (config["think"] is not JsonValue thinking || !thinking.TryGetValue<bool>(out _)))
+            throw new InvalidDataException("Explicit thinking control must be a JSON boolean");
         if (!config["caseIds"]!.AsArray().Select(Text).SequenceEqual(CaseIds)
             || !fixtures.Select(f => Text(f!["id"])).SequenceEqual(CaseIds))
             throw new InvalidDataException("This checkpoint supports exactly the six agreed development cases, in order");
         if (Text(config["route"]) != "native" || string.IsNullOrWhiteSpace(Text(config["model"]))
-            || config["requestTimeoutSeconds"]!.GetValue<int>() != 120)
+            || config["requestTimeoutSeconds"]!.GetValue<int>() is not (120 or 300))
             throw new InvalidDataException("Invalid native feasibility configuration");
         foreach (var fixture in fixtures)
         {
@@ -331,6 +335,9 @@ internal static class Evaluation
         var metrics = new JsonObject();
         foreach (var key in new[] { "total_duration", "load_duration", "prompt_eval_count", "prompt_eval_duration", "eval_count", "eval_duration" })
             metrics[key] = envelope[key]?.DeepClone();
+        // Retain only whether a separated reasoning field was observed, never its text.
+        metrics["reasoningObserved"] = envelope["message"]?["thinking"] is JsonValue value
+            && value.TryGetValue<string>(out var reasoning) && !string.IsNullOrWhiteSpace(reasoning);
         return metrics;
     }
 

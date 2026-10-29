@@ -51,7 +51,8 @@ static async Task<int> MainAsync(string[] args)
                 ["fingerprint"] = fingerprint, ["route"] = route, ["scope"] = scope,
                 ["caseIds"] = new JsonArray(Evaluation.ScopeCaseIds(scope).Select(id => (JsonNode?)JsonValue.Create(id)).ToArray()),
                 ["requestCount"] = selected.Count,
-                ["timeoutSecondsPerRequest"] = 120, ["maximumRequestSeconds"] = selected.Count * 120,
+                ["timeoutSecondsPerRequest"] = config["requestTimeoutSeconds"]!.DeepClone(),
+                ["maximumRequestSeconds"] = selected.Count * config["requestTimeoutSeconds"]!.GetValue<int>(),
                 ["limitsStatus"] = config["limitsStatus"]!.DeepClone(),
                 ["routeLimitations"] = route == "compatible"
                     ? "Adapter preview only. Context/top-k/min-p need reviewed server-side configuration; native/compatible equivalence has not been established. Live compatible execution is not enabled in this checkpoint."
@@ -176,7 +177,8 @@ static async Task RunAsync(string root, JsonNode config, JsonArray fixtures, str
             var mustStop = false;
             try
             {
-                var raw = await Evaluation.SendAsync(client, "api/chat", body, TimeSpan.FromSeconds(120), stop.Token);
+                var raw = await Evaluation.SendAsync(client, "api/chat", body,
+                    TimeSpan.FromSeconds(config["requestTimeoutSeconds"]!.GetValue<int>()), stop.Token);
                 var received = Evaluation.Parse(raw);
                 record["content"] = received["message"]?["content"]?.DeepClone();
                 record["metrics"] = Evaluation.NativeMetrics(received);

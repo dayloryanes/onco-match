@@ -5,83 +5,54 @@ through local Ollama. No application project references, added packages, model
 downloads, provider framework, or automatic model search. It is not part of API
 startup or a product feature. .NET 10 SDK is required.
 
-## Current authorization and scope
+## Current checkpoint and scope
 
-The human approved local preparation on `chore/inference-evaluation`: runner,
-six serialized development fixtures, prompt/schema/configuration, documentation,
-offline checks, and dry-run previews. The human then reviewed the prepared
-prompt/schema and six-case walkthrough, selected the 12,288-token context and
-2,048-token output baseline, and approved the local baseline commit. Push,
-PR/tracker publication, and inference still require separate approval.
-The separately approved first native trial then ran all six cases and stopped:
-all responses failed strict duplicate-field validation. Its local approval record
-is consumed, and its original outputs/input snapshots are retained. The human
-approved two subsequent local fixes and offline checks: flatten the cancer-type
-schema definition and exclude results source snapshots from compilation, then
-approved their local commit after offline verification. That approval does not
-authorize another run or publication.
-The human subsequently approved local preparation of a D1-only mode and its
-offline checks, then approved its local commit after all 48 checks passed.
-The separately approved D1-only diagnostic then ran once and stopped. Mechanical
-checks passed, but stage was wrongly excluded despite the satisfied OR alternative.
-The human approved local preparation of a general prompt revision for compound
-requirements and supplied staging labels, then approved its local commit and one
-native six-case development batch. Freeze this revised prompt across D1, D3,
-D5, D6, D9, D13, once each, with unchanged settings and no retries; stop for
-review after the batch or earlier on timeout, cancellation, or internal fault.
-That batch completed and stopped: five responses passed mechanical checks, while
-D5 failed evidence validation; D3 and D9 matched all expected labels, but the
-candidate still had substantive development-case failures. Review was presented
-in chat; the human does not need to inspect the saved files again. Detailed raw
-outputs and AI review remain local, and no independent human file review is claimed.
+The original narrative-assessment feasibility work has stopped. None of the
+tested configurations met its development quality requirements. This reusable
+console still contains the historical narrative fixtures and response contract;
+condition-label assessment has not been implemented. [Scope decision #12](https://github.com/dayloryanes/onco-match/issues/12)
+records the agreed narrowed direction and unresolved contract/evaluation questions.
+[Model checkpoint #6](https://github.com/dayloryanes/onco-match/issues/6) records the
+measurements. Further experiments wait for the revised design and exact approval.
 
-The human then chose the shortlisted Phi-4 Mini alternative, downloaded it, and
-approved local configuration preparation and offline checks. After reviewing the
-comparison scope and clarifying the prior results, the human approved proceeding
-with the local Phi commit and one native six-case batch. Use the frozen revised
-prompt and unchanged explicit settings, no retries, then stop for review. Further
-changes, reruns, and publication require separate approval. That Phi batch has
-now completed: all six responses failed evidence validation, with additional
-interpretation problems found during AI inspection and reviewed through chat.
-The retained local report is `results/native-phi4mini-20261029-051929/REVIEW.md`.
-Previous run approvals are consumed records.
+| Latest completed native configuration | Mechanical completions | All expected criterion labels match | Total request time |
+| --- | ---: | ---: | ---: |
+| Phi Mini, corrected evidence request | 0/6 | 0/6 raw answers | 269.156s |
+| Qwen Instruct-2507, same corrected request | 6/6 | 2/6 | 513.617s |
+| Qwen3 4B hybrid, explicit thinking | 5/6 | 0/6 | 1090.016s |
 
-The human approved a read-only audit, then approved local request corrections and
-offline checks: explain evidence fields and missing/null sources, derive allowed
-source IDs from each supplied catalog, and include the same request schema in the
-system message and API schema field. No answer keys enter schema construction.
-The validator, fixtures, expected labels, model, and inference settings remain
-unchanged. This approval does not authorize a commit, inference, or publication.
+Each batch used D1/D3/D5/D6/D9/D13 once, without retries. Phi/Instruct requests
+differed only by model. The hybrid trial also changed reasoning mode, sampling
+and deadline, so it does not isolate thinking's causal effect. Mechanical
+completion and matching labels do not prove correct interpretation. Full repeated
+acceptance and live compatible-route comparisons remain unrun.
 
-The schema-grounding revision initially exceeded the old whole-request byte
-guard (native maximum 17,368; compatible 17,401), which counted the schema twice
-and included HTTP JSON escaping and API options. The human then approved provider
-verification, correction to message-content sizing, and offline checks only.
-That correction is prepared locally: the largest decoded message content is
-8,761 UTF-8 bytes, giving a conservative total bound of 11,833 with the existing
-1,024 framing reserve and 2,048 output allowance. All six cases clear the unchanged
-12,288 context limit in both previews. This is not measured token usage or memory.
-No context increase, truncation, commit, inference, or publication is authorized
-by this sizing-correction approval.
+The retained candidate.json is the last tested ordinary hybrid
+qwen3:4b-q4_K_M profile: explicit think:true, temperature0.6, top-p0.95, top-k20,
+min-p0, seed42, context12288, combined generation cap2048 and deadline300s. It is
+not a selected POC model or the next condition-label candidate. The completed
+hybrid batch observed separated reasoning in all six responses; only a boolean
+is retained. D1 hit the generation cap without final JSON. Its five completed
+answers contained interpretation errors. No raw reasoning is retained.
 
-The request and sizing corrections passed offline checks. Live inference with
-this revision has not run. The next proposed step is a native six-case Phi rerun,
-awaiting approval.
+Earlier structural fixes flattened a schema composition that forced duplicate
+result keys and excluded saved result sources from compilation. Later request
+corrections defined evidence roles, specialized IDs from each supplied catalog,
+and included the same schema in messages and the API format field. Expected
+answers remain outside requests. Those corrections improved some mechanical
+results but did not establish reliable narrative interpretation.
 
-The current proposed comparison candidate is `phi4-mini:3.8b-q4_K_M`.
-The earlier candidate was `qwen3:4b-instruct-2507-q4_K_M`; its exact inputs and
-answers remain in Git history and local result snapshots. Partial CPU offload
-is allowed: measure it rather than treating it as an automatic rejection.
+An earlier hybrid D1 remained unfinished across Windows Modern Standby. A local
+postmortem found that UTC elapsed time alone did not demonstrate a timeout defect: the
+.NET Windows relative timer excludes sleep time. Two local-stub HTTP deadline
+probes passed. The fresh six-case batch finished without timeout. The user
+controls power settings; no automatic sleep-prevention behavior was implemented.
 
-Initial trial scope: D1, D3, D5, D6, D9, D13, in that order, once each through
-native `/api/chat`. Fresh two-message conversation per case, sequential requests,
-120-second deadline including loading, no warm-up inference, automatic retry,
-prompt revision, alternate model, or next batch. At most six inference requests
-and 720 seconds of inference-request time; metadata observations and file I/O
-are additional. Stop for review after the batch, interruption, timeout, or an
-unexpected internal fault. A timeout stops scheduling so server activity can
-be checked before any later request. Other pair-level HTTP/validation failures
-are retained and the remaining agreed cases continue.
+Local exact inputs, consumed approvals, answers, measurements and diagnostics are
+retained under ignored results/. All prior attempts remain intact. No model is
+accepted, no narrowed-scope trial has run, and no run starts automatically.
+Separate local commits preserve the experimental runner checkpoint and the scope
+draft. No push, new inference or application change follows from those commits.
 
 ## Authoritative design
 
@@ -112,6 +83,9 @@ dotnet run --project tools/inference-evaluation -- dry-run-d1
 ```
 
 The tool's offline commands make no HTTP requests. Self-check uses in-memory
+handlers. For the current explicit-thinking candidate, use native previews only;
+the compatible command above applies to configurations without that control.
+Self-check retains legacy compatible coverage separately. It uses
 fake HTTP handlers, not an Ollama or fake-network server. The ordinary .NET
 build may perform SDK restore work; the project has no package references.
 Dry-run writes six complete request previews and `manifest.json` under
@@ -119,7 +93,7 @@ Dry-run writes six complete request previews and `manifest.json` under
 command defaults to native dry-run. There is no background process.
 `dry-run-d1` accepts no route or other arguments: it previews exactly D1 through
 the native API, under `results/preparation/<fingerprint>/native-d1/`. Its manifest
-records one request and at most 120 seconds of inference-request time. The usual
+records one request and the configured request deadline. The usual
 `dry-run` continues to preview the six-case batch.
 
 ## Files to review
@@ -159,37 +133,33 @@ verify the exclusion, then removes only that sentinel.
 
 ## Candidate settings and input sizing
 
-The prompt used for the Qwen revised batch spells out how a satisfied OR alternative
-governs every affected criterion summary while retaining independent mandatory
-requirements. It also clarifies unresolved alternatives/cohort applicability,
-separate assessment of unrelated criteria, and the prohibition on invented
-staging-system equivalence comparisons. It introduces no fixture-specific facts,
-answer examples, new assessed criteria, changed expected results, or acceptance
-material. For the proposed Phi comparison, only candidate identity/model change:
-the prompt, sampling, context/output settings, fixtures, schema, and validator
-remain as in the revised Qwen batch. This compares recorded configurations, not
-each model's best possible settings. The models have different native templates
-and tokenizers; those necessary differences must be recorded. No alias or runner
-code change is needed. The approved trial uses all six native development cases,
-once each, with one frozen prompt; only that single batch is authorized.
-D1-only mode remains available for targeted structural diagnostics.
+The current prompt and schema are retained evidence of the narrative experiment.
+They preserve compound requirements, cohort uncertainty and supplied staging
+labels, define evidence roles and missing/null sources, and derive allowed source
+IDs from inputs without answer-key examples. They must be redesigned only after
+#12 resolves the narrowed contract; old fixtures are not acceptance evidence for
+that future task. D1-only mode remains available for separately approved
+structural diagnostics.
 
-Read-only metadata verification found Phi installed as Q4_K_M under Ollama
-0.40.13, with byte-level gpt2 tokenizer metadata, gpt-4o pretokenization, and the
-Phi chat template. The verified two-message/no-tools framing fits the existing
-reserve. The Phi model declares a 131,072-token context capability; the experiment
-still requests only 12,288. Its metadata has no model-specific sampling overrides.
-Ollama 0.40.13's repetition penalty default is 1.0, matching Qwen's recorded
-model override; explicit request sampling remains unchanged. GPU fit and speed
-at the proposed context have not been measured for Phi. A manually observed
-4,096-context residency sample is not a controlled comparison with the prior
-12,288-context Qwen run.
+The latest Phi/Instruct completion runs used temperature0.7, top-p0.8, top-k20,
+min-p0, seed42, context12288, generation cap2048 and deadline120s, without a
+separate thinking control. The retained hybrid profile uses the values in the
+checkpoint above. Explicit thinking is native-only; compatible previews reject it
+rather than silently dropping the setting. Omitting a think field does not
+generally prove reasoning is disabled for every model; verify model controls.
 
-Agreed generation settings: temperature 0.7, top-p 0.8, top-k 20, min-p 0;
-recorded seed 42. No thinking controls are sent for these completion candidates.
-A seed is not a guarantee of identical answers or repeatability evidence.
-Native `keep_alive` is 5 minutes to avoid deliberately reloading between cases;
-the runner does not change global Ollama settings or unload another model.
+Installed metadata and template hashes were inspected per candidate. Phi uses
+gpt2/gpt-4o pretokenization; the Qwen candidates use gpt2/qwen2. Their reviewed
+two-message/no-tools template paths fit the framing reserve. Metadata, generation
+metrics, residency and exact hashes remain in local records. Download size is
+not loaded memory, and a4096-context observation is not a12288-context comparison.
+No generic GPU-fit or speed guarantee is made.
+
+A seed is not a guarantee of identical answers. Native keep_alive is5 minutes to
+avoid deliberately reloading between cases. The runner does not alter global
+Ollama settings or explicitly unload another model. Request deadlines are the
+reviewed configured120 or300 seconds; Windows relative-timer sleep behavior must
+be considered when interpreting UTC durations.
 
 **Reviewed baseline limits:** 12,288 context tokens, 2,048 maximum output tokens,
 and a 1,024-token chat-framing reserve. An initial
@@ -274,7 +244,7 @@ dotnet run --project tools/inference-evaluation -- run-d1 tools/inference-evalua
 
 `run-d1` selects only D1 from the same reviewed fixtures, sends one native request,
 and stops regardless of its outcome. It does not alter the model, prompt, schema,
-sampling, context/output limits, or D1 payload. It applies the same 120-second
+sampling, context/output limits, or D1 payload. It applies the configured request
 deadline, cancellation, evidence validation, snapshot/record retention, and
 human semantic review. The original `run` selects all six cases. Both commands
 require an exact matching approval list/count; neither approval can authorize
@@ -338,8 +308,7 @@ new reviewed run. Keep all scheduled attempts; no cherry-picking or silent retri
 Reviewed findings may later be committed with approval. Raw answers, timings, and
 model downloads are not proposed for Git. Raw evidence can be separately reviewed
 for publication/archive/deletion when no longer needed. All trial findings and
-the offline diagnosis remain local under results/ for review. The latest evidence
-field/schema grounding revision has not been evaluated with inference.
+the offline diagnosis remain local under results/ for review. The completed trials are summarized above.
 
 ## Official references
 
@@ -355,7 +324,12 @@ field/schema grounding revision has not been evaluated with inference.
 This preparation is AI-assisted. Offline tool checks are distinct from model
 evaluation, independent automated code review, and maintainer manual validation.
 
-Current local validation: 61 deterministic offline checks passed. Six sizing
+Current local validation: 67 deterministic offline checks passed. Six added checks
+cover explicit thinking on/off payloads, rejection of silently dropped compatible
+thinking, reviewed 120/300-second configurations, rejection of unreviewed deadlines
+and non-boolean controls, and rejection of reasoning without final JSON. The
+existing response test also checks the reasoning-observed boolean and no raw text
+retention. Six earlier sizing
 checks cover decoded Unicode byte counts and reserves, API packaging versus added
 message text, exact-limit acceptance/overflow rejection without truncation,
 matching adapter bounds/all six inputs fitting, and rejection of unreviewed media
