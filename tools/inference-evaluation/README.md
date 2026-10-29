@@ -29,12 +29,25 @@ requirements and supplied staging labels, then approved its local commit and one
 native six-case development batch. Freeze this revised prompt across D1, D3,
 D5, D6, D9, D13, once each, with unchanged settings and no retries; stop for
 review after the batch or earlier on timeout, cancellation, or internal fault.
-This authorization covers that single batch, not further changes, reruns, or
-publication. At this commit checkpoint the revised batch has not started.
+That batch completed and stopped: five responses passed mechanical checks, while
+D5 failed evidence validation; D3 and D9 matched all expected labels, but the
+candidate still had substantive development-case failures. Review was presented
+in chat; the human does not need to inspect the saved files again. Detailed raw
+outputs and AI review remain local, and no independent human file review is claimed.
 
-The approved initial candidate for this bounded trial is
-`qwen3:4b-instruct-2507-q4_K_M`. Partial CPU offload is allowed: measure it rather
-than treating it as an automatic reason to reject this candidate.
+The human then chose the shortlisted Phi-4 Mini alternative, downloaded it, and
+approved local configuration preparation and offline checks. After reviewing the
+comparison scope and clarifying the prior results, the human approved proceeding
+with the local Phi commit and one native six-case batch. Use the frozen revised
+prompt and unchanged explicit settings, no retries, then stop for review. Further
+changes, reruns, and publication remain unauthorized. At this commit checkpoint
+the Phi evaluation batch has not started. Previous run approvals are consumed
+records; this batch requires its own exact fingerprint/model/scope record.
+
+The current proposed comparison candidate is `phi4-mini:3.8b-q4_K_M`.
+The earlier candidate was `qwen3:4b-instruct-2507-q4_K_M`; its exact inputs and
+answers remain in Git history and local result snapshots. Partial CPU offload
+is allowed: measure it rather than treating it as an automatic rejection.
 
 Initial trial scope: D1, D3, D5, D6, D9, D13, in that order, once each through
 native `/api/chat`. Fresh two-message conversation per case, sequential requests,
@@ -122,20 +135,34 @@ verify the exclusion, then removes only that sentinel.
 
 ## Candidate settings and input sizing
 
-The current local prompt revision spells out how a satisfied OR alternative
+The prompt used for the Qwen revised batch spells out how a satisfied OR alternative
 governs every affected criterion summary while retaining independent mandatory
 requirements. It also clarifies unresolved alternatives/cohort applicability,
 separate assessment of unrelated criteria, and the prohibition on invented
 staging-system equivalence comparisons. It introduces no fixture-specific facts,
 answer examples, new assessed criteria, changed expected results, or acceptance
-material. Model, sampling, context/output settings, fixtures, schema, and validator
-are unchanged. A full six-case development batch is recommended for the revised
-prompt to check improvements and regressions; the human approved one such batch. Freeze
-one prompt for the whole batch and review all retained results before revising it
-again. D1-only mode remains available for targeted structural diagnostics.
+material. For the proposed Phi comparison, only candidate identity/model change:
+the prompt, sampling, context/output settings, fixtures, schema, and validator
+remain as in the revised Qwen batch. This compares recorded configurations, not
+each model's best possible settings. The models have different native templates
+and tokenizers; those necessary differences must be recorded. No alias or runner
+code change is needed. The approved trial uses all six native development cases,
+once each, with one frozen prompt; only that single batch is authorized.
+D1-only mode remains available for targeted structural diagnostics.
+
+Read-only metadata verification found Phi installed as Q4_K_M under Ollama
+0.40.13, with byte-level gpt2 tokenizer metadata, gpt-4o pretokenization, and the
+Phi chat template. The verified two-message/no-tools framing fits the existing
+reserve. The Phi model declares a 131,072-token context capability; the experiment
+still requests only 12,288. Its metadata has no model-specific sampling overrides.
+Ollama 0.40.13's repetition penalty default is 1.0, matching Qwen's recorded
+model override; explicit request sampling remains unchanged. GPU fit and speed
+at the proposed context have not been measured for Phi. A manually observed
+4,096-context residency sample is not a controlled comparison with the prior
+12,288-context Qwen run.
 
 Agreed generation settings: temperature 0.7, top-p 0.8, top-k 20, min-p 0;
-recorded seed 42. Instruct-2507 is non-thinking; no thinking controls are sent.
+recorded seed 42. No thinking controls are sent for these completion candidates.
 A seed is not a guarantee of identical answers or repeatability evidence.
 Native `keep_alive` is 5 minutes to avoid deliberately reloading between cases;
 the runner does not change global Ollama settings or unload another model.
@@ -274,11 +301,14 @@ has been evaluated with inference.
 
 ## Official references
 
+- [Phi-4 Mini Q4_K_M Ollama listing](https://ollama.com/library/phi4-mini:3.8b-q4_K_M)
+- [Microsoft Phi-4 Mini model card](https://huggingface.co/microsoft/Phi-4-mini-instruct)
 - [Qwen3 4B Instruct 2507 model card and recommended sampling](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507)
 - [Ollama native chat request/metrics](https://docs.ollama.com/api/chat)
 - [Ollama structured outputs](https://docs.ollama.com/capabilities/structured-outputs)
 - [Ollama OpenAI compatibility and context settings](https://docs.ollama.com/api/openai-compatibility)
 - [Ollama context and offloading](https://docs.ollama.com/context-length)
+- [Ollama 0.40.13 sampling defaults](https://github.com/ollama/ollama/blob/v0.40.13/api/types.go#L1130)
 
 This preparation is AI-assisted. Offline tool checks are distinct from model
 evaluation, independent automated code review, and maintainer manual validation.

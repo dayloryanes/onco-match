@@ -1,7 +1,7 @@
 {
-  "id": "qwen3-4b-instruct-feasibility-1",
+  "id": "phi4-mini-feasibility-1",
   "baseUrl": "http://127.0.0.1:11434/",
-  "model": "qwen3:4b-instruct-2507-q4_K_M",
+  "model": "phi4-mini:3.8b-q4_K_M",
   "route": "native",
   "caseIds": ["D1", "D3", "D5", "D6", "D9", "D13"],
   "requestTimeoutSeconds": 120,
