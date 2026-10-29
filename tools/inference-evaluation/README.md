@@ -13,13 +13,19 @@ offline checks, and dry-run previews. The human then reviewed the prepared
 prompt/schema and six-case walkthrough, selected the 12,288-token context and
 2,048-token output baseline, and approved the local baseline commit. Push,
 PR/tracker publication, and inference still require separate approval.
-No execution approval file has been created.
+The separately approved first native trial then ran all six cases and stopped:
+all responses failed strict duplicate-field validation. Its local approval record
+is consumed, and its original outputs/input snapshots are retained. The human
+approved two subsequent local fixes and offline checks: flatten the cancer-type
+schema definition and exclude results source snapshots from compilation, then
+approved their local commit after offline verification. That approval does not
+authorize another run or publication.
 
 The approved initial candidate for this bounded trial is
 `qwen3:4b-instruct-2507-q4_K_M`. Partial CPU offload is allowed: measure it rather
 than treating it as an automatic reason to reject this candidate.
 
-First proposed run: D1, D3, D5, D6, D9, D13, in that order, once each through
+Initial trial scope: D1, D3, D5, D6, D9, D13, in that order, once each through
 native `/api/chat`. Fresh two-message conversation per case, sequential requests,
 120-second deadline including loading, no warm-up inference, automatic retry,
 prompt revision, alternate model, or next batch. At most six inference requests
@@ -83,6 +89,20 @@ This is not the production six-unit age parser or application failure/recovery
 test harness. More fixtures and the full acceptance scheduler need separately
 reviewed extensions. No new application implementation is included.
 
+The cancer criterion is intentionally a standalone object rather than an allOf
+refinement of the shared criterion. The installed Ollama 0.40.13 / llama.cpp
+b11963 converter concatenates overlapping allOf property lists, which forced a
+duplicate result key in the first trial. An offline probe against the installed
+converter reproduces that failure with the saved schema and passes with the
+revised schema. The response contract and strict duplicate/evidence validation
+are unchanged. The self-check guards the standalone definition, its three-value
+result enum, and agreement with all other shared criterion fields.
+
+The project excludes `results/**/*.cs` from compilation. Saved source snapshots
+remain evidence, not source inputs for the next build. The self-check creates a
+temporary ignored source sentinel and inspects actual MSBuild Compile inputs to
+verify the exclusion, then removes only that sentinel.
+
 ## Candidate settings and input sizing
 
 Agreed generation settings: temperature 0.7, top-p 0.8, top-k 20, min-p 0;
@@ -130,9 +150,13 @@ prompt/schema, and offline results. The intended history is an approved baseline
 commit before inference, then separately approved execution, review, and later
 commits of findings or deliberate revisions. The human approved this local
 baseline commit; that approval does not authorize inference or publication.
+The human also approved the local schema/build-fix commit after offline review;
+execution and publication approvals remain separate.
 
-Only after explicit execution approval, create ignored `execution-approval.json`
-from the example. Record the actual approval, final fingerprint, unique run ID,
+Only after explicit execution approval, prepare a fresh ignored
+`execution-approval.json` from the example. The retained first-run record is not
+permission to rerun; changed inputs also invalidate its fingerprint. Record the
+actual new approval, final fingerprint, unique run ID,
 installed model's full digest, Ollama version, reviewed template hash, and both
 review flags. That file is a record of permission, not a way to grant permission.
 
@@ -195,7 +219,9 @@ them. A changed configuration/prompt/fixture is a new fingerprint and requires a
 new reviewed run. Keep all scheduled attempts; no cherry-picking or silent retries.
 Reviewed findings may later be committed with approval. Raw answers, timings, and
 model downloads are not proposed for Git. Raw evidence can be separately reviewed
-for publication/archive/deletion when no longer needed. No findings exist yet.
+for publication/archive/deletion when no longer needed. First-trial findings and
+the offline diagnosis remain local under results/ for review; no revised candidate
+has been evaluated with inference.
 
 ## Official references
 
@@ -208,12 +234,16 @@ for publication/archive/deletion when no longer needed. No findings exist yet.
 This preparation is AI-assisted. Offline tool checks are distinct from model
 evaluation, independent automated code review, and maintainer manual validation.
 
-Local preparation validation: 34 deterministic offline checks passed, including
+Local validation after the approved schema/build fixes: 36 deterministic offline
+checks passed, including standalone schema regression and actual MSBuild result
+source exclusion, along with the original coverage:
 fixture agreement with the approved design, exact evidence/type checks, malformed
 and duplicate JSON, API request/response adapters, expected-label comparison,
 oversized-input detection, execution approval guards, fake HTTP failures,
-deadline, and cancellation. Both six-request dry-run previews were generated.
-No inference, application test rerun, independent automated code-review run, or
-maintainer manual validation is claimed. Context/output limits were subsequently
-selected by the human for the baseline. Installed-model/template metadata and
-explicit execution approval remain outstanding before inference.
+deadline, and cancellation. Both revised six-request dry-run previews were
+generated. The installed native converter was also exercised offline: saved old
+schema fails the duplicate-result assertion; revised schema passes. No inference
+was performed for these fixes; no application test rerun, independent automated
+code-review run, or maintainer manual validation is claimed. Previously reviewed
+context/output settings are unchanged. Fresh explicit execution approval and
+verification of installed metadata are required before further inference.

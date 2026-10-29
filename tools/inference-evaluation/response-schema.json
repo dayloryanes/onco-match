@@ -32,7 +32,17 @@
       }
     },
     "cancerCriterion": {
-      "allOf": [ { "$ref": "#/$defs/criterion" }, { "properties": { "result": { "enum": ["satisfied", "excluded", "undetermined"] } } } ]
+      "type": "object", "additionalProperties": false,
+      "required": ["assessmentStatus", "result", "requirementSummary", "patientEvidence", "studyEvidence", "examinedSources", "explanation"],
+      "properties": {
+        "assessmentStatus": { "const": "assessed" },
+        "result": { "enum": ["satisfied", "excluded", "undetermined"] },
+        "requirementSummary": { "type": "string", "minLength": 1 },
+        "patientEvidence": { "type": "array", "items": { "$ref": "#/$defs/valueEvidence" } },
+        "studyEvidence": { "type": "array", "items": { "$ref": "#/$defs/textEvidence" } },
+        "examinedSources": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "explanation": { "type": "string", "minLength": 1 }
+      }
     }
   }
 }

@@ -10,7 +10,9 @@ internal static class OfflineChecks
         var count = 0;
         void Check(string name, Action test)
         {
-            test(); count++; Console.WriteLine($"PASS {name}");
+            try { test(); }
+            catch (Exception ex) { throw new InvalidOperationException($"Offline check failed: {name}: {ex.Message}", ex); }
+            count++; Console.WriteLine($"PASS {name}");
         }
         void Assert(bool value) { if (!value) throw new InvalidOperationException("Offline assertion failed"); }
         void Reject(string name, Action test, string? code = null) => Check(name, () =>
@@ -22,6 +24,49 @@ internal static class OfflineChecks
         });
         var fixture = fixtures[0]!;
         var answer = SampleAnswer(fixture);
+        Check("cancer schema uses a standalone object with one narrowed result definition", () =>
+        {
+            var cancer = schema["$defs"]!["cancerCriterion"]!;
+            var criterion = schema["$defs"]!["criterion"]!;
+            Assert(cancer["allOf"] is null && Evaluation.Text(cancer["type"]) == "object");
+            Assert(cancer["additionalProperties"]!.GetValue<bool>() == false);
+            Assert(JsonNode.DeepEquals(cancer["required"], criterion["required"]));
+            Assert(cancer["properties"]!.AsObject().Count == 7);
+            Assert(cancer["properties"]!["result"]!["enum"]!.AsArray().Select(Evaluation.Text)
+                .SequenceEqual(new[] { "satisfied", "excluded", "undetermined" }));
+            foreach (var property in criterion["properties"]!.AsObject().Where(p => p.Key != "result"))
+                Assert(JsonNode.DeepEquals(cancer["properties"]![property.Key], property.Value));
+        });
+
+        // Exercise MSBuild's actual recursive Compile glob with a new ignored source.
+        // This also works before the first live run has produced any input snapshots.
+        var sentinelDirectory = Path.Combine(root, "results", "build-exclusion-check");
+        Directory.CreateDirectory(sentinelDirectory);
+        var sentinel = Path.Combine(sentinelDirectory, $"MustNotCompile-{Guid.NewGuid():N}.cs");
+        await File.WriteAllTextAsync(sentinel, "#error Evaluation results must never be compiled\n");
+        try
+        {
+            var start = new System.Diagnostics.ProcessStartInfo("dotnet")
+            { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true };
+            foreach (var argument in new[] { "msbuild", Path.Combine(root, "InferenceEvaluation.csproj"), "-getItem:Compile" })
+                start.ArgumentList.Add(argument);
+            using var process = System.Diagnostics.Process.Start(start) ?? throw new InvalidOperationException("Cannot inspect Compile inputs");
+            using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(15));
+            var stdout = process.StandardOutput.ReadToEndAsync(deadline.Token);
+            var stderr = process.StandardError.ReadToEndAsync(deadline.Token);
+            try { await process.WaitForExitAsync(deadline.Token); }
+            catch (OperationCanceledException) { process.Kill(entireProcessTree: true); throw; }
+            var compile = Evaluation.Parse(await stdout);
+            var errors = await stderr;
+            Check("MSBuild excludes saved and diagnostic result sources from compilation", () =>
+            {
+                Assert(process.ExitCode == 0 && errors.Length == 0);
+                var names = compile["Items"]!["Compile"]!.AsArray().Select(item => Evaluation.Text(item!["Identity"]).Replace('\\', '/')).ToArray();
+                Assert(names.Order().SequenceEqual(new[] { "Evaluation.cs", "OfflineChecks.cs", "Program.cs" }.Order()));
+                Assert(!names.Any(name => name.StartsWith("results/", StringComparison.OrdinalIgnoreCase)));
+            });
+        }
+        finally { File.Delete(sentinel); }
         var design = File.ReadAllText(Path.Combine(root, "../../docs/planning/inference-evaluation-design.md"));
         Check("six inputs and expected outcomes match approved design", () =>
         {
