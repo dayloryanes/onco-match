@@ -22,8 +22,15 @@ approved their local commit after offline verification. That approval does not
 authorize another run or publication.
 The human subsequently approved local preparation of a D1-only mode and its
 offline checks, then approved its local commit after all 48 checks passed.
-That mode has not been used for inference; execution and publication still
-need separate approval.
+The separately approved D1-only diagnostic then ran once and stopped. Mechanical
+checks passed, but stage was wrongly excluded despite the satisfied OR alternative.
+The human approved local preparation of a general prompt revision for compound
+requirements and supplied staging labels, then approved its local commit and one
+native six-case development batch. Freeze this revised prompt across D1, D3,
+D5, D6, D9, D13, once each, with unchanged settings and no retries; stop for
+review after the batch or earlier on timeout, cancellation, or internal fault.
+This authorization covers that single batch, not further changes, reruns, or
+publication. At this commit checkpoint the revised batch has not started.
 
 The approved initial candidate for this bounded trial is
 `qwen3:4b-instruct-2507-q4_K_M`. Partial CPU offload is allowed: measure it rather
@@ -114,6 +121,18 @@ temporary ignored source sentinel and inspects actual MSBuild Compile inputs to
 verify the exclusion, then removes only that sentinel.
 
 ## Candidate settings and input sizing
+
+The current local prompt revision spells out how a satisfied OR alternative
+governs every affected criterion summary while retaining independent mandatory
+requirements. It also clarifies unresolved alternatives/cohort applicability,
+separate assessment of unrelated criteria, and the prohibition on invented
+staging-system equivalence comparisons. It introduces no fixture-specific facts,
+answer examples, new assessed criteria, changed expected results, or acceptance
+material. Model, sampling, context/output settings, fixtures, schema, and validator
+are unchanged. A full six-case development batch is recommended for the revised
+prompt to check improvements and regressions; the human approved one such batch. Freeze
+one prompt for the whole batch and review all retained results before revising it
+again. D1-only mode remains available for targeted structural diagnostics.
 
 Agreed generation settings: temperature 0.7, top-p 0.8, top-k 20, min-p 0;
 recorded seed 42. Instruct-2507 is non-thinking; no thinking controls are sent.
