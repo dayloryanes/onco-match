@@ -187,6 +187,33 @@ internal static class OfflineChecks
         Reject("committed example cannot grant execution", () => Evaluation.ValidateApproval(Evaluation.Read(Path.Combine(root, "execution-approval.example.json")), fingerprint));
         var approval = Approval(fingerprint);
         Check("exact run approval accepted offline", () => Evaluation.ValidateApproval(approval, fingerprint));
+        var d1Approval = Approval(fingerprint);
+        d1Approval["maxRequests"] = 1;
+        d1Approval["caseIds"] = new JsonArray("D1");
+        Check("D1-only approval accepted for D1 mode", () => Evaluation.ValidateApproval(d1Approval, fingerprint, "d1"));
+        Reject("D1 approval cannot authorize the batch", () => Evaluation.ValidateApproval(d1Approval, fingerprint));
+        Reject("batch approval cannot authorize D1 mode", () => Evaluation.ValidateApproval(approval, fingerprint, "d1"));
+        var excessiveD1 = d1Approval.DeepClone(); excessiveD1["maxRequests"] = 6;
+        Reject("D1 mode rejects a larger request allowance", () => Evaluation.ValidateApproval(excessiveD1, fingerprint, "d1"));
+        var otherCase = d1Approval.DeepClone(); otherCase["caseIds"] = new JsonArray("D3");
+        Reject("D1 mode rejects authorization for another case", () => Evaluation.ValidateApproval(otherCase, fingerprint, "d1"));
+        var extraCase = d1Approval.DeepClone(); extraCase["caseIds"] = new JsonArray("D1", "D3");
+        Reject("D1 mode rejects additional case IDs", () => Evaluation.ValidateApproval(extraCase, fingerprint, "d1"));
+        var noCases = d1Approval.DeepClone(); noCases.AsObject().Remove("caseIds");
+        Reject("D1 mode requires explicit case IDs", () => Evaluation.ValidateApproval(noCases, fingerprint, "d1"));
+        var d1Template = Evaluation.Read(Path.Combine(root, "execution-approval-d1.example.json"));
+        Reject("D1 example cannot grant execution", () => Evaluation.ValidateApproval(d1Template, fingerprint, "d1"));
+        Reject("unknown selection scope rejected", () => Evaluation.SelectCases(fixtures, "other"));
+        Check("D1 selection contains only the original unchanged D1 payload", () =>
+        {
+            var selected = Evaluation.SelectCases(fixtures, "d1");
+            Assert(selected.Count == 1 && Evaluation.Text(selected[0]!["id"]) == "D1");
+            Assert(JsonNode.DeepEquals(Evaluation.Request(selected[0]!, config, prompt, schema, "native"), native));
+            selected[0]!["patient"]!["cancerType"] = "changed only in selected copy";
+            Assert(Evaluation.Text(fixtures[0]!["patient"]!["cancerType"]) == "Fictional cancer A");
+        });
+        Check("batch selection retains all six cases in order", () =>
+            Assert(Evaluation.SelectCases(fixtures, "batch").Select(item => Evaluation.Text(item!["id"])).SequenceEqual(Evaluation.CaseIds)));
         var notApproved = approval.DeepClone(); notApproved["approved"] = false;
         Reject("preparation is not execution approval", () => Evaluation.ValidateApproval(notApproved, fingerprint));
         var changed = approval.DeepClone(); changed["fingerprintSha256"] = new string('0', 64);
@@ -201,6 +228,12 @@ internal static class OfflineChecks
         using var client = new HttpClient(fake) { BaseAddress = new Uri("http://127.0.0.1:1/") };
         var reply = await Evaluation.SendAsync(client, "api/chat", native, TimeSpan.FromSeconds(1), CancellationToken.None);
         Check("HTTP transport against in-memory handler", () => Assert(reply.Contains("done_reason", StringComparison.Ordinal) && fake.Calls == 1));
+        using var d1Fake = new FakeHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(nativeEnvelope.ToJsonString()) }));
+        using var d1Client = new HttpClient(d1Fake) { BaseAddress = client.BaseAddress };
+        Evaluation.ValidateApproval(d1Approval, fingerprint, "d1");
+        foreach (var selected in Evaluation.SelectCases(fixtures, "d1"))
+            await Evaluation.SendAsync(d1Client, "api/chat", Evaluation.Request(selected!, config, prompt, schema, "native"), TimeSpan.FromSeconds(1), CancellationToken.None);
+        Check("approved D1 selection makes exactly one fake transport request", () => Assert(d1Fake.Calls == 1));
         using var bad = new HttpClient(new FakeHandler((_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)))) { BaseAddress = client.BaseAddress };
         try { await Evaluation.SendAsync(bad, "api/chat", native, TimeSpan.FromSeconds(1), CancellationToken.None); throw new Exception("Expected HTTP failure"); }
         catch (EvaluationFailure ex) when (ex.Code == "inferenceError") { count++; Console.WriteLine("PASS HTTP error is execution failure"); }
@@ -218,6 +251,7 @@ internal static class OfflineChecks
     {
         ["approved"] = true, ["contextAndOutputLimitsReviewed"] = true, ["templateAndTokenizerReviewed"] = true,
         ["fingerprintSha256"] = fingerprint["sha256"]!.DeepClone(), ["route"] = "native", ["maxRequests"] = 6,
+        ["caseIds"] = new JsonArray(Evaluation.CaseIds.Select(id => (JsonNode?)JsonValue.Create(id)).ToArray()),
         ["runId"] = "offline-only", ["modelDigest"] = new string('a', 64), ["templateSha256"] = new string('b', 64),
         ["ollamaVersion"] = "offline-fake", ["humanApprovalReference"] = "offline fixture, never used for execution"
     };

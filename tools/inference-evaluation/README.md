@@ -20,6 +20,10 @@ approved two subsequent local fixes and offline checks: flatten the cancer-type
 schema definition and exclude results source snapshots from compilation, then
 approved their local commit after offline verification. That approval does not
 authorize another run or publication.
+The human subsequently approved local preparation of a D1-only mode and its
+offline checks, then approved its local commit after all 48 checks passed.
+That mode has not been used for inference; execution and publication still
+need separate approval.
 
 The approved initial candidate for this bounded trial is
 `qwen3:4b-instruct-2507-q4_K_M`. Partial CPU offload is allowed: measure it rather
@@ -60,6 +64,7 @@ From the repository root:
 dotnet run --project tools/inference-evaluation -- self-check
 dotnet run --project tools/inference-evaluation -- dry-run native
 dotnet run --project tools/inference-evaluation -- dry-run compatible
+dotnet run --project tools/inference-evaluation -- dry-run-d1
 ```
 
 The tool's offline commands make no HTTP requests. Self-check uses in-memory
@@ -68,6 +73,10 @@ build may perform SDK restore work; the project has no package references.
 Dry-run writes six complete request previews and `manifest.json` under
 `results/preparation/<fingerprint>/<route>/`, which Git ignores. Omitting a
 command defaults to native dry-run. There is no background process.
+`dry-run-d1` accepts no route or other arguments: it previews exactly D1 through
+the native API, under `results/preparation/<fingerprint>/native-d1/`. Its manifest
+records one request and at most 120 seconds of inference-request time. The usual
+`dry-run` continues to preview the six-case batch.
 
 ## Files to review
 
@@ -81,6 +90,7 @@ command defaults to native dry-run. There is no background process.
 | `response-schema.json` | Required narrative response shape |
 | `candidate.json` | Reviewed baseline model, settings, order, and limits |
 | `execution-approval.example.json` | Non-executable example; all approvals remain false |
+| `execution-approval-d1.example.json` | Non-executable D1-only approval example |
 
 The deterministic age/sex handling is deliberately limited to these six fixtures:
 all use age 52, minimum 21 Years, maximum 75 Years, and sex ALL. Those inputs are
@@ -165,14 +175,34 @@ review flags. That file is a record of permission, not a way to grant permission
 dotnet run --project tools/inference-evaluation -- run tools/inference-evaluation/execution-approval.json
 ```
 
+For a separately approved D1-only diagnostic, use the D1 approval example and
+record exactly `caseIds: ["D1"]` and `maxRequests: 1` in a fresh local approval
+file under ignored `results/`. The command is deliberately distinct:
+
+```powershell
+# DO NOT RUN without separate approval of this exact one-request diagnostic.
+dotnet run --project tools/inference-evaluation -- run-d1 tools/inference-evaluation/results/approvals/d1.json
+```
+
+`run-d1` selects only D1 from the same reviewed fixtures, sends one native request,
+and stops regardless of its outcome. It does not alter the model, prompt, schema,
+sampling, context/output limits, or D1 payload. It applies the same 120-second
+deadline, cancellation, evidence validation, snapshot/record retention, and
+human semantic review. The original `run` selects all six cases. Both commands
+require an exact matching approval list/count; neither approval can authorize
+the other mode. No arbitrary case selection, automatic follow-on batch, or retry
+is introduced. Both modes share the same candidate fingerprint but their execution
+approvals additionally bind the exact scope through case IDs and request count.
+
 The run validates permission and conservative fit before HTTP. It then claims
 the run ID exactly once, snapshots the hashed inputs, and checks local metadata
 without inference. It never downloads a model. Missing service, mismatched model
 or version, or unverified template/tokenizer stops before inference and consumes
 the run ID; it requires review rather than a silent restart. Loopback numeric
 HTTP addresses only; redirects/proxies are disabled. Live execution currently
-accepts only a separately approved candidate fingerprint and the native six-case
-scope. Another local model can be proposed by changing configuration; it still
+accepts only a separately approved candidate fingerprint and the exact native
+scope (six-case `run` or one-case `run-d1`). Another local model can be proposed by
+changing configuration; it still
 needs fresh approval and verified tokenizer/template prerequisites. Other
 tokenizers need a reviewed sizing implementation, not an assumed fit.
 
@@ -234,14 +264,17 @@ has been evaluated with inference.
 This preparation is AI-assisted. Offline tool checks are distinct from model
 evaluation, independent automated code review, and maintainer manual validation.
 
-Local validation after the approved schema/build fixes: 36 deterministic offline
-checks passed, including standalone schema regression and actual MSBuild result
-source exclusion, along with the original coverage:
+Current local validation: 48 deterministic offline checks passed. This includes
+the 36 checks after the schema/build fixes plus D1 selection, payload identity,
+scope/count approval guards, and single-request fake transport. Earlier coverage
+includes standalone schema regression and actual MSBuild result source exclusion,
+along with:
 fixture agreement with the approved design, exact evidence/type checks, malformed
 and duplicate JSON, API request/response adapters, expected-label comparison,
 oversized-input detection, execution approval guards, fake HTTP failures,
-deadline, and cancellation. Both revised six-request dry-run previews were
-generated. The installed native converter was also exercised offline: saved old
+deadline, and cancellation. Both revised six-request dry-run previews and the
+native D1-only preview were generated. The installed native converter was also
+exercised offline: saved old
 schema fails the duplicate-result assertion; revised schema passes. No inference
 was performed for these fixes; no application test rerun, independent automated
 code-review run, or maintainer manual validation is claimed. Previously reviewed

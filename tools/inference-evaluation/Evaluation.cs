@@ -137,14 +137,35 @@ internal static class Evaluation
     }
     internal static string Hash(byte[] bytes) => Convert.ToHexStringLower(SHA256.HashData(bytes));
 
-    internal static void ValidateApproval(JsonNode approval, JsonNode fingerprint)
+    internal static string[] ScopeCaseIds(string scope) => scope switch
     {
+        "batch" => CaseIds,
+        "d1" => ["D1"],
+        _ => throw new InvalidDataException("Scope must be batch or d1")
+    };
+
+    internal static JsonArray SelectCases(JsonArray fixtures, string scope)
+    {
+        var selected = new JsonArray();
+        foreach (var id in ScopeCaseIds(scope))
+        {
+            var fixture = fixtures.SingleOrDefault(f => Text(f!["id"]) == id)
+                ?? throw new InvalidDataException($"Missing fixture {id}");
+            selected.Add(fixture.DeepClone());
+        }
+        return selected;
+    }
+
+    internal static void ValidateApproval(JsonNode approval, JsonNode fingerprint, string scope = "batch")
+    {
+        var ids = ScopeCaseIds(scope);
         if (approval["approved"]?.GetValue<bool>() != true
             || approval["contextAndOutputLimitsReviewed"]?.GetValue<bool>() != true
             || approval["templateAndTokenizerReviewed"]?.GetValue<bool>() != true
             || Text(approval["fingerprintSha256"]) != Text(fingerprint["sha256"])
-            || Text(approval["route"]) != "native" || approval["maxRequests"]?.GetValue<int>() != 6)
-            throw new InvalidDataException("Missing/mismatched approval for this exact native six-case candidate");
+            || Text(approval["route"]) != "native" || approval["maxRequests"]?.GetValue<int>() != ids.Length
+            || approval["caseIds"] is not JsonArray approvedIds || !approvedIds.Select(Text).SequenceEqual(ids))
+            throw new InvalidDataException($"Missing/mismatched approval for this exact native {scope} scope");
         var runId = Text(approval["runId"]);
         if (!System.Text.RegularExpressions.Regex.IsMatch(runId, "^[a-z0-9][a-z0-9-]{0,63}$") || runId is "preparation")
             throw new InvalidDataException("Use a unique lowercase run ID; path separators are not allowed");

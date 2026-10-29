@@ -21,15 +21,18 @@ static async Task<int> MainAsync(string[] args)
             await OfflineChecks.RunAsync(root, config, fixtures, prompt, schema);
             return 0;
         }
-        if (command == "dry-run")
+        if (command is "dry-run" or "dry-run-d1")
         {
-            var route = args.ElementAtOrDefault(1) ?? "native";
+            var scope = command == "dry-run-d1" ? "d1" : "batch";
+            if (scope == "d1" && args.Length != 1) throw new InvalidDataException("dry-run-d1 accepts no additional arguments");
+            var route = scope == "d1" ? "native" : args.ElementAtOrDefault(1) ?? "native";
             if (route is not ("native" or "compatible")) throw new InvalidDataException("Route must be native or compatible");
+            var selected = Evaluation.SelectCases(fixtures, scope);
             var fingerprint = Evaluation.Fingerprint(root);
-            var directory = Path.Combine(root, "results", "preparation", Evaluation.Text(fingerprint["sha256"]), route);
+            var directory = Path.Combine(root, "results", "preparation", Evaluation.Text(fingerprint["sha256"]), scope == "d1" ? "native-d1" : route);
             Directory.CreateDirectory(directory);
             var requests = new JsonArray();
-            foreach (var fixture in fixtures)
+            foreach (var fixture in selected)
             {
                 var body = Evaluation.Request(fixture!, config, prompt, schema, route);
                 var id = Evaluation.Text(fixture!["id"]);
@@ -45,12 +48,14 @@ static async Task<int> MainAsync(string[] args)
             var manifest = new JsonObject
             {
                 ["status"] = "preparation only; zero HTTP requests; execution not approved",
-                ["fingerprint"] = fingerprint, ["route"] = route, ["requestCount"] = 6,
-                ["timeoutSecondsPerRequest"] = 120, ["maximumRequestSeconds"] = 720,
+                ["fingerprint"] = fingerprint, ["route"] = route, ["scope"] = scope,
+                ["caseIds"] = new JsonArray(Evaluation.ScopeCaseIds(scope).Select(id => (JsonNode?)JsonValue.Create(id)).ToArray()),
+                ["requestCount"] = selected.Count,
+                ["timeoutSecondsPerRequest"] = 120, ["maximumRequestSeconds"] = selected.Count * 120,
                 ["limitsStatus"] = config["limitsStatus"]!.DeepClone(),
                 ["routeLimitations"] = route == "compatible"
                     ? "Adapter preview only. Context/top-k/min-p need reviewed server-side configuration; native/compatible equivalence has not been established. Live compatible execution is not enabled in this checkpoint."
-                    : "Native-only six-case feasibility proposal; CPU offload permitted; semantic review required.",
+                    : $"Native-only {scope} proposal; CPU offload permitted; semantic review required.",
                 ["requests"] = requests
             };
             WriteJson(Path.Combine(directory, "manifest.json"), manifest);
@@ -58,12 +63,12 @@ static async Task<int> MainAsync(string[] args)
             Console.WriteLine($"Review files: {directory}");
             return 0;
         }
-        if (command == "run" && args.Length == 2)
+        if ((command is "run" or "run-d1") && args.Length == 2)
         {
-            await RunAsync(root, config, fixtures, prompt, schema, args[1]);
+            await RunAsync(root, config, fixtures, prompt, schema, args[1], command == "run-d1" ? "d1" : "batch");
             return 0;
         }
-        Console.Error.WriteLine("Commands: dry-run [native|compatible], self-check, run <separately-approved-local-file.json>");
+        Console.Error.WriteLine("Commands: dry-run [native|compatible], dry-run-d1, self-check, run|run-d1 <separately-approved-local-file.json>");
         return 1;
     }
     catch (Exception exception) when (exception is not OutOfMemoryException)
@@ -88,11 +93,12 @@ static string FindRoot()
 
 static void WriteJson(string path, JsonNode value) => File.WriteAllText(path, value.ToJsonString(Evaluation.Pretty) + "\n", new UTF8Encoding(false));
 
-static async Task RunAsync(string root, JsonNode config, JsonArray fixtures, string prompt, JsonNode schema, string approvalPath)
+static async Task RunAsync(string root, JsonNode config, JsonArray fixtures, string prompt, JsonNode schema, string approvalPath, string scope)
 {
     var approval = Evaluation.Read(approvalPath);
     var fingerprint = Evaluation.Fingerprint(root);
-    Evaluation.ValidateApproval(approval, fingerprint);
+    Evaluation.ValidateApproval(approval, fingerprint, scope);
+    fixtures = Evaluation.SelectCases(fixtures, scope);
     foreach (var fixture in fixtures)
         if (Evaluation.Sizing(Evaluation.Request(fixture!, config, prompt, schema, "native"), config)["withinConservativeBound"]!.GetValue<bool>() != true)
             throw new InvalidDataException("Input exceeds conservative context bound; review limits instead of truncating");
@@ -223,7 +229,11 @@ static async Task RunAsync(string root, JsonNode config, JsonArray fixtures, str
             if (mustStop) break;
         }
         WriteJson(Path.Combine(runDirectory, "checkpoint.json"), new JsonObject
-        { ["status"] = "stopped for human review; no retries or next batch", ["interrupted"] = stop.IsCancellationRequested, ["atUtc"] = DateTimeOffset.UtcNow.ToString("O") });
+        {
+            ["status"] = "stopped for human review; no retries or next batch", ["scope"] = scope,
+            ["caseIds"] = approval["caseIds"]!.DeepClone(), ["interrupted"] = stop.IsCancellationRequested,
+            ["atUtc"] = DateTimeOffset.UtcNow.ToString("O")
+        });
     }
     finally { Console.CancelKeyPress -= cancel; }
 }

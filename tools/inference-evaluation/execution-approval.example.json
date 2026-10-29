@@ -5,6 +5,7 @@
   "runId": "native-feasibility-1",
   "route": "native",
   "maxRequests": 6,
+  "caseIds": ["D1", "D3", "D5", "D6", "D9", "D13"],
   "contextAndOutputLimitsReviewed": false,
   "templateAndTokenizerReviewed": false,
   "modelDigest": "REPLACE_WITH_FULL_INSTALLED_MODEL_DIGEST",
