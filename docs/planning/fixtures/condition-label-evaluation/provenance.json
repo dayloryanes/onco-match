@@ -1,0 +1,70 @@
+﻿{
+    "status":  "seven-real-case allocation, exact fixture records, and expectations approved locally; publication and inference not authorized",
+    "endpoint":  "https://clinicaltrials.gov/api/v2/studies",
+    "parameters":  {
+                       "format":  "json",
+                       "query.cond":  "cancer",
+                       "filter.overallStatus":  "RECRUITING,NOT_YET_RECRUITING",
+                       "filter.advanced":  "AREA[StudyType](INTERVENTIONAL OR OBSERVATIONAL)",
+                       "sort":  "@relevance",
+                       "pageSize":  10
+                   },
+    "pagination":  "Each response nextPageToken used as the following pageToken; fixed parameters preserved",
+    "pagesRetrieved":  12,
+    "recordsRetrieved":  120,
+    "distinctStudyIds":  120,
+    "distinctConditionArrays":  54,
+    "selection":  "Deliberate coverage choices; not a representative sample or application import",
+    "snapshots":  [
+                      {
+                          "studyId":  "NCT07277777",
+                          "file":  "studies/NCT07277777.json",
+                          "sourcePage":  2,
+                          "retrievedUtc":  "2026-10-30T05:42:46.3209988Z",
+                          "sha256":  "e5930833cad499fba3395c13cdcd50e6140a3c0fa710650a21f6ea8b2cbdd972"
+                      },
+                      {
+                          "studyId":  "NCT04797039",
+                          "file":  "studies/NCT04797039.json",
+                          "sourcePage":  3,
+                          "retrievedUtc":  "2026-10-30T05:44:25.8045963Z",
+                          "sha256":  "0cd315ec2878304dcd3abfc4cd36fe744fb3761cfe7d9a64e22538fe5f794b23"
+                      },
+                      {
+                          "studyId":  "NCT06867445",
+                          "file":  "studies/NCT06867445.json",
+                          "sourcePage":  12,
+                          "retrievedUtc":  "2026-10-30T05:44:27.4981594Z",
+                          "sha256":  "28dd60db24ad1201c62ddc05b750acee9ce2ccec0f3737f0750d1fd9d56b9131"
+                      },
+                      {
+                          "studyId":  "NCT07301801",
+                          "file":  "studies/NCT07301801.json",
+                          "sourcePage":  4,
+                          "retrievedUtc":  "2026-10-30T05:44:26.0162862Z",
+                          "sha256":  "1ae3564a4a8323aaf3b87ac77aaf998c3e21a9fddeb5db9eada3dc8947953832"
+                      },
+                      {
+                          "studyId":  "NCT05855811",
+                          "file":  "studies/NCT05855811.json",
+                          "sourcePage":  7,
+                          "retrievedUtc":  "2026-10-30T05:44:26.6424879Z",
+                          "sha256":  "116712a6d4198248c858f17c3f268041be3508dc18d789afa31379a0cbd5ae65"
+                      },
+                      {
+                          "studyId":  "NCT06043193",
+                          "file":  "studies/NCT06043193.json",
+                          "sourcePage":  10,
+                          "retrievedUtc":  "2026-10-30T05:44:27.1281494Z",
+                          "sha256":  "0d6bdb98862a6c79f74c2a42eb6b750eda84d98f36116cd974f99bf5362b688a"
+                      },
+                      {
+                          "studyId":  "NCT06270602",
+                          "file":  "studies/NCT06270602.json",
+                          "sourcePage":  9,
+                          "retrievedUtc":  "2026-10-30T05:44:26.9767640Z",
+                          "sha256":  "0148ebf84ab6b4269efb2977af854c2491fec6ddfd06a9f946c6067eb8a7cfbc"
+                      }
+                  ],
+    "hashFormat":  "SHA-256 of UTF-8 snapshot bytes with CRLF normalized to LF, retaining any UTF-8 BOM; matches snapshot bytes stored in Git"
+}

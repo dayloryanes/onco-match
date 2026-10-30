@@ -1,0 +1,197 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT07301801",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "XLan-0603"
+                                                                            },
+                                                         "organization":  {
+                                                                              "fullName":  "Union Hospital, Tongji Medical College, Huazhong University of Science and Technology",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "Clinical Application of 68Ga-FL-031 PET in the Diagnosis and Staging of Malignant Tumors",
+                                                         "officialTitle":  "Clinical Application of 68Ga-FL-031 PET in the Diagnosis and Staging of Malignant Tumors"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2025-12",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2025-06-12",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2026-09-01",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2026-09-30",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2025-12-11",
+                                                 "studyFirstSubmitQcDate":  "2025-12-11",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2025-12-24",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2025-12-11",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2025-12-24",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "SPONSOR"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Union Hospital, Tongji Medical College, Huazhong University of Science and Technology",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "The project\u0027s objective is to recruit patients with clinically confirmed or suspected small cell lung cancer, breast cancer, nasopharyngeal carcinoma and other tumours for 68Ga-FL-031 PET imaging and 18F-FDG PET imaging. The histopathology of biopsy or surgical specimens was taken as the final diagnostic criteria, and the presence or absence of tumour lesions was confirmed by the aforementioned imaging. The location and nature of the lesion, and the presence or absence of metastasis, were then judged. The objective was to analyse and clarify the diagnostic efficacy of 68Ga-FL-031 PET imaging for the aforementioned malignant tumours. The objective of this study is to analyse the correlation between the 68Ga-FL-031 PET imaging tumour tissue uptake value and the tumour tissue immunohistochemical staining SSTR2 target expression."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Malignant Tumors",
+                                                                        "SSTR2",
+                                                                        "PET"
+                                                                    ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "INTERVENTIONAL",
+                                                 "phases":  [
+                                                                "EARLY_PHASE1"
+                                                            ],
+                                                 "designInfo":  {
+                                                                    "allocation":  "NA",
+                                                                    "interventionModel":  "SINGLE_GROUP",
+                                                                    "primaryPurpose":  "DIAGNOSTIC",
+                                                                    "maskingInfo":  {
+                                                                                        "masking":  "NONE"
+                                                                                    }
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  10,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "68Ga-FL-031 Group",
+                                                                                  "type":  "EXPERIMENTAL",
+                                                                                  "description":  "This is one diagnostic study. Firstly, oncologists screen patients with malignant tumors such as small cell lung cancer, breast cancer, head and neck cancer and so on, who are clinically suspected or confirmed.\n\nSecondly, investigators will talk to patients who meet the inclusion criteria, explain the study purpose and process; the patients are required to sign informed consent forms, and receive the 18F-FDG and 68Ga-FL-031PET scanning respectively in outpatient or inpatient periods.\n\nThirdly, general information, clinical data, blood routine, urine routine, liver and kidney function and other biochemical indicators, electrocardiogram, radionuclide imaging results and other imaging data of the patients participating in the study were collected and compared with histopathology to evaluate the value of both imaging in the diagnosis of the above mentioned malignant tumors.",
+                                                                                  "interventionNames":  [
+                                                                                                            "Drug: Injection of 68Ga-FL-031",
+                                                                                                            "Drug: Injection of 18F-FDG"
+                                                                                                        ]
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "DRUG",
+                                                                                      "name":  "Injection of 68Ga-FL-031",
+                                                                                      "description":  "Patients will be injected with 68Ga-FL-031and PET imaging was performed at different time points",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "68Ga-FL-031 Group"
+                                                                                                         ]
+                                                                                  },
+                                                                                  {
+                                                                                      "type":  "DRUG",
+                                                                                      "name":  "Injection of 18F-FDG",
+                                                                                      "description":  "Patients will be injected with 18F-FDG and PET imaging was performed",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "68Ga-FL-031 Group"
+                                                                                                         ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Visual and standardized uptake values assessment of lesions and biodistribution",
+                                                                               "description":  "At least two experienced nuclear medicine physicians will conduct a visual analysis using consensus reading. The standardized uptake value (SUV) of tumor and normal organs will be measured and the semiquantitative analysis is conducted for each patient.",
+                                                                               "timeFrame":  "1 year"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Pathological sections of tumour tissue",
+                                                                                 "description":  "The tumor tissue was taken for immunohistochemistry to verify its SSTR2 expression",
+                                                                                 "timeFrame":  "1 year"
+                                                                             }
+                                                                         ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n1. The subject or their legal representative is permitted to sign the informed consent form.\n2. The subject has committed themselves to adherence to the prescribed research procedures and to cooperation in the implementation of the entire study process.\n3. Adult patients (aged 18 years or older), irrespective of gender\n4. Patients with a clinical suspicion or confirmed diagnosis of small cell lung cancer, breast cancer, nasopharyngeal carcinoma, and other tumours (for which supporting evidence is provided in the form of serum-related tumour markers, ultrasound, CT, MRI and other image data, and histopathological examination)\n5. The patient is generally in good condition\n6. It is mutually agreed upon by all parties involved that the designated specimen shall be utilised for the purposes of this study.\n\nExclusion Criteria:\n\n1. The patient or his legal representative is unable or unwilling to sign the informed consent\n2. The patient is unable to cooperate with the implementation of the whole process research\n3. The patient has been diagnosed with acute systemic diseases and electrolyte disorders\n4. Pregnant women or lactating women, etc\n5. In the event of other circumstances being deemed by the investigator to be unsuitable for participation in the study, such patients must be excluded on the basis of their known intolerance to SSTR2 targeted substances.",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "ALL",
+                                                      "minimumAge":  "18 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ]
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Xiaoli Lan, Professor",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "86-027-83692633",
+                                                                                        "email":  "lxl730724@hotmail.com"
+                                                                                    }
+                                                                                ],
+                                                            "overallOfficials":  [
+                                                                                     {
+                                                                                         "name":  "Xiaoli Lan",
+                                                                                         "affiliation":  "Union Hospital, Tongji Medical College, Huazhong University of Science and Technology",
+                                                                                         "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                     }
+                                                                                 ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "Wuhan Union Hospital",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Wuhan",
+                                                                                  "state":  "Hubei",
+                                                                                  "zip":  "430022",
+                                                                                  "country":  "China",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Xiaoli Lan, Professor",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "86-027-83692633",
+                                                                                                       "email":  "lxl730724@hotmail.com"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  30.58333,
+                                                                                                   "lon":  114.26667
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D009369",
+                                                                            "term":  "Neoplasms"
+                                                                        }
+                                                                    ]
+                                                     }
+                       },
+    "hasResults":  false
+}

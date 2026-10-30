@@ -1,0 +1,324 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT06867445",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "ID 7338"
+                                                                            },
+                                                         "organization":  {
+                                                                              "fullName":  "Fondazione Policlinico Universitario Agostino Gemelli IRCCS",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "Minimally Invasive Pelvic Exenteration in Vaginal or Cervical Cancer Recurrence",
+                                                         "officialTitle":  "Minimally Invasive Pelvic Exenteration in Vaginal or Cervical Cancer Recurrence",
+                                                         "acronym":  "MIPEX"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2025-07",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2025-07-07",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2028-03-01",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2031-03-01",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2025-02-11",
+                                                 "studyFirstSubmitQcDate":  "2025-03-06",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2025-03-10",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2025-07-11",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2025-07-17",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "PRINCIPAL_INVESTIGATOR",
+                                                                                        "investigatorFullName":  "Bizzarri NicolÃ²",
+                                                                                        "investigatorTitle":  "Medical Doctor in the Gynecologic Oncology Department",
+                                                                                        "investigatorAffiliation":  "Fondazione Policlinico Universitario Agostino Gemelli IRCCS"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Fondazione Policlinico Universitario Agostino Gemelli IRCCS",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "The aim of this clinical trial is to assess the oncologic safety of minimally invasive pelvic exenteration in patients with recurrence or persistence of cervical or vaginal cancer with pelvic location, suitable for pelvic exenteration according to the ESGO guidelines (European Society of Gynecological Oncology). The primary aim is to assess the 3-year disease-free survival (DFS). The secondary aim is to assess the 3-year overall survival (OS), the intraoperative and post-operative complication rate, and the patient\u0027s quality of life.",
+                                                      "detailedDescription":  "Patients will be considered pre-operatively eligible in case of recurrence/persistence of cervical or vaginal cancer with pelvic location, suitable for pelvic exenteration according to the ESGO guidelines (European Society of Gynecological Oncology). Histological diagnosis of recurrent or persistent disease obtained with biopsy performed during examination under anesthesia or US-guided biopsy, or RECIST 1.1 (Response Evaluation Criteria in Solid Tumors) criteria of progressive disease are required, as by standard clinical practice. All patients will undergo MRI pelvic scan and PET/CT scan within one month before the surgery, as by standard clinical practice. After obtaining oral and written informed consent, patients will be registered. Pelvic exenteration will be performed with the aim of removing a single specimen with negative surgical margins.\n\nA mini-laparotomy of up to 7 cm will be allowed to complete the reconstructive phase of the procedure.\n\nRegistration data has to be entered to an electronic Case Report Form (eCRF). The Principal Investigator (PI) of the study will independently take responsibility for the development of an electronic Case Report Form (CRF) for data collection."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Cervical Cancers",
+                                                                        "Vaginal Cancers"
+                                                                    ],
+                                                     "keywords":  [
+                                                                      "cervical cancer",
+                                                                      "vaginal cancer",
+                                                                      "minimally invasive surgery",
+                                                                      "pelvic exenteration",
+                                                                      "gynecologic oncology"
+                                                                  ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "INTERVENTIONAL",
+                                                 "phases":  [
+                                                                "NA"
+                                                            ],
+                                                 "designInfo":  {
+                                                                    "allocation":  "NA",
+                                                                    "interventionModel":  "SINGLE_GROUP",
+                                                                    "primaryPurpose":  "TREATMENT",
+                                                                    "maskingInfo":  {
+                                                                                        "masking":  "NONE"
+                                                                                    }
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  64,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "Recruited patients",
+                                                                                  "type":  "EXPERIMENTAL",
+                                                                                  "description":  "Cervical cancer or vaginal cancer patients with recurrent/persistent disease assessed for elegibility",
+                                                                                  "interventionNames":  [
+                                                                                                            "Procedure: Minimally invasive pelvic exenteration"
+                                                                                                        ]
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "PROCEDURE",
+                                                                                      "name":  "Minimally invasive pelvic exenteration",
+                                                                                      "description":  "If all criteria are met, patients are registered. The patient is enrolled before the surgery, at the time of pelvic evaluation under anaesthesia. A diagnostic laparoscopic assessment can be performed before the operation to exclude peritoneal metastasis. The experimental procedure in this protocol involves the use of a minimally invasive approach (robot-assisted or laparoscopic) for performing pelvic exenteration.",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "Recruited patients"
+                                                                                                         ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Disease free survival (DFS)",
+                                                                               "description":  "The primary aim is to assess the 3-year disease free survival",
+                                                                               "timeFrame":  "From the enrollment for the following three years."
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Overall survival (OS)",
+                                                                                 "description":  "One of the secondary aim is to assess the overall survival.",
+                                                                                 "timeFrame":  "Survival time is calculated from the date of surgery until the date of death from any cause, or for patients still alive to the date of last clinical follow-up or contact, assessed up to 100 months."
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Intraoperative complication rate",
+                                                                                 "description":  "Intraoperative complications will be assessed with CTCAE 5.0 classification (Common Terminology Criteria for Adverse Events).",
+                                                                                 "timeFrame":  "During the procedure"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Post-operative complication rate",
+                                                                                 "description":  "Post-operative complications: will be assessed with Clavien-Dindo classification",
+                                                                                 "timeFrame":  "One month and six months after surgery"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Health Related Quality of Life (HRQoL) n.1",
+                                                                                 "description":  "Quality of life will be assessed by questionnaires completed by study participants preferably as electronical patient reported outcome measures or during the clinic visit.\n\nQuestionnaire n. 1 comprises the EORTC QLQ-30 (version 3.0, EORTC: European Organization for Research and Treatment of Cancer; QLQ: Quality-of-Life questionnaire).",
+                                                                                 "timeFrame":  "At baseline and one month, six months, one years and two years after surgery."
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Health Related Quality of Life (HRQoL) n. 2",
+                                                                                 "description":  "Quality of life will be assessed by questionnaires completed by study participants preferably as electronical patient reported outcome measures or during the clinic visit.\n\nQuestionnaire n. 2 comprises the EORTC QLQCX24 (European Organization for Research and Treatment of Cancer; QLQ: Quality-of-Life questionnaire)",
+                                                                                 "timeFrame":  "At baseline and one month, six months, one years and two years after surgery."
+                                                                             }
+                                                                         ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* Diagnosis of recurrent or persistent vaginal or cervical cancer\n* Proven histological diagnosis of squamous carcinoma, adenocarcinoma or adenosquamous carcinoma\n* Isolated central pelvic recurrence\n* MRI-measured maximum tumor diameter â¤ 50 mm\n* Age \\\u003e 18 years\n* Patients who have signed an approved informed consent form\n* Patients must be suitable for surgery\n* ECOG Performance Status of 0, 1 or 2 (Eastern Cooperative Oncology Group)\n\nExclusion Criteria:\n\n* Para-aortic lymph nodes with a short-axis diameter â¥ 15 mm on MRI scan and/or SUV max â¥ 2.5 on PET/CT scan\n* Involvement of lateral pelvic structures (on preoperative imaging or during examination under anaesthesia)\n* Sciatic nerve involvement (at pre-operative imaging or during examination under anaesthesia)\n* Distant metastasis at PET/CT scan\n* Any histological type other than squamous carcinoma, adenocarcinoma, or adenosquamous carcinoma\n* Contraindications to surgery\n* Serious concomitant systemic disorders incompatible with surgery or minimally invasive surgery (at the discretion of the investigator)\n* Women unable to tolerate prolonged lithotomy and steep Trendelenburg positions\n* Women with secondary invasive neoplasm in the last 5 years",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "FEMALE",
+                                                      "genderBased":  true,
+                                                      "genderDescription":  "Female patients with cervical or vaginal cancer",
+                                                      "minimumAge":  "18 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ]
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "NicolÃ² Bizzarri",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "0630156249",
+                                                                                        "email":  "nicolo.bizzarri@policlinicogemelli.it"
+                                                                                    }
+                                                                                ],
+                                                            "overallOfficials":  [
+                                                                                     {
+                                                                                         "name":  "Giovanni Scambia, MD, PhD",
+                                                                                         "affiliation":  "Fondazione Policlinico Universitario Agostino Gemelli IRCCS",
+                                                                                         "role":  "STUDY_DIRECTOR"
+                                                                                     }
+                                                                                 ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "Policlinico Agostino Gemelli IRCCS",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Rome",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "NicolÃ² Bizzarri",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "0630156249",
+                                                                                                       "email":  "nicolo.bizzarri@policlinicogemelli.it"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "NicolÃ² Bizzarri",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  41.89193,
+                                                                                                   "lon":  12.51133
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        },
+                            "referencesModule":  {
+                                                     "references":  [
+                                                                        {
+                                                                            "pmid":  "5910392",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Mantel N. Evaluation of survival data and two new rank order statistics arising in its consideration. Cancer Chemother Rep. 1966 Mar;50(3):163-70. No abstract available."
+                                                                        },
+                                                                        {
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Kaplan EL, Meier P. Nonparametric estimation from incomplete observation. J Am Stat Assoc 1958;53:457-481"
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "22406639",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Schmidt AM, Imesch P, Fink D, Egger H. Indications and long-term clinical outcomes in 282 patients with pelvic exenteration for advanced or recurrent cervical cancer. Gynecol Oncol. 2012 Jun;125(3):604-9. doi: 10.1016/j.ygyno.2012.03.001. Epub 2012 Mar 7."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "16977652",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Greimel ER, Kuljanic Vlasic K, Waldenstrom AC, Duric VM, Jensen PT, Singer S, Chie W, Nordin A, Bjelic Radisic V, Wydra D; European Organization for Research and Treatment of Cancer Quality-of-Life Group. The European Organization for Research and Treatment of Cancer (EORTC) Quality-of-Life questionnaire cervical cancer module: EORTC QLQ-CX24. Cancer. 2006 Oct 15;107(8):1812-22. doi: 10.1002/cncr.22217."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "8433390",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Aaronson NK, Ahmedzai S, Bergman B, Bullinger M, Cull A, Duez NJ, Filiberti A, Flechtner H, Fleishman SB, de Haes JC, et al. The European Organization for Research and Treatment of Cancer QLQ-C30: a quality-of-life instrument for use in international clinical trials in oncology. J Natl Cancer Inst. 1993 Mar 3;85(5):365-76. doi: 10.1093/jnci/85.5.365."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "15273542",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Dindo D, Demartines N, Clavien PA. Classification of surgical complications: a new proposal with evaluation in a cohort of 6336 patients and results of a survey. Ann Surg. 2004 Aug;240(2):205-13. doi: 10.1097/01.sla.0000133083.54934.ae."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "30611973",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Bizzarri N, Chiantera V, Ercoli A, Fagotti A, Tortorella L, Conte C, Cappuccio S, Di Donna MC, Gallotta V, Scambia G, Vizzielli G. Minimally Invasive Pelvic Exenteration for Gynecologic Malignancies: A Multi-Institutional Case Series and Review of the Literature. J Minim Invasive Gynecol. 2019 Nov-Dec;26(7):1316-1326. doi: 10.1016/j.jmig.2018.12.019. Epub 2019 Jan 4."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "25922209",
+                                                                            "type":  "BACKGROUND",
+                                                                            "citation":  "Sardain H, Lavoue V, Redpath M, Bertheuil N, Foucher F, Leveque J. Curative pelvic exenteration for recurrent cervical carcinoma in the era of concurrent chemotherapy and radiation therapy. A systematic review. Eur J Surg Oncol. 2015 Aug;41(8):975-85. doi: 10.1016/j.ejso.2015.03.235. Epub 2015 Apr 14."
+                                                                        }
+                                                                    ]
+                                                 }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D002583",
+                                                                            "term":  "Uterine Cervical Neoplasms"
+                                                                        },
+                                                                        {
+                                                                            "id":  "D014625",
+                                                                            "term":  "Vaginal Neoplasms"
+                                                                        }
+                                                                    ],
+                                                         "ancestors":  [
+                                                                           {
+                                                                               "id":  "D014594",
+                                                                               "term":  "Uterine Neoplasms"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D005833",
+                                                                               "term":  "Genital Neoplasms, Female"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D014565",
+                                                                               "term":  "Urogenital Neoplasms"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009371",
+                                                                               "term":  "Neoplasms by Site"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009369",
+                                                                               "term":  "Neoplasms"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D002577",
+                                                                               "term":  "Uterine Cervical Diseases"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D014591",
+                                                                               "term":  "Uterine Diseases"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D005831",
+                                                                               "term":  "Genital Diseases, Female"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D052776",
+                                                                               "term":  "Female Urogenital Diseases"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D005261",
+                                                                               "term":  "Female Urogenital Diseases and Pregnancy Complications"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D000091642",
+                                                                               "term":  "Urogenital Diseases"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D000091662",
+                                                                               "term":  "Genital Diseases"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D014623",
+                                                                               "term":  "Vaginal Diseases"
+                                                                           }
+                                                                       ]
+                                                     }
+                       },
+    "hasResults":  false
+}

@@ -9,7 +9,23 @@ A completed screening assessment of one patient against one study within the lim
 _Avoid_: Match score, eligibility determination
 
 **Criterion summary**:
-The requirements, supplied patient facts, conclusions, and explanations for one assessed criterion within a pair assessment. Requirements may include alternatives or combinations that must retain their meaning.
+The supplied patient facts, applicable requirements, findings, and explanations for one assessed aspect of a pair. A direct comparison is distinct from the conclusion about a complete condition label.
+
+**Condition label**:
+One complete text entry in a study's listed conditions. It can contain a disease name and explicit qualifiers; separate labels do not by themselves establish an eligibility AND/OR relationship.
+_Avoid_: Eligibility rule, diagnosis code
+
+**Qualifier**:
+Information in a condition label that narrows or describes its disease scope, such as stage, disease state, a biomarker, or treatment history.
+
+**Unassessed qualifier**:
+An explicit modifier within a condition label that is outside the supported assessment scope. An unsupported standalone label retains its own assessment and explanation rather than being treated as a modifier of another label.
+
+**Condition-label assessment**:
+The interpretation of one complete condition label against supplied cancer-type, stage, and disease-state facts, preserving its explicit relationships and unassessed information.
+
+**Pair summary**:
+The summary of structured age/sex findings and complete condition-label results for one patient and one study. It is not a determination of full-study clinical eligibility.
 
 **Cancer-type alignment**:
 Supported correspondence between the patient's supplied cancer type and the study's disease scope. Search relevance alone does not establish this correspondence.
@@ -37,9 +53,46 @@ An evaluation fixture reserved for judging a frozen candidate; using it to guide
 **Candidate configuration**:
 The recorded model, prompt, inference settings, and software versions evaluated together.
 
-## Criterion results
+## Condition-label findings
 
-These describe individual criteria, separately from the overall pair-assessment outcomes.
+**Alignment supported**:
+The supplied facts support correspondence within the assessed scope. For a complete label, its explicit supported qualifiers and relationships are considered; unassessed information remains separate.
+
+**Conflict identified**:
+A supported comparison identifies a conflict with supplied facts. A direct comparison conflict is not necessarily a complete-label conflict when it is an alternative to another satisfied condition.
+
+**Undetermined**:
+Missing facts or ambiguous meaning prevent a supported conclusion at the level being described.
+
+**Not specified in condition labels**:
+No explicit in-scope stage value/classification or supported disease-state qualifier is stated in the examined label. Other extent wording can remain visibly unassessed; this says nothing about restrictions elsewhere in the study.
+_Avoid_: No restriction identified
+
+**Not assessed**:
+Information for which no assessment was performed, with the reason retained. This is distinct from an undetermined comparison and does not establish that the underlying requirement is satisfied.
+
+## Pair summaries
+
+**Excluded by age/sex**:
+At least one reliable structured age/sex comparison excludes the patient; condition-label assessment is skipped.
+
+**Condition-label alignment supported**:
+All assessed complete labels support alignment within scope. Structured uncertainty and unassessed qualifiers remain visible separately.
+
+**Mixed condition-label findings**:
+At least one complete label supports alignment and at least one other label conflicts or is undetermined.
+
+**Condition-label conflicts identified**:
+Every supplied complete label has a reliable conflict within the assessed scope. This does not establish full-study ineligibility.
+
+**Condition-label alignment undetermined**:
+No complete label supports alignment and at least one is undetermined, or no condition text is supplied without a reliable age/sex exclusion.
+
+## Structured checks and historical narrative vocabulary
+
+Satisfied, Excluded, and No restriction identified remain structured-check terms.
+Earlier narrative design records also use them for narrative criteria; that use
+does not define the revised condition-label findings.
 
 **Satisfied**:
 The applicable requirement is understood and supplied patient facts support it.
@@ -47,11 +100,5 @@ The applicable requirement is understood and supplied patient facts support it.
 **Excluded**:
 Reliable evidence establishes that the patient fails an applicable requirement.
 
-**Undetermined**:
-Missing information or ambiguity prevents a criterion-level conclusion.
-
 **No restriction identified**:
-No applicable restriction was identified in the supplied study content examined for a criterion. This is distinct from missing or unusable relevant content and from an unclear requirement.
-
-**Not assessed**:
-A criterion for which no assessment was performed, with the reason retained. This describes assessment status, not a criterion result or evidence of uncertainty in the underlying facts.
+An applicable structured value explicitly establishes unrestricted eligibility, such as study sex ALL. In historical narrative records it also described an absence claim; the revised label assessment uses Not specified in condition labels instead.

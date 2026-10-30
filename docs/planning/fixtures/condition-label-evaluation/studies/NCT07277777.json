@@ -1,0 +1,352 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT07277777",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "960HP20251119"
+                                                                            },
+                                                         "organization":  {
+                                                                              "fullName":  "Jinan Military General Hospital",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "125I Seed Brachytherapy Combined With Immunotherapy for Primary, Recurrent, or Metastatic Malignant Tumors",
+                                                         "officialTitle":  "A Prospective, Randomized, Open-Label, Parallel-Group Clinical Trial Evaluating the Efficacy and Safety of 125I Seed Interstitial Brachytherapy Combined With Immune Checkpoint Inhibitor Therapy in Patients With Primary, Recurrent, or Metastatic Malignant Tumors Compared With Immune Checkpoint Inhibitor Therapy Alone"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2026-01",
+                                                 "overallStatus":  "NOT_YET_RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2026-01",
+                                                                         "type":  "ESTIMATED"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2027-01-01",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2028-01-01",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2025-11-30",
+                                                 "studyFirstSubmitQcDate":  "2025-11-30",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2025-12-11",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2026-01-02",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2026-01-06",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "SPONSOR_INVESTIGATOR",
+                                                                                        "investigatorFullName":  "Li Min",
+                                                                                        "investigatorTitle":  "Vice Director",
+                                                                                        "investigatorAffiliation":  "Jinan Military General Hospital"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Li Min",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "oversightHasDmc":  true,
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "This prospective randomized trial evaluates the efficacy and safety of combining 125I seed interstitial brachytherapy with immune checkpoint inhibitor therapy in patients with primary, recurrent, or metastatic malignant tumors. Immunotherapy has become an important systemic treatment option, yet many patients experience limited benefit due to low tumor immunogenicity, insufficient T-cell infiltration, and an immunosuppressive tumor microenvironment.\n\n125I seed brachytherapy provides continuous low-dose-rate radiation to the tumor, promoting antigen release, enhancing dendritic cell activation, and potentially converting immunologically \"cold\" tumors into more responsive \"hot\" lesions. Integrating localized radiation with systemic immunotherapy may improve tumor response, prolong progression-free survival, and reduce recurrence.\n\nPatients will be randomized 1:1 to receive 125I seed implantation plus immunotherapy or immunotherapy alone. The primary endpoints are objective response rate (ORR) and progression-free survival (PFS). Secondary endpoints include failure-free survival (FFS), overall survival (OS), disease control rate (DCR), duration of response (DoR), local control, recurrence rate, adverse events, and quality of life. Exploratory analyses will assess radiomics features, subgroup responses, and different patterns of recurrence. This study aims to determine whether adding 125I seed brachytherapy enhances the clinical benefits of immunotherapy across diverse malignant tumors.",
+                                                      "detailedDescription":  "Patients with malignant tumors-including primary, recurrent, and metastatic disease-often exhibit heterogeneous responses to immune checkpoint inhibitors (ICIs). Limited tumor antigen exposure, poor immune infiltration, and an immunosuppressive tumor microenvironment frequently restrict the efficacy of immunotherapy. Strategies capable of enhancing local tumor immunogenicity and promoting systemic immune activation may improve clinical outcomes.\n\n125I seed interstitial brachytherapy delivers continuous low-dose-rate radiation precisely to the tumor, offering both durable local control and immunomodulatory effects. Low-dose-rate irradiation can induce immunogenic tumor cell death, increase tumor antigen presentation, enhance dendritic cell activation, and promote T-cell recruitment. This process may convert immunologically inactive (\"cold\") tumors into immunologically active (\"hot\") lesions, thereby synergizing with ICIs to enhance anti-tumor immunity. Combining these modalities may improve objective response, delay treatment failure, reduce recurrence, and prolong survival.\n\nThis prospective, randomized, open-label, parallel-group trial will compare 125I seed brachytherapy plus immunotherapy with immunotherapy alone. Eligible patients will be randomized 1:1. The combination arm will receive CT-guided seed implantation followed by ICI therapy; the control arm will receive ICI monotherapy. All patients will undergo standardized imaging and clinical evaluations at pre-defined intervals.\n\nThe primary endpoints are objective response rate (ORR) and progression-free survival (PFS). Secondary endpoints include failure-free survival (FFS), overall survival, disease control rate, duration of response, local control rate, tumor recurrence rate, treatment-related and immune-related adverse events, and patient-reported quality of life. Exploratory analyses will investigate radiomics features associated with response, patterns of recurrence (local, regional, or distant), and subgroup differences across tumor types, disease stages, biomarker profiles, and treatment characteristics. These analyses may help identify imaging or clinical predictors of benefit, refine patient selection, and support biomarker-driven optimization of 125I seed brachytherapy combined with immunotherapy."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Malignant Tumors"
+                                                                    ],
+                                                     "keywords":  [
+                                                                      "lodine-125 Seed Brachytherapy",
+                                                                      "Immune Checkpoint Inhibitors",
+                                                                      "Local-Systemic Synergy",
+                                                                      "Recurrent or Refractory Tumors"
+                                                                  ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "INTERVENTIONAL",
+                                                 "phases":  [
+                                                                "PHASE2"
+                                                            ],
+                                                 "designInfo":  {
+                                                                    "allocation":  "RANDOMIZED",
+                                                                    "interventionModel":  "PARALLEL",
+                                                                    "interventionModelDescription":  "This is a two-arm, parallel-group, phase II trial in which eligible patients with recurrent or refractory, unresectable malignant tumors are randomized in a 1:1 ratio to receive either 125I seed interstitial brachytherapy combined with immune checkpoint inhibitor therapy or immune checkpoint inhibitor therapy alone. Treatment allocation remains fixed throughout the study; no crossover between arms is planned. Patients will be treated and followed according to the assigned arm until disease progression, unacceptable toxicity, withdrawal of consent, or study completion.",
+                                                                    "primaryPurpose":  "TREATMENT",
+                                                                    "maskingInfo":  {
+                                                                                        "masking":  "NONE",
+                                                                                        "maskingDescription":  "Due to the procedural nature of 125I seed implantation, blinding of participants and treating clinicians is not feasible. However, imaging evaluators-including independent radiologists and nuclear medicine physicians responsible for tumor response assessment and imaging-based efficacy evaluations-will remain blinded to treatment allocation."
+                                                                                    }
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  90,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "125I Seed Brachytherapy + Immunotherapy",
+                                                                                  "type":  "EXPERIMENTAL",
+                                                                                  "description":  "Participants in this arm will receive CT-guided 125I seed interstitial brachytherapy, followed by systemic immune checkpoint inhibitor (ICI) therapy administered according to the approved dosing schedule for the selected agent. Seed implantation will be planned and delivered using standardized TPS-based dosimetric protocols, and immunotherapy will continue until progression, unacceptable toxicity, or study completion.",
+                                                                                  "interventionNames":  [
+                                                                                                            "Drug: Immune Checkpoint Inhibitors",
+                                                                                                            "Other: 125I Seed Implantation"
+                                                                                                        ]
+                                                                              },
+                                                                              {
+                                                                                  "label":  "Immunotherapy Alone",
+                                                                                  "type":  "ACTIVE_COMPARATOR",
+                                                                                  "description":  "Participants in this arm will receive systemic immune checkpoint inhibitor (ICI) therapy alone, following the same agent, schedule, and supportive care standards used in the experimental arm. No local radiotherapy or seed implantation will be performed. Treatment will continue until disease progression, unacceptable toxicity, or study completion.",
+                                                                                  "interventionNames":  [
+                                                                                                            "Drug: Immune Checkpoint Inhibitors"
+                                                                                                        ]
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "DRUG",
+                                                                                      "name":  "Immune Checkpoint Inhibitors",
+                                                                                      "description":  "Examples include PD-1/PD-L1 inhibitors (e.g., pembrolizumab, nivolumab, camrelizumab, sintilimab) Administered per standard dosing schedule (e.g., every 2-3 weeks)",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "125I Seed Brachytherapy + Immunotherapy"
+                                                                                                         ]
+                                                                                  },
+                                                                                  {
+                                                                                      "type":  "OTHER",
+                                                                                      "name":  "125I Seed Implantation",
+                                                                                      "description":  "PET/CT-guided implantation or CT-guided implantation Dose planning: D90 typically 90-140 Gy (adjusted per tumor type and size) Post-implant dosimetry: D90, V100, V150 recorded",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "125I Seed Brachytherapy + Immunotherapy"
+                                                                                                         ]
+                                                                                  },
+                                                                                  {
+                                                                                      "type":  "DRUG",
+                                                                                      "name":  "Immune Checkpoint Inhibitors",
+                                                                                      "description":  "Same agent class and dosing schedule as the experimental arm Administered until disease progression, unacceptable toxicity, or study completion",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "Immunotherapy Alone"
+                                                                                                         ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Objective Response Rate (ORR)",
+                                                                               "description":  "Proportion of patients achieving complete response (CR) or partial response (PR) as defined by RECIST 1.1 or iRECIST, assessed via CT/MRI/PET-CT.",
+                                                                               "timeFrame":  "Every 6-12 weeks, up to 24 months"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Progression-Free Survival (PFS)",
+                                                                               "description":  "Time from randomization to radiographic disease progression or death from any cause.",
+                                                                               "timeFrame":  "Up to 24 months"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Failure-Free Survival (FFS)",
+                                                                                 "description":  "Time from randomization to the first occurrence of treatment failure, including disease progression, local recurrence, distant metastasis, discontinuation due to adverse events, or death.",
+                                                                                 "timeFrame":  "Up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Overall Survival (OS)",
+                                                                                 "description":  "Time from randomization to death from any cause.",
+                                                                                 "timeFrame":  "Up to 36 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Disease Control Rate (DCR)",
+                                                                                 "description":  "Percentage of patients achieving CR, PR, or stable disease (SD), according to RECIST 1.1/iRECIST.",
+                                                                                 "timeFrame":  "Every 6-12 weeks, up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Duration of Response (DoR)",
+                                                                                 "description":  "Time from first documentation of CR/PR until radiographic progression or death.",
+                                                                                 "timeFrame":  "Up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Local Control Rate (LCR)",
+                                                                                 "description":  "Proportion of treated lesions without local progression, based on imaging (CT/MRI/PET-CT) and dosimetric correlation of the implanted region.",
+                                                                                 "timeFrame":  "Up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Tumor Recurrence Rate",
+                                                                                 "description":  "Rate of local or regional tumor recurrence, defined by new lesions or regrowth within the same anatomical region as confirmed by imaging.",
+                                                                                 "timeFrame":  "Up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Treatment-Related Adverse Events (TRAEs)",
+                                                                                 "description":  "Incidence, severity, and type of adverse events associated with treatment, graded according to CTCAE v5.0.",
+                                                                                 "timeFrame":  "From baseline until 90 days after last treatment"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Immune-Related Adverse Events (irAEs)",
+                                                                                 "description":  "Incidence and grade of immunotherapy-related toxicities such as pneumonitis, colitis, dermatitis, endocrinopathies.",
+                                                                                 "timeFrame":  "Up to 24 months"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Quality of Life (QoL)",
+                                                                                 "description":  "Assessed using validated patient-reported instruments (e.g., EORTC QLQ-C30).",
+                                                                                 "timeFrame":  "Baseline, Week 12, Week 24, and every 6 months up to 24 months"
+                                                                             }
+                                                                         ],
+                                                   "otherOutcomes":  [
+                                                                         {
+                                                                             "measure":  "Radiomics Features and Predictive Modeling",
+                                                                             "description":  "Extraction of radiomic features from PET/CT or CT images to explore associations with ORR, PFS, recurrence pattern, and treatment response.",
+                                                                             "timeFrame":  "Up to 24 months"
+                                                                         },
+                                                                         {
+                                                                             "measure":  "Subgroup Analyses",
+                                                                             "description":  "Assessment of treatment effect by clinical subgroups (primary vs recurrent vs metastatic disease, tumor type, PD-L1 expression, inflammatory markers).",
+                                                                             "timeFrame":  "Up to 24 months"
+                                                                         },
+                                                                         {
+                                                                             "measure":  "Patterns of Failure / Recurrence Patterns",
+                                                                             "description":  "Classification of failure patterns (local, regional, distant) and correlation with dosimetry (D90, V100) and imaging biomarkers.",
+                                                                             "timeFrame":  "Up to 24 months"
+                                                                         }
+                                                                     ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* Age 18 to 80 years.\n* Histologically or clinically confirmed primary, recurrent, or metastatic malignant tumor.\n* At least one measurable lesion according to RECIST 1.1 or iRECIST.\n* Tumor site suitable for 125I seed implantation under CT or PET/CT guidance.\n* Planned to receive or eligible to receive an immune checkpoint inhibitor (ICI).\n* ECOG performance status 0-2.\n* Adequate organ function:\n\nANC â¥ 1.5 Ã 10â¹/L Platelets â¥ 80 Ã 10â¹/L Hemoglobin â¥ 90 g/L AST/ALT â¤ 3 Ã ULN (â¤ 5 Ã ULN for liver metastasis) Creatinine clearance â¥ 50 mL/min\n\n* Life expectancy â¥ 3 months.\n* Ability to understand and sign informed consent.\n\nExclusion Criteria:\n\n* Prior I-125 seed implantation at the planned treatment site.\n* Active uncontrolled infection or systemic inflammatory disease.\n* Known history of autoimmune disease requiring systemic immunosuppression.\n* Prior treatment with immune checkpoint inhibitors within the last 4 weeks.\n* Uncontrolled coagulopathy or contraindication to interventional seed implantation:\n\nINR \\\u003e 1.5 Platelets \\\u003c 50 Ã 10â¹/L\n\n* Tumor location that poses unacceptable procedural risk, including inability to obtain a safe puncture path.\n* Severe cardiopulmonary dysfunction (e.g., heart failure, unstable arrhythmia, severe COPD).\n* Pregnancy or breastfeeding.\n* Known allergy or contraindication to radiopharmaceuticals, contrast agents, or anesthesia agents used during implantation.\n* Any condition that, in the investigator\u0027s judgment, makes the participant unsuitable for the study (e.g., poor compliance, severe psychiatric disorder).",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "ALL",
+                                                      "minimumAge":  "18 Years",
+                                                      "maximumAge":  "80 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ]
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Min Li, Dr.",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "0531-51665482",
+                                                                                        "email":  "liminyingxiang.@163.com"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "Min Li, Dr.",
+                                                                                        "role":  "CONTACT",
+                                                                                        "email":  "924787237@qq.com"
+                                                                                    }
+                                                                                ],
+                                                            "overallOfficials":  [
+                                                                                     {
+                                                                                         "name":  "Min Li, Dr.",
+                                                                                         "role":  "STUDY_DIRECTOR"
+                                                                                     }
+                                                                                 ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "The 960th Hospital of People\u0027s Liberation Army (PLA)",
+                                                                                  "city":  "Jinan",
+                                                                                  "state":  "Shandong",
+                                                                                  "zip":  "250031",
+                                                                                  "country":  "China",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Min Li, Dr.",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "0531-51665482",
+                                                                                                       "email":  "924787237@qq.com"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  36.66833,
+                                                                                                   "lon":  116.99722
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        },
+                            "ipdSharingStatementModule":  {
+                                                              "ipdSharing":  "YES",
+                                                              "description":  "De-identified individual participant data (IPD) will be made available to qualified researchers upon reasonable request after completion of the study and publication of the primary results. Data to be shared may include demographic information, treatment assignment, key efficacy outcomes, adverse events, and imaging-derived parameters. A data-sharing agreement will be required to ensure appropriate use of the dataset.",
+                                                              "infoTypes":  [
+                                                                                "STUDY_PROTOCOL",
+                                                                                "ICF"
+                                                                            ],
+                                                              "timeFrame":  "Individual participant data (IPD) will be available beginning 6 months after publication of the primary study results and will remain available for 5 years following publication, or until the main study database is closed, whichever occurs first.",
+                                                              "accessCriteria":  "Qualified researchers affiliated with academic institutions or recognized research organizations may request access to de-identified individual participant data (IPD), including imaging-derived parameters, dosimetric results, and clinical outcome data.\n\nRequests must include a brief research proposal describing the scientific rationale, objectives, and planned analyses. Approval will be granted by the study\u0027s principal investigator and institutional ethics committee. Data will be shared through secure institutional data transfer systems after execution of a formal data sharing agreement that ensures patient confidentiality and compliance with applicable privacy regulations."
+                                                          }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D009369",
+                                                                            "term":  "Neoplasms"
+                                                                        },
+                                                                        {
+                                                                            "id":  "D012008",
+                                                                            "term":  "Recurrence"
+                                                                        }
+                                                                    ],
+                                                         "ancestors":  [
+                                                                           {
+                                                                               "id":  "D020969",
+                                                                               "term":  "Disease Attributes"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D010335",
+                                                                               "term":  "Pathologic Processes"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D013568",
+                                                                               "term":  "Pathological Conditions, Signs and Symptoms"
+                                                                           }
+                                                                       ]
+                                                     },
+                           "interventionBrowseModule":  {
+                                                            "meshes":  [
+                                                                           {
+                                                                               "id":  "D000082082",
+                                                                               "term":  "Immune Checkpoint Inhibitors"
+                                                                           }
+                                                                       ],
+                                                            "ancestors":  [
+                                                                              {
+                                                                                  "id":  "D045504",
+                                                                                  "term":  "Molecular Mechanisms of Pharmacological Action"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D020228",
+                                                                                  "term":  "Pharmacologic Actions"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D020164",
+                                                                                  "term":  "Chemical Actions and Uses"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D000074322",
+                                                                                  "term":  "Antineoplastic Agents, Immunological"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D000970",
+                                                                                  "term":  "Antineoplastic Agents"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D045506",
+                                                                                  "term":  "Therapeutic Uses"
+                                                                              }
+                                                                          ]
+                                                        }
+                       },
+    "hasResults":  false
+}

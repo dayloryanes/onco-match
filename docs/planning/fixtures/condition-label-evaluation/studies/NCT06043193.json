@@ -1,0 +1,284 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT06043193",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "69HCL23_0367"
+                                                                            },
+                                                         "secondaryIdInfos":  [
+                                                                                  {
+                                                                                      "id":  "2023-A01344-41",
+                                                                                      "type":  "OTHER",
+                                                                                      "domain":  "ID-RCB"
+                                                                                  }
+                                                                              ],
+                                                         "organization":  {
+                                                                              "fullName":  "Hospices Civils de Lyon",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "Evaluation of the Quality of Life and Tolerance of Patients Treated With Vectorized Internal Radiotherapy (RIV) for a Neuro Endocrine Tumor (NET) in the Auvergne-RhÃ´ne-Alpes Region.",
+                                                         "officialTitle":  "Evaluation of the Quality of Life and Tolerance of Patients Treated With Vectorized Internal Radiotherapy (RIV) for a Neuro Endocrine Tumor (NET) in the Auvergne-RhÃ´ne-Alpes Region.",
+                                                         "acronym":  "AURA-RIV-TNE"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2025-06",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2024-02-20",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2025-03-20",
+                                                                                     "type":  "ACTUAL"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2026-09-20",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2023-08-10",
+                                                 "studyFirstSubmitQcDate":  "2023-09-12",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2023-09-21",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2025-06-10",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2025-06-11",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "SPONSOR"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Hospices Civils de Lyon",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "oversightHasDmc":  false,
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "The study consists of having participants complete quality of life questionnaires (PROMs) at the time of the cures +/- one week and in the middle of the intercure time +/- one week.\n\nAs all the collection times do not correspond to a consultation or a visit to a medical service, The investigator wanted to develop a remote, computerized data collection solution.\n\nResearchers have programmed an AURA-RIV-TNE care pathway (MOCAs: Engine for the organization and coordination of health acts) on the myHCL patient environment, taking up the course of the study presented in the form of a table in paragraph 6.2. Once the patient consents to participate in the study, he must create an account on the patient interface of his investigation center (myHCL, myCHUGA etc) as much as possible to facilitate data extraction.\n\nOnce the patient consents to participate in the study, the MOCAs AURA-RIV-TNE course will be associated with him in the Easily software, by defining the date week 0 (baseline) of the first treatment. This will allow automated sending of MAIL and SMS reminders at each questionnaire time. The MAILs will contain an internet link allowing the participant to be directly written to the questionnaires to be completed. A reminder system will be possible if the patient does not complete the questionnaire.",
+                                                      "detailedDescription":  "The study consists of having participants complete quality of life questionnaires (PROMs) at the time of the cures +/- one week and in the middle of the intercure time +/- one week.\n\nAs all the collection times do not correspond to a consultation or a visit to a medical service, the investigator wanted to develop a remote, computerized data collection solution.\n\nThe investigator programmed an AURA-RIV-TNE care pathway (MOCAs: Engine for the organization and coordination of health acts) on the myHCL patient environment, taking up the course of the study presented in the form of a table in paragraph 6.2. Once the patient consents to participate in the study, he must create an account on the patient interface of his investigation center (myHCL, myCHUGA etc) as much as possible to facilitate data extraction.\n\nOnce the patient consents to participate in the study, the MOCAs AURA-RIV-TNE course will be associated with him in the Easily software, by defining the date week 0 (baseline) of the first treatment. This will allow automated sending of MAIL and SMS reminders at each questionnaire time. The MAILs will contain an internet link allowing the participant to be directly written to the questionnaires to be completed. A reminder system will be possible if the patient does not complete the questionnaire."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Metastatic Neuroendocrine Tumour"
+                                                                    ],
+                                                     "keywords":  [
+                                                                      "IRV, Neuroendocrin, Quality of life"
+                                                                  ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "OBSERVATIONAL",
+                                                 "patientRegistry":  false,
+                                                 "designInfo":  {
+                                                                    "observationalModel":  "COHORT",
+                                                                    "timePerspective":  "PROSPECTIVE"
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  100,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "Major subjects, suffering from metastatic neuroendocrine tumours",
+                                                                                  "description":  "Major subjects, suffering from metastatic neuroendocrine tumours, for whom the indication for treatment by vectorized internal radiotherapy is decided in a multidisciplinary consultation meeting (National Reference Network for the management of Neuro-Endocrine Tumors) and who will be treated in one of the 5 centers in the AURA region"
+                                                                              }
+                                                                          ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "The main quality of life criterion would be changed by the score of the EORTC-QLQC30 scale",
+                                                                               "description":  "The main quality of life criterion would be changed by the score of the EORTC-QLQC30 scale. 10% missing data tolerable",
+                                                                               "timeFrame":  "Collection time: Week 0 (baseline) and 1 year"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Analysis of quality of life at baseline (week 0)",
+                                                                                 "description":  "Analysis of quality of life at baseline (Week 0) according to patient demographic profile and the characteristics of the tumour.",
+                                                                                 "timeFrame":  "Collection time: Week 0 (baseline)"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Analysis of the primary endpoint according to the Health Related Quality of Life (HRQoL) between inclusion, during the treatment and at 12 months.",
+                                                                                 "description":  ".Analysis of the primary endpoint according to the Health Related Quality of Life (HRQoL) between inclusion (before the first cycle-IVR1), during IVR (IVR2 to IVRn), at 6 and 12 months after IVR1, will be assessed by 4 questionnaires (EORTC QLQ-C30 + EORTC QLQ-GI.NET21 + EQ-5D + HADS) forming a composite criterion.and response to treatment.",
+                                                                                 "timeFrame":  "Time of collection: Week 0 (baseline), 6 months and 1 year"
+                                                                             }
+                                                                         ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* Age \\\u003e18 years;\n* Patient starting treatment with RIV validated in the RENATEN RCP;\n* Patient having received written information about the study;\n* Collection of the patient\u0027s non-objection\n* Patients for whom treatment with RIV is administered within the framework of a clinical trial, may be included in the AURARIV-TNE study according to the written indications written in the 2 nd protocol of the sponsor of the clinical trial;\n* Patients undergoing re-treatment with RIV can be included;\n\nExclusion Criteria:\n\n* Persons deprived of their liberty by a judicial or administrative decision;\n* Adults subject to a legal protection measure (guardianship, curatorship);",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "ALL",
+                                                      "minimumAge":  "18 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ],
+                                                      "studyPopulation":  "Major subjects, suffering from metastatic neuroendocrine tumours, for whom the indication for treatment by vectorized internal radiotherapy is decided in a multidisciplinary consultation meeting (National Reference Network for the management of Neuro-Endocrine Tumors) and who will be treated in one of the 5 centers in the AURA region",
+                                                      "samplingMethod":  "PROBABILITY_SAMPLE"
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Nicolas JACQUET-FRANCILLON, MD",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "4 72 35 69 99",
+                                                                                        "phoneExt":  "+33",
+                                                                                        "email":  "nicolas.jacquet-francillon@chu-lyon.fr"
+                                                                                    },
+                                                                                    {
+                                                                                        "name":  "Adeline MANSUY",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "4 72 11 51 70",
+                                                                                        "phoneExt":  "+33",
+                                                                                        "email":  "adeline.mansuy@chu-lyon.fr"
+                                                                                    }
+                                                                                ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "CHU de Saint-Etienne, HÃ´pital Nord",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Saint-Priest-en-Jarez",
+                                                                                  "state":  "Saint-Etienne",
+                                                                                  "zip":  "42270",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Vincent HABOUZIT, MD",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "04 77 82 80 00",
+                                                                                                       "phoneExt":  "+33",
+                                                                                                       "email":  "vincent.habouzit@chu-st-etienne.fr"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "Vincent HABOUZIT, MD",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.4739,
+                                                                                                   "lon":  4.37678
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "CH MÃ©tropole Savoie",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "ChambÃ©ry",
+                                                                                  "zip":  "73000",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Jean Cyril BOURRE, MD",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "04 79 96 50 70",
+                                                                                                       "email":  "jean-cyril.bourre@ch-metropole-savoie.fr"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "Jean Cyril BOURRE, MD",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.56628,
+                                                                                                   "lon":  5.92079
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Centre de Lutte Contre le Cancer Jean Perrin",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Clermont-Ferrand",
+                                                                                  "zip":  "63011",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Antony KELLY, MD",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "04 73 27 80 80",
+                                                                                                       "phoneExt":  "+33",
+                                                                                                       "email":  "antony.kelly@clermont.unicancer.fr"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "Antony KELLY, MD",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.77969,
+                                                                                                   "lon":  3.08682
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Hospices Civils de Lyon, Hopital Lyon Sud",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Lyon",
+                                                                                  "zip":  "69495",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Nicolas JACQUET-FRANCILLON, MD",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "4 72 35 69 99",
+                                                                                                       "phoneExt":  "+33",
+                                                                                                       "email":  "nicolas.jacquet-francillon@chu-lyon.fr"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.74906,
+                                                                                                   "lon":  4.84789
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        },
+                            "ipdSharingStatementModule":  {
+                                                              "ipdSharing":  "NO"
+                                                          }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D018358",
+                                                                            "term":  "Neuroendocrine Tumors"
+                                                                        }
+                                                                    ],
+                                                         "ancestors":  [
+                                                                           {
+                                                                               "id":  "D017599",
+                                                                               "term":  "Neuroectodermal Tumors"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009373",
+                                                                               "term":  "Neoplasms, Germ Cell and Embryonal"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009370",
+                                                                               "term":  "Neoplasms by Histologic Type"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009369",
+                                                                               "term":  "Neoplasms"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D009380",
+                                                                               "term":  "Neoplasms, Nerve Tissue"
+                                                                           }
+                                                                       ]
+                                                     }
+                       },
+    "hasResults":  false
+}

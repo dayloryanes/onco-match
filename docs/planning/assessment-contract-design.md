@@ -1,5 +1,13 @@
 # Focused assessment contract: approved design
 
+> Historical narrative-scope design. Its original decisions and examples are
+> preserved below. The revised condition-label design is recorded in
+> [Condition-label assessment design](condition-label-assessment-design.md),
+> approved locally under [scope decision #12](https://github.com/dayloryanes/onco-match/issues/12), awaiting publication.
+> Structured age/sex and unaffected lifecycle decisions remain relevant as
+> identified there. Historical authorization statements below are not current
+> permission to implement or experiment; resume through [overview #1](https://github.com/dayloryanes/onco-match/issues/1).
+
 Decision work: [Define the focused assessment contract and evidence validation rules (#4)](https://github.com/dayloryanes/onco-match/issues/4).
 
 Canonical published decision: [approved resolution](https://github.com/dayloryanes/onco-match/issues/4#issuecomment-6462538387).

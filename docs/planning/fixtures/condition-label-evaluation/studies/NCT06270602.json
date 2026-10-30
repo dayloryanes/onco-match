@@ -1,0 +1,701 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT06270602",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "ONCOCAMP"
+                                                                            },
+                                                         "secondaryIdInfos":  [
+                                                                                  {
+                                                                                      "id":  "6/23 oss",
+                                                                                      "type":  "OTHER",
+                                                                                      "domain":  "IRCCS I.N.T. \"G. Pascale\""
+                                                                                  }
+                                                                              ],
+                                                         "organization":  {
+                                                                              "fullName":  "National Cancer Institute, Naples",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "The ONCOCAMP Study",
+                                                         "officialTitle":  "A Retrospective-prospective, Observational, Multicentric Study to Record Data From the ROC Platform and Monitor the ROC Performance"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2025-07",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2023-07-14",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2026-05",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2026-07",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2024-01-29",
+                                                 "studyFirstSubmitQcDate":  "2024-02-13",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2024-02-21",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2025-12-16",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2025-12-22",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "SPONSOR"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "National Cancer Institute, Naples",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "oversightHasDmc":  true,
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "The present study is a retrospective-prospective observational and multicentric study aiming to collect data relating to all patients included in the ROC platform. All ROC centers will be involved in the present study.",
+                                                      "detailedDescription":  "The ROC platform therefore represents a multicenter database and a growing source of data and information regarding cancer patients in the Campania region. The need for multicenter databases is supported by the results obtained with both retrospective and prospective studies. Many retrospective studies have led to changes in some of the available guidelines. Important advantages of this study include representativeness of the analyzed cohort to all patients with a specific cancer and a large sample size that provides sufficient statistical power to detect differences across different patient groups. The data extracted from the ROC have the potential to produce knowledge, to guide decision-making, and to manage more effectively the challenges of fighting cancer in our region. The Campania region counts more than 6 million people, and it is characterized by a worst oncological outcome compared to the average data of other Italian region: the ROC platform has the potential to analyze the effect of a public intervention in the field of oncology care. Therefore, the primary aim of this study is to create a retrospective-prospective registry of all cancer patients entering the ROC platform and in a GOM path describing the primary and secondary endpoints."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Oncology"
+                                                                    ],
+                                                     "keywords":  [
+                                                                      "Oncological Network",
+                                                                      "Multidisciplinary Oncology Groups"
+                                                                  ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "OBSERVATIONAL",
+                                                 "patientRegistry":  false,
+                                                 "designInfo":  {
+                                                                    "observationalModel":  "COHORT",
+                                                                    "timePerspective":  "OTHER"
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  15000,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "Cohort A (Retrospective):",
+                                                                                  "description":  "All consecutive patients entered in the ROC platform from the start of platform activation (November 2018) until the date in which the study is approved by the local ethical committee (Investigator is allowed to enroll patients) will be enrolled. The retrospective cohort will be made by more than 40000 patients already included in the platform and entered a GOM path",
+                                                                                  "interventionNames":  [
+                                                                                                            "Other: Data collection (retrospective)"
+                                                                                                        ]
+                                                                              },
+                                                                              {
+                                                                                  "label":  "Cohort B (Prospective):",
+                                                                                  "description":  "All consecutive patients who enter in the ROC platform as for clinical practice from the date in which the study is approved by the local ethical committee (Investigator is allowed to enroll patients).",
+                                                                                  "interventionNames":  [
+                                                                                                            "Other: Data collection (prospective)"
+                                                                                                        ]
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "OTHER",
+                                                                                      "name":  "Data collection (retrospective)",
+                                                                                      "description":  "Collection of patient data entered in the ROC platform from the beginning activation of the platform (November 2018) until the date on which the study is approved by the local ethics committee",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "Cohort A (Retrospective):"
+                                                                                                         ]
+                                                                                  },
+                                                                                  {
+                                                                                      "type":  "OTHER",
+                                                                                      "name":  "Data collection (prospective)",
+                                                                                      "description":  "Collection of patient data entered in the ROC platform from the date in which the study is approved by the local ethical committee",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "Cohort B (Prospective):"
+                                                                                                         ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Incidence for each tumor of the patients included in the ROC platform",
+                                                                               "description":  "Incidence for each tumor of the patients included in the ROC platform",
+                                                                               "timeFrame":  "Every year up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Evaluation of the time interval between GOM activities",
+                                                                               "description":  "Time interval between reporting and taking charge by the GOM, the date diagnosis and the GOM meeting date, the first GOM meeting and the final therapeutic decision, the therapy decision and the therapeutic act, and the request for home assistance and the actual taking in charge by the ASL",
+                                                                               "timeFrame":  "Every 6 months up to 3 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Evaluation of the time interval between GOM activities",
+                                                                               "description":  "Time interval between the request for home assistance and the actual taking in charge by the ASL",
+                                                                               "timeFrame":  "Every 6 months up to 3 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Evaluation of the time interval between GOM activities",
+                                                                               "description":  "Time interval between the therapy decision and the therapeutic act",
+                                                                               "timeFrame":  "Every 6 months up to 3 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Evaluation of the time interval between GOM activities",
+                                                                               "description":  "Time interval between the first GOM meeting and the final therapeutic decision",
+                                                                               "timeFrame":  "Every 6 months up to 3 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Evaluation of the time interval between GOM activities",
+                                                                               "description":  "Time interval betweenthe date diagnosis and the GOM meeting date",
+                                                                               "timeFrame":  "Every 6 months up to 3 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Frequency of use of the services of the ROC platform",
+                                                                               "description":  "Frequency of use of the services of the ROC platform",
+                                                                               "timeFrame":  "Every 2 months up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Descriptive analysis of each subgroup of patients (subdivision by tumor type)",
+                                                                               "description":  "Descriptive analysis of each subgroup of patients (subdivision by tumor type)",
+                                                                               "timeFrame":  "Every 6 months up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Spatial analysis for each patient",
+                                                                               "description":  "Spatial analysis for each patient",
+                                                                               "timeFrame":  "Every year up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Frequency of adherence to guidelines of the Diagnostic Therapeutic Assistance Paths (PDTA)",
+                                                                               "description":  "Frequency of adherence to guidelines of the Diagnostic Therapeutic Assistance Paths (PDTA)",
+                                                                               "timeFrame":  "Every 6 months up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Percentage of patient included in clinical trial",
+                                                                               "description":  "Percentage of patient included in clinical trial",
+                                                                               "timeFrame":  "Every 2 months up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Assessment of costs arising due to inefficiencies (repetition and inappropriateness of diagnostic tests; passive health mobility rate",
+                                                                               "description":  "Assessment of costs arising due to inefficiencies (repetition and inappropriateness of diagnostic tests; passive health mobility rate",
+                                                                               "timeFrame":  "Every 6 months up to 5 years"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Prevalence for each tumor of the patients included in the ROC platform",
+                                                                               "description":  "Prevalence for each tumor of the patients included in the ROC platform",
+                                                                               "timeFrame":  "Every year up to 5 years"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Description of pharmacological strategies",
+                                                                                 "description":  "Evaluation of pharmacological strategies",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Description of diagnostic activities",
+                                                                                 "description":  "Evaluation of diagnostic activities",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Description of surgical strategies",
+                                                                                 "description":  "Evaluation of surgical strategies",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Appropriateness of diagnostic tests (taking as reference the guidelines reported in each PDTA)",
+                                                                                 "description":  "Appropriateness of diagnostic tests (taking as reference the guidelines reported in each PDTA)",
+                                                                                 "timeFrame":  "Every 6 months up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Description of each surgical approach",
+                                                                                 "description":  "Description of each surgical approach",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Description of the different surgical techniques among the centers",
+                                                                                 "description":  "Description of the different surgical techniques among the centers",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Patients\u0027 quality of life",
+                                                                                 "description":  "Patients\u0027 quality of life using questionnaires",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Patients\u0027 reported outcome",
+                                                                                 "description":  "Patients\u0027 reported outcome using questionnaires",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Patients\u0027 satisfaction and evaluation of the diagnostic / therapeutic path",
+                                                                                 "description":  "Patients\u0027 satisfaction and evaluation of the diagnostic / therapeutic path using questionnaires",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Correlation analysis among risk factors and diagnostic / therapeutic delay or poor prognosis",
+                                                                                 "description":  "Correlation analysis among risk factors and diagnostic / therapeutic delay or poor prognosis",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Dependence analysis between the conditions of social deprivation of ROC patients and the time to the first GOM visit",
+                                                                                 "description":  "Dependence analysis between the conditions of social deprivation of ROC patients and the time to the first GOM visit",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Dependence analysis among costs, socio-demographic characteristics and some variables related to the diagnostic / therapeutic path",
+                                                                                 "description":  "Dependence analysis among costs, socio-demographic characteristics and some variables related to the diagnostic / therapeutic path",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Survival analysis for each tumor",
+                                                                                 "description":  "Survival analysis for each tumor",
+                                                                                 "timeFrame":  "Every 2 years up to 6 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Life status assessment for each patient",
+                                                                                 "description":  "Life status assessment for each patient",
+                                                                                 "timeFrame":  "Every year up to 5 years"
+                                                                             }
+                                                                         ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* signed informed consent\n* registration in the ROC platform",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "ALL",
+                                                      "minimumAge":  "18 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ],
+                                                      "studyPopulation":  "1. All consecutive patients entered in the ROC platform from the start of platform activation (November 2018) until the date in which the study is approved by the local ethical committee (The retrospective cohort will be made by more than 40000 patients already included in the platform and entered a GOM path.\n2. All consecutive patients who enter in the ROC platform as for clinical practice from the date in which the study is approved by the local ethical committee (Investigator is allowed to enroll patients).",
+                                                      "samplingMethod":  "NON_PROBABILITY_SAMPLE"
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Sandro Pignata, M.D.",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "08117770755",
+                                                                                        "email":  "s.pignata@istitutotumori.na.it"
+                                                                                    }
+                                                                                ],
+                                                            "overallOfficials":  [
+                                                                                     {
+                                                                                         "name":  "Sandro Pignata, M.D.",
+                                                                                         "affiliation":  "IRCCS I.N.T. \"G. Pascale\"",
+                                                                                         "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                     }
+                                                                                 ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "A.O. Moscati",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Avellino",
+                                                                                  "state":  "Avellino",
+                                                                                  "zip":  "83100",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Cesare Gridelli, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.91494,
+                                                                                                   "lon":  14.79103
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Avellino",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Avellino",
+                                                                                  "state":  "Avellino",
+                                                                                  "zip":  "83100",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Giuseppe Genua, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.91494,
+                                                                                                   "lon":  14.79103
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O. Rummo",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Benevento",
+                                                                                  "state":  "Benevento",
+                                                                                  "zip":  "82100",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Antonio Grimaldi, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  41.1307,
+                                                                                                   "lon":  14.77816
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Benevento",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Benevento",
+                                                                                  "state":  "Benevento",
+                                                                                  "zip":  "82100",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Elena Fossi, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  41.1307,
+                                                                                                   "lon":  14.77816
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Caserta",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Caserta",
+                                                                                  "state":  "Caserta",
+                                                                                  "zip":  "81035",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Antonella Guida, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  41.07262,
+                                                                                                   "lon":  14.33231
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O. S.Anna S. Sebastiano",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Caserta",
+                                                                                  "state":  "Caserta",
+                                                                                  "zip":  "81100",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Michele Orditura, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  41.07262,
+                                                                                                   "lon":  14.33231
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Napoli 2 Nord",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Casavatore",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80020",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Filomena Sibilio, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.89921,
+                                                                                                   "lon":  14.27663
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Napoli 3 Sud",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Ercolano",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80056",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Mario Fusco, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.80783,
+                                                                                                   "lon":  14.35012
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O. Cardarelli",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80131",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Ferdinando Riccardi, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O. Dei Colli",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80131",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Vincenzo Montesarchio, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Federico II",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80131",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Sabino De Placido, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "I.N.T. Pascale",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80131",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Sandro Pignata, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O.U. Luigi Vanvitelli",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80138",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Fortunato Ciardiello, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Napoli 1 Centro",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80145",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Tiziana Spinosa, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Ospedale del Mare",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Naples",
+                                                                                  "state":  "Napoli",
+                                                                                  "zip":  "80147",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Bruno Daniele, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.85216,
+                                                                                                   "lon":  14.26811
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Asl Salerno",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Salerno",
+                                                                                  "state":  "Salerno",
+                                                                                  "zip":  "84124",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Giuseppe Di Lorenzo, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.67545,
+                                                                                                   "lon":  14.79328
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "A.O.U. Ruggi",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Salerno",
+                                                                                  "state":  "Salerno",
+                                                                                  "zip":  "84126",
+                                                                                  "country":  "Italy",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Stefano Pepe, M.D.",
+                                                                                                       "role":  "CONTACT"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  40.67545,
+                                                                                                   "lon":  14.79328
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        },
+                            "referencesModule":  {
+                                                     "references":  [
+                                                                        {
+                                                                            "pmid":  "42930158",
+                                                                            "type":  "DERIVED",
+                                                                            "citation":  "Luongo A, Di Carlo FPM, Coluccia S, Rocco P, Russo N, Racca E, D\u0027Amico M, Coppola E, D\u0027Errico D, Crispo A, Turra V, Maiolino P, Foschini F, Silvestro L, Nappi A, Romano C, Avallone A, Pignata S, Porciello G; NUTRISCREEN Research Group. Exploring Body Composition Profiles in Patients with Gastrointestinal Cancers: A Cross-Sectional Analysis of the NUTRISCREEN Project. Curr Oncol. 2026 Sep 30;33(10):591. doi: 10.3390/curroncol33100591."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "41830013",
+                                                                            "type":  "DERIVED",
+                                                                            "citation":  "Porciello G, Crispo A, Di Carlo FPM, Rocco P, Luongo A, Russo N, Palumbo E, Vitale S, Coluccia S, Prete M, Di Lauro T, Abbadessa L, Di Martino A, Mozzillo AL, Racca E, Piccirillo A, Di Giacomo V, D\u0027Amico M, Fontana M, Augustin LSA, D\u0027Errico D, Coppola E, Stallone T, Maiolino P, Parascandolo I, Turra V, Pignata S; NUTRISCREEN Collaborative Research Group. Physical Activity, Nutritional Status, and Health-Related Quality of Life in Newly Diagnosed Cancer Patients: Evidence from the NUTRISCREEN Project. Nutrients. 2026 Mar 5;18(5):844. doi: 10.3390/nu18050844."
+                                                                        },
+                                                                        {
+                                                                            "pmid":  "40284239",
+                                                                            "type":  "DERIVED",
+                                                                            "citation":  "Porciello G, Di Lauro T, Luongo A, Coluccia S, Prete M, Abbadessa L, Coppola E, Di Martino A, Mozzillo AL, Racca E, Piccirillo A, Di Giacomo V, Fontana M, D\u0027Amico M, Palumbo E, Vitale S, D\u0027Errico D, Turra V, Parascandolo I, Stallone T, Augustin LSA, Crispo A, Celentano E, Pignata S. Optimizing Nutritional Care with Machine Learning: Identifying Sarcopenia Risk Through Body Composition Parameters in Cancer Patients-Insights from the NUTritional and Sarcopenia RIsk SCREENing Project (NUTRISCREEN). Nutrients. 2025 Apr 18;17(8):1376. doi: 10.3390/nu17081376."
+                                                                        }
+                                                                    ]
+                                                 }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D009369",
+                                                                            "term":  "Neoplasms"
+                                                                        }
+                                                                    ]
+                                                     },
+                           "interventionBrowseModule":  {
+                                                            "meshes":  [
+                                                                           {
+                                                                               "id":  "D003625",
+                                                                               "term":  "Data Collection"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D012189",
+                                                                               "term":  "Retrospective Studies"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D008137",
+                                                                               "term":  "Longitudinal Studies"
+                                                                           }
+                                                                       ],
+                                                            "ancestors":  [
+                                                                              {
+                                                                                  "id":  "D004812",
+                                                                                  "term":  "Epidemiologic Methods"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D008919",
+                                                                                  "term":  "Investigative Techniques"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D017531",
+                                                                                  "term":  "Health Care Evaluation Mechanisms"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D011787",
+                                                                                  "term":  "Quality of Health Care"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D017530",
+                                                                                  "term":  "Health Care Quality, Access, and Evaluation"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D011634",
+                                                                                  "term":  "Public Health"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D004778",
+                                                                                  "term":  "Environment and Public Health"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D016022",
+                                                                                  "term":  "Case-Control Studies"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D016021",
+                                                                                  "term":  "Epidemiologic Studies"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D016020",
+                                                                                  "term":  "Epidemiologic Study Characteristics"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D015331",
+                                                                                  "term":  "Cohort Studies"
+                                                                              }
+                                                                          ]
+                                                        }
+                       },
+    "hasResults":  false
+}
