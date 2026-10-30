@@ -1,0 +1,328 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT05855811",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "ET22-215"
+                                                                            },
+                                                         "organization":  {
+                                                                              "fullName":  "Centre Leon Berard",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "PREventing Second Cancers With DOSTARlimab",
+                                                         "officialTitle":  "A Multicenter, Open-label, Randomized Phase II Study Aiming to Assess the Clinical Impact of Dostarlimab on Occurrence of Second Primary Cancer in Patients With Cured Primary Cancer",
+                                                         "acronym":  "PREDOSTAR"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2024-07",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2023-07-26",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2028-07-26",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2029-03-26",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2023-05-04",
+                                                 "studyFirstSubmitQcDate":  "2023-05-04",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2023-05-11",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2024-07-12",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2024-07-15",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "SPONSOR"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Centre Leon Berard",
+                                                                                   "class":  "OTHER"
+                                                                               },
+                                                               "collaborators":  [
+                                                                                     {
+                                                                                         "name":  "GlaxoSmithKline",
+                                                                                         "class":  "INDUSTRY"
+                                                                                     }
+                                                                                 ]
+                                                           },
+                            "oversightModule":  {
+                                                    "oversightHasDmc":  true,
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "PredoSTAR is a multicenter, randomized, open-label phase II study proposed to patients at high risk of SPC and in whom the treatment of the FPC does not include immunotherapy. Dostarlimab treatment will be started within 6 months after the completion of treatment for localized FPC (i.e. after the end of last CT, RT cure or surgery with a wash-out period of 4 weeks before to start Dostarlimab). Eligible patients will be randomized (1:1) to receive:\n\n* Arm Dostarlimab : 4 intravenous (IV) injections of dostarlimab, Q3W or\n* Arm No treatment"
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Recurrent Cancer",
+                                                                        "Primary Cancer",
+                                                                        "Second Cancer"
+                                                                    ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "INTERVENTIONAL",
+                                                 "phases":  [
+                                                                "PHASE2"
+                                                            ],
+                                                 "designInfo":  {
+                                                                    "allocation":  "RANDOMIZED",
+                                                                    "interventionModel":  "PARALLEL",
+                                                                    "interventionModelDescription":  "Analysis will be performed according the ITT principe and will include all randomized patients. Incidence of events by arm will be compared assuming a Poisson distribution. Cumulative incidence curves against time will we compared between treatment arms. Follow-up of each patient will be calculated from randomisation to death or last follow-up for alive patients.",
+                                                                    "primaryPurpose":  "PREVENTION",
+                                                                    "maskingInfo":  {
+                                                                                        "masking":  "NONE"
+                                                                                    }
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  400,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "Dostarlimab",
+                                                                                  "type":  "EXPERIMENTAL",
+                                                                                  "description":  "4 intravenous injections maximum of dostarlimab, 500mg, every 3 weeks",
+                                                                                  "interventionNames":  [
+                                                                                                            "Drug: Dostarlimab"
+                                                                                                        ]
+                                                                              },
+                                                                              {
+                                                                                  "label":  "No treatment",
+                                                                                  "type":  "NO_INTERVENTION"
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "DRUG",
+                                                                                      "name":  "Dostarlimab",
+                                                                                      "description":  "Dostarlimab should initiated within 6 months after the end of treatment for FPC.",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "Dostarlimab"
+                                                                                                         ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Incidence of Second Primary Cancer (SPC) in patients who have completed curative treatment for a First Primary Cancer (FPC).",
+                                                                               "description":  "Second primary invasive cancer must be centrally histologically confirmed",
+                                                                               "timeFrame":  "Up to 3 years"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "Rate of SPC",
+                                                                                 "timeFrame":  "Up to 3 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Time to SPC",
+                                                                                 "timeFrame":  "Up to 3 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Event Free survival",
+                                                                                 "timeFrame":  "Up to 3 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Overall Survival since randomisation and since SPC",
+                                                                                 "timeFrame":  "Up to 3 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Recurrence of FPC.",
+                                                                                 "description":  "Relapse of first cancer rate",
+                                                                                 "timeFrame":  "Up to 3 years"
+                                                                             },
+                                                                             {
+                                                                                 "measure":  "Safety profile",
+                                                                                 "description":  "Only for Arm A : any AEs graded using Common Terminology Criteria for Adverse Events (CTCAE) V5.0.",
+                                                                                 "timeFrame":  "from the date of first intake of study drug until 90 days after study drug discontinuation or at time of initiation of a new anti-cancer treatment"
+                                                                             }
+                                                                         ],
+                                                   "otherOutcomes":  [
+                                                                         {
+                                                                             "measure":  "Molecular profiles of SPC and immune infiltrate characterisation by WES analysis (tumor samples)",
+                                                                             "timeFrame":  "From FPC material and in case of SPC (biopsy diagnostic or surgery)"
+                                                                         },
+                                                                         {
+                                                                             "measure":  "Immune parameters definition by cytometry analysis (blood samples)",
+                                                                             "timeFrame":  "At inclusion, 30 days after the last injection and in case of SPC (at diagnostic timing)"
+                                                                         }
+                                                                     ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* Male or female patient â¥18 years of age at time of informed consent form signature. Note - Patients with childhood first primary cancer (FPC) are eligible.\n* Patients with prior histologically proven primary solid tumors (any type), AJCC stage I, II or III or IV if M0, eligible to curative treatment. Note - Time between end of treatment for first cancer and randomisation must be \\\u003c6 months.\n* Patients with at least one risk factor for second primary cancer (SPC) including:\n* Exposure to exogenous risk factor : tobacco (\\\u003e20YP) â¥ 10 years and still active at time of FPC diagnosis and/or Endogenous risk factors (genetic predisposition including for instance germ line mutations of p53 or BRCA genes, Lynch syndrome, or any mutations of genes known to be associated with higher risk of cancer according to current list from French National Cancer institute or HPV-related FPC.\n* Availability of FFPE tumor sample from FPC initial diagnosis for histological comparison in case/at time of SPC. Note - Histological report must be sent to the sponsor with archival FFPE tumor block within 14 days after randomisation.\n* Eastern Cooperative Oncology Group (ECOG) Performance Status of 0 or .\n* Adequate hematologic and end-organ function, defined by the following laboratory test results:\n* WBC â¥ 2.5 x 109/L,\n* Hemoglobin â¥ 9.0 g/dL. Patients may be transfused (\\\u003e 2 weeks before randomisation) to meet this criterion,\n* Absolute neutrophil count (ANC) â¥ 1.5 x 109/L without granulocyte colony-stimulating factor support within 2 weeks before randomisation,\n* Platelets â¥ 100 x 109/L,\n* Lymphocyte count â¥ 0.5 x 109/L;\n* Serum creatinine clearance â¥30 mL/min/1.73m2 (MDRD or CKD-EPI formula - See Appendix) or serum creatinine â¤1.5 ULN\n* Serum bilirubin â¤ 1.5 Ã Upper Limit of Normal (ULN), with the following exception: Patients with known Gilbert disease who have serum bilirubin level â¤ 3 x ULN may be enrolled;\n* Aspartate aminotransferase (AST), alanine aminotransferase (ALT) and alkaline phosphatase (ALP) â¤ 2.5 x ULN;\n* Prothrombin time/INR â¤ 1.5, or, if patient is receiving therapeutic anticoagulation, prothrombin time/INR \\\u003c 3.0\n* aPTT â¤ ULN OR, if patient is receiving therapeutic anticoagulation, aPTT must be \\\u003c 1.5 ULN. Note: Patient receiving therapeutic anticoagulation must be on stable dose.\n* Proteinuria by urine dipstick \\\u003c 2+ or 24-hour proteinuria â¤ 1.0 g.\n* Corrected QT interval (QTc) \\\u003c450msec (or QTc \\\u003c480msec for participants with bundle branch block).\n* Women patients of child-bearing potential are eligible, provided they have a negative serum or urine pregnancy and agrees to use adequate contraception for up to 6 months after the final dose of dostarlimab.\n* Fertile men must agree to use an effective method of contraception during the study and for up to 6 months after the last dose of dostarlimab.\n* Patient should understand, sign, and date the written voluntary informed consent form prior to any protocol-specific procedures performed and should be able and willing to comply with study visits and procedures as per protocol.\n* Patients must be covered by a medical insurance in country where applicable.\n\nExclusion Criteria:\n\n* Previous treatment with immunotherapy (any types) for cured first primary cancer.\n* Acute and ongoing toxicities from previous therapy that have not resolved to Grade â¤ 1, except for alopecia, neuropathy and lab values presented in inclusion criteria.\n* Major surgical procedure, open biopsy, or significant traumatic injury within 28 days prior to randomisation, or abdominal surgery, abdominal interventions or significant abdominal traumatic injury within 60 days prior to randomisation or anticipation of need for major surgical procedure during the course of the study or non-recovery from side effects of any such procedure.\n* Treatment with systemic immunosuppressive medication (including, but not limited to, corticosteroids, cyclophosphamide, azathioprine, methotrexate, thalidomide, and anti-TNF-alpha agents) within 2 weeks prior to randomisation, or anticipation of need for systemic immunosuppressive medication during study treatment; with the exceptions of intranasal, inhaled, or topical corticosteroids or systemic corticosteroids at physiological doses, which are not to exceed 10 mg/day of prednisone, or an equivalent corticosteroid.\n* Systemic immunostimulatory agents (including, but not limited to, interferons and IL-2) are prohibited within 4 weeks or five half-lives of the drug (whichever is longer) prior to randomisation.\n* Oral or IV antibiotics within 14 days of randomisation.\n* History of severe allergic or other hypersensitivity reactions to:\n\n  * chimeric or humanized antibodies or fusion proteins,\n  * biopharmaceuticals produced in Chinese hamster ovary cells, or\n  * any component of the dostarlimab formulation\n* Concurrent treatment with any approved or investigational anti-cancer treatment or participation in another clinical trial with therapeutic intent. Note - Hormonotherapy as part of standard of care is allowed.\n* History of autoimmune disease including (see Appendix 18.5 for a more comprehensive list of pre-existing autoimmune diseases and immune deficiencies and exceptions in the protocol.\n* Infectious diseases:\n\n  * active infection requiring IV antibiotics,\n  * severe infection within 4 weeks prior to randomisation, including, but not limited to, hospitalization for complications of infection, bacteremia, or severe pneumonia,\n  * active hepatitis B (chronic or acute; defined as having a positive hepatitis B surface antigen \\[HBsAg\\] test at screening),\n  * active hepatitis C. Patients positive for hepatitis C virus (HCV) antibody are eligible only if PCR is negative for HCV RNA at screening,\n  * HIV infection,\n  * active tuberculosis,\n  * influenza vaccination should be given during influenza season. Patients must not receive live attenuated influenza vaccine (e.g., FluMistÂ®) within 4 weeks prior to randomisation or at any time during the study.\n* Significant cardiovascular disease: see details in the protocol.\n* History of idiopathic pulmonary fibrosis (including pneumonitis), drug-induced pneumonitis, organizing pneumonia (i.e. bronchiolitis obliterans, cryptogenic organizing pneumonia), or evidence of active pneumonitis on screening chest CT scan.\n* Evidence of significant uncontrolled concomitant disease that could affect compliance with the protocol or interpretation of results, including significant liver disease (such as cirrhosis, uncontrolled major seizure disorder, or superior vena cava syndrome).\n* Patient with FPC known to be at high risk of relapse defined as â¥ 70% relapse from FPC within 2 years.\n* Patient patients who are solid organ recipients.\n* Patient with primary cancer of unknown origin (CUP).\n* Pregnant or lactating women",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "ALL",
+                                                      "minimumAge":  "18 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ]
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Jean-Yves BLAY, MD, PhD",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "4 78 78 51 26",
+                                                                                        "phoneExt":  "+33",
+                                                                                        "email":  "jean-yves.blay@lyon.unicancer.fr"
+                                                                                    }
+                                                                                ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "Centre FranÃ§ois Baclesse",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Caen",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "ZoÃ© NEVIERE",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "email":  "z.neviere@baclesse.unicancer.fr"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  49.18585,
+                                                                                                   "lon":  -0.35912
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Centre Jean Perrin",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Clermont-Ferrand",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Xavier DURANDO",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "email":  "xavier.durando@clermont.unicancer.fr"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.77969,
+                                                                                                   "lon":  3.08682
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Centre LÃ©on BÃ©rard",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Lyon",
+                                                                                  "zip":  "69008",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Jean-Yves BLAY, MD,PhD",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "4 78 78 51 26",
+                                                                                                       "phoneExt":  "+33",
+                                                                                                       "email":  "jean-yves.blay@lyon.unicancer.fr"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "Jean-Yves BLAY, MD,PhD",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  45.74906,
+                                                                                                   "lon":  4.84789
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Institut Claudius Regaud",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Toulouse",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Victor SARRADIN",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "email":  "sarradin.victor@iuct-oncopole.fr"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  43.60426,
+                                                                                                   "lon":  1.44367
+                                                                                               }
+                                                                              },
+                                                                              {
+                                                                                  "facility":  "Institut Gustave Roussy",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Villejuif",
+                                                                                  "country":  "France",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Thomas PUDLARZ",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "email":  "thomas.pudlarz@gustaveroussy.fr"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  48.7939,
+                                                                                                   "lon":  2.35992
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D012008",
+                                                                            "term":  "Recurrence"
+                                                                        },
+                                                                        {
+                                                                            "id":  "D009369",
+                                                                            "term":  "Neoplasms"
+                                                                        },
+                                                                        {
+                                                                            "id":  "D016609",
+                                                                            "term":  "Neoplasms, Second Primary"
+                                                                        }
+                                                                    ],
+                                                         "ancestors":  [
+                                                                           {
+                                                                               "id":  "D020969",
+                                                                               "term":  "Disease Attributes"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D010335",
+                                                                               "term":  "Pathologic Processes"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D013568",
+                                                                               "term":  "Pathological Conditions, Signs and Symptoms"
+                                                                           }
+                                                                       ]
+                                                     },
+                           "interventionBrowseModule":  {
+                                                            "meshes":  [
+                                                                           {
+                                                                               "id":  "C000719628",
+                                                                               "term":  "dostarlimab"
+                                                                           }
+                                                                       ]
+                                                        }
+                       },
+    "hasResults":  false
+}

@@ -1,0 +1,236 @@
+﻿{
+    "protocolSection":  {
+                            "identificationModule":  {
+                                                         "nctId":  "NCT04797039",
+                                                         "orgStudyIdInfo":  {
+                                                                                "id":  "20-003822"
+                                                                            },
+                                                         "organization":  {
+                                                                              "fullName":  "Mayo Clinic",
+                                                                              "class":  "OTHER"
+                                                                          },
+                                                         "briefTitle":  "MRI-Guided Cryoablation for Focal Native Prostate Cancer",
+                                                         "officialTitle":  "MRI-Guided Cryoablation for Focal Native Prostate Cancer"
+                                                     },
+                            "statusModule":  {
+                                                 "statusVerifiedDate":  "2026-05",
+                                                 "overallStatus":  "RECRUITING",
+                                                 "expandedAccessInfo":  {
+                                                                            "hasExpandedAccess":  false
+                                                                        },
+                                                 "startDateStruct":  {
+                                                                         "date":  "2020-12-01",
+                                                                         "type":  "ACTUAL"
+                                                                     },
+                                                 "primaryCompletionDateStruct":  {
+                                                                                     "date":  "2030-12",
+                                                                                     "type":  "ESTIMATED"
+                                                                                 },
+                                                 "completionDateStruct":  {
+                                                                              "date":  "2030-12",
+                                                                              "type":  "ESTIMATED"
+                                                                          },
+                                                 "studyFirstSubmitDate":  "2021-03-11",
+                                                 "studyFirstSubmitQcDate":  "2021-03-11",
+                                                 "studyFirstPostDateStruct":  {
+                                                                                  "date":  "2021-03-15",
+                                                                                  "type":  "ACTUAL"
+                                                                              },
+                                                 "lastUpdateSubmitDate":  "2026-05-01",
+                                                 "lastUpdatePostDateStruct":  {
+                                                                                  "date":  "2026-05-07",
+                                                                                  "type":  "ACTUAL"
+                                                                              }
+                                             },
+                            "sponsorCollaboratorsModule":  {
+                                                               "responsibleParty":  {
+                                                                                        "type":  "PRINCIPAL_INVESTIGATOR",
+                                                                                        "investigatorFullName":  "David A. Woodrum",
+                                                                                        "investigatorTitle":  "M.D, Ph.D, Principal Investigator",
+                                                                                        "investigatorAffiliation":  "Mayo Clinic"
+                                                                                    },
+                                                               "leadSponsor":  {
+                                                                                   "name":  "Mayo Clinic",
+                                                                                   "class":  "OTHER"
+                                                                               }
+                                                           },
+                            "oversightModule":  {
+                                                    "oversightHasDmc":  false,
+                                                    "isFdaRegulatedDrug":  false,
+                                                    "isFdaRegulatedDevice":  false
+                                                },
+                            "descriptionModule":  {
+                                                      "briefSummary":  "The purpose of this research is to collect data about the MRI cryoablation procedure your doctor(s) would normally perform in order to treat the participants focal prostate cancer and to evaluate the participants condition after the participants treatment is performed.\n\nParticipants have been asked to take part in this research because the participants have been diagnosed with prostate cancer and scheduled to have an ablation procedure.",
+                                                      "detailedDescription":  "The purpose of this study is to evaluate MR-guided cryoablation of biopsy proven prostate tumors using the Galil MRI-compatible cryoablation system. The system has been approved by the United States Food and Drug Administration (FDA) for soft tissue ablation and has been utilized successfully at Mayo. All procedures will be performed according to approved indications. the investigators wish to monitor the technique and collect data at the participants follow-up visits.\n\nThe study only collects data about the MRI-guided cryoablation procedure the participants doctor(s) would normally perform in order to treat the participants focal prostate cancer and to evaluate the participants condition after there treatment is performed. The participants doctor will advise the participants when the participants should return for follow-up visits. These visits will be according to the participants doctor\u0027s standard of care; usually return visits are at 3-6months, 12 months, 24 months, 36 months, 48 months and 60 months after the procedure, although the participants doctor may ask that the participants return for more frequent visits."
+                                                  },
+                            "conditionsModule":  {
+                                                     "conditions":  [
+                                                                        "Primary Malignant Neoplasm of Prostate (Diagnosis)"
+                                                                    ]
+                                                 },
+                            "designModule":  {
+                                                 "studyType":  "OBSERVATIONAL",
+                                                 "patientRegistry":  false,
+                                                 "designInfo":  {
+                                                                    "observationalModel":  "COHORT",
+                                                                    "timePerspective":  "PROSPECTIVE"
+                                                                },
+                                                 "enrollmentInfo":  {
+                                                                        "count":  100,
+                                                                        "type":  "ESTIMATED"
+                                                                    }
+                                             },
+                            "armsInterventionsModule":  {
+                                                            "armGroups":  [
+                                                                              {
+                                                                                  "label":  "MR guided cryoablation",
+                                                                                  "description":  "Focal MR guided cryoablation for low- to intermediate-grade prostate cancer",
+                                                                                  "interventionNames":  [
+                                                                                                            "Procedure: MR guided cryoablation"
+                                                                                                        ]
+                                                                              }
+                                                                          ],
+                                                            "interventions":  [
+                                                                                  {
+                                                                                      "type":  "PROCEDURE",
+                                                                                      "name":  "MR guided cryoablation",
+                                                                                      "description":  "MR guided cryoablation of focal biopsy proven prostate cancer",
+                                                                                      "armGroupLabels":  [
+                                                                                                             "MR guided cryoablation"
+                                                                                                         ],
+                                                                                      "otherNames":  [
+                                                                                                         "cryoablation"
+                                                                                                     ]
+                                                                                  }
+                                                                              ]
+                                                        },
+                            "outcomesModule":  {
+                                                   "primaryOutcomes":  [
+                                                                           {
+                                                                               "measure":  "Technical success of the MR-guided cryoablation",
+                                                                               "description":  "Determine the technical success of the MR-guided cryoablation as measured by complete target lesion ablation.",
+                                                                               "timeFrame":  "Will assess for 5 years with interval assessment each year"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Safety of the MR-guided cryoablation",
+                                                                               "description":  "Determine safety of the MR-guided cryoablation using continuous MR imaging during the procedure.",
+                                                                               "timeFrame":  "Will assess for 5 years with interval assessment each year"
+                                                                           },
+                                                                           {
+                                                                               "measure":  "Examine short term tumor recurrence",
+                                                                               "description":  "Examine short term tumor recurrence over 6 months with contrast enhanced MRI and as required MR or U/S guided biopsy of prostate bed if PSA biochemical recurrence.",
+                                                                               "timeFrame":  "Will assess for 5 years with interval assessment each year"
+                                                                           }
+                                                                       ],
+                                                   "secondaryOutcomes":  [
+                                                                             {
+                                                                                 "measure":  "MR procedure time.",
+                                                                                 "description":  "We will examine the time for each step in the process to create a stream-lined process and minimize MR procedure time.",
+                                                                                 "timeFrame":  "Will assess for 5 years with interval assessment each year"
+                                                                             }
+                                                                         ]
+                                               },
+                            "eligibilityModule":  {
+                                                      "eligibilityCriteria":  "Inclusion Criteria:\n\n* Patients with \"biopsy proven\" Gleason7 prostate cancer referred to Urology and/or Interventional Radiology for treatment\n* Surgery and/or Radiation is not a desirable alternative therapy at the time of enrollment\n* Tumor size is \\\u003c 2 cm at its largest diameter\n* Tumor does not encompass the rectal wall or external urethral sphincter\n* Patient is able to undergo MRI\n\nExclusion Criteria:\n\nâ¢",
+                                                      "healthyVolunteers":  false,
+                                                      "sex":  "MALE",
+                                                      "minimumAge":  "30 Years",
+                                                      "maximumAge":  "100 Years",
+                                                      "stdAges":  [
+                                                                      "ADULT",
+                                                                      "OLDER_ADULT"
+                                                                  ],
+                                                      "studyPopulation":  "Male population 50-100 years old with biopsy confirmed localized low- to intermediate-grade cancer.",
+                                                      "samplingMethod":  "NON_PROBABILITY_SAMPLE"
+                                                  },
+                            "contactsLocationsModule":  {
+                                                            "centralContacts":  [
+                                                                                    {
+                                                                                        "name":  "Desirae Howe-Clayton",
+                                                                                        "role":  "CONTACT",
+                                                                                        "phone":  "507-255-0111",
+                                                                                        "email":  "howe.desirae@mayo.edu"
+                                                                                    }
+                                                                                ],
+                                                            "locations":  [
+                                                                              {
+                                                                                  "facility":  "Mayo Clinic",
+                                                                                  "status":  "RECRUITING",
+                                                                                  "city":  "Rochester",
+                                                                                  "state":  "Minnesota",
+                                                                                  "zip":  "55905",
+                                                                                  "country":  "United States",
+                                                                                  "contacts":  [
+                                                                                                   {
+                                                                                                       "name":  "Desirae Howe-Clayton",
+                                                                                                       "role":  "CONTACT",
+                                                                                                       "phone":  "507-255-0111",
+                                                                                                       "email":  "howe.desirae@mayo.edu"
+                                                                                                   },
+                                                                                                   {
+                                                                                                       "name":  "David Woodrum, M.D, Ph.D.",
+                                                                                                       "role":  "PRINCIPAL_INVESTIGATOR"
+                                                                                                   }
+                                                                                               ],
+                                                                                  "geoPoint":  {
+                                                                                                   "lat":  44.02163,
+                                                                                                   "lon":  -92.4699
+                                                                                               }
+                                                                              }
+                                                                          ]
+                                                        },
+                            "referencesModule":  {
+                                                     "seeAlsoLinks":  [
+                                                                          {
+                                                                              "label":  "Mayo Clinic Clinical Trials",
+                                                                              "url":  "https://www.mayo.edu/research/clinical-trials"
+                                                                          }
+                                                                      ]
+                                                 },
+                            "ipdSharingStatementModule":  {
+                                                              "ipdSharing":  "NO"
+                                                          }
+                        },
+    "derivedSection":  {
+                           "miscInfoModule":  {
+                                                  "versionHolder":  "2026-10-29"
+                                              },
+                           "conditionBrowseModule":  {
+                                                         "meshes":  [
+                                                                        {
+                                                                            "id":  "D004194",
+                                                                            "term":  "Disease"
+                                                                        }
+                                                                    ],
+                                                         "ancestors":  [
+                                                                           {
+                                                                               "id":  "D010335",
+                                                                               "term":  "Pathologic Processes"
+                                                                           },
+                                                                           {
+                                                                               "id":  "D013568",
+                                                                               "term":  "Pathological Conditions, Signs and Symptoms"
+                                                                           }
+                                                                       ]
+                                                     },
+                           "interventionBrowseModule":  {
+                                                            "meshes":  [
+                                                                           {
+                                                                               "id":  "D003452",
+                                                                               "term":  "Cryosurgery"
+                                                                           }
+                                                                       ],
+                                                            "ancestors":  [
+                                                                              {
+                                                                                  "id":  "D055011",
+                                                                                  "term":  "Ablation Techniques"
+                                                                              },
+                                                                              {
+                                                                                  "id":  "D013514",
+                                                                                  "term":  "Surgical Procedures, Operative"
+                                                                              }
+                                                                          ]
+                                                        }
+                       },
+    "hasResults":  false
+}

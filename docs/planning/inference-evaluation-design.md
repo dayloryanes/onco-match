@@ -1,5 +1,13 @@
 # Inference evaluation: approved design
 
+> Historical narrative-scope design. Preserve these original fixtures,
+> expectations, and snapshots as evidence of the earlier task; do not relabel
+> their failures as successes on the narrower task. The new plan is
+> [Condition-label evaluation design](condition-label-evaluation-design.md),
+> approved locally under [scope decision #12](https://github.com/dayloryanes/onco-match/issues/12), awaiting publication.
+> Historical authorization statements below are not current permission to run
+> experiments; resume through [overview #1](https://github.com/dayloryanes/onco-match/issues/1).
+
 Decision work: [Agree the inference evaluation fixtures and acceptance criteria (#5)](https://github.com/dayloryanes/onco-match/issues/5).
 
 Status: approved through live human discussion on 2026-10-28, using grilling

@@ -5,6 +5,14 @@ decision record, not a detailed implementation specification. Read the developme
 overview for current authorization. Remaining decisions live in the Wayfinder map;
 do not duplicate their eventual resolutions across competing planning records.
 
+Local revision, 2026-10-30: incorporates the focused discussion for
+[scope decision #12](https://github.com/dayloryanes/onco-match/issues/12).
+The human approved local document preparation, not implementation or publication.
+The [condition-label assessment](condition-label-assessment-design.md) and
+[evaluation](condition-label-evaluation-design.md) records contain the contract
+and approved exact fixtures. GitHub records await separately approved
+publication; the old narrative designs and fixtures remain historical evidence.
+
 ## Purpose
 
 OncoMatch is an independent, noncommercial public portfolio proof of concept
@@ -57,10 +65,10 @@ studies, batches, progress, and assessments; the synthetic patients load again.
 
 ## Synthetic patients
 
-Load exactly 10 fictional patient records from JSON into memory. Include pediatric
-and adult examples with varied diagnoses and cases demonstrating supported
-alignment, exclusions, and uncertainty. Exact records need review alongside study
-fixtures; live pages cannot guarantee a particular outcome distribution.
+Load exactly 10 fictional patient records from JSON into memory. The delivered
+login/patient-browsing slice already supplies these pediatric and adult records.
+They remain unchanged by this scope revision. Separate evaluation fixtures do not
+augment application patients; live pages cannot guarantee an outcome distribution.
 
 Assessment attributes are age, sex, cancer type, stage with its classification
 system where applicable, and optional disease state. Represent unknown separately
@@ -114,52 +122,84 @@ the application; other users may browse stored results. LLM requests are
 sequential initially. New imports do not change an active batch's pair set.
 
 There is one matching mechanism. Patients and Studies are read perspectives on
-the same stored pair assessments, including all three outcomes and explanations.
+the same stored pair assessments, including pair summaries and explanations.
 Neither view starts matching or offers Match Again. Completed assessments are
 snapshots; later imports leave them untouched.
 
-## Assessment scope and outcomes
+## Assessment scope and pair summaries
 
 Recruitment status is a deterministic import filter. Both accepted statuses are
 suitable for screening; Not Yet Recruiting does not count against the patient.
 
 Use structured age/sex eligibility as the operational authority for deterministic
-pair checks. A clear failure produces an explained Nonmatch and skips inference.
+pair checks. Compute both checks. A reliable exclusion produces Excluded by
+age/sex and skips inference. Otherwise continue, even if either or both checks
+are Undetermined. AI does not resolve or override these structured checks.
 Missing, invalid, or unsupported information must not become an automatic
 exclusion or satisfied criterion. Passing prefiltering only permits further
-assessment. Reliable parsing rules and exact contracts remain design work.
+assessment. Previously reviewed conservative age/sex rules are retained; exact
+calendar-arithmetic implementation remains later specification work.
 
-For remaining pairs, the LLM interprets in-scope cancer-type, stage, and disease-
-state requirements using supplied facts and study text. Evaluate a restriction
-when the study specifies it. No restriction identified is not the same as an
-unknown patient value or ambiguous study wording. Preserve that distinction.
+For remaining pairs with condition text, one AI request interprets all complete
+condition labels against supplied cancer type, stage/classification, and disease
+state. Each label has separate findings and a complete-label result: Alignment
+supported, Conflict identified, or Undetermined. Explicit AND/OR relationships
+within a label retain their meaning; a failed alternative does not defeat a
+satisfied OR alternative. Separate labels do not establish an eligibility AND/OR
+relationship. Stage-at-diagnosis facts do not establish current disease extent.
 
-| Overall outcome | Meaning within the limited scope |
+No eligibility narrative, titles, summaries, detailed descriptions, study-population
+narrative, or gender descriptions are supplied to resolve label ambiguity.
+Absent qualifiers are Not specified in condition labels, not evidence of no
+restriction elsewhere. Missing necessary facts and ambiguous staging contexts
+remain Undetermined. Preserve unsupported qualifiers as Not assessed.
+
+Current metastatic status is not an assessed patient attribute. Preserve an
+explicit Metastatic label qualifier as unassessed rather than inferring it from
+recurrence or automatically mapping it to stage at diagnosis. Without an explicit
+in-scope stage value/classification, the stage finding is Not specified; the
+extent wording remains visible in the qualifier evidence and explanation.
+
+Code computes the pair summary after valid complete-label results:
+
+| Pair summary | Meaning within the limited scope |
 | --- | --- |
-| Potential match | Supported alignment across assessed criteria, without an established in-scope exclusion |
-| Nonmatch | Reliable evidence establishes an in-scope exclusion |
-| Insufficient information | Missing or ambiguous information prevents an in-scope conclusion |
+| Excluded by age/sex | At least one reliable structured exclusion; AI skipped |
+| Condition-label alignment supported | All supplied complete labels support alignment within scope |
+| Mixed condition-label findings | At least one complete label aligns and another conflicts or is undetermined |
+| Condition-label conflicts identified | Every complete label reliably conflicts; not full-study exclusion |
+| Condition-label alignment undetermined | No label aligns and at least one is undetermined, or no condition text is supplied without a reliable age/sex exclusion |
 
-No numerical score. Retain criterion-level requirements, applicable supplied
-patient values, evaluation outcomes, explanations, and source references. Exact
-schema and aggregation/validation contracts require further design review.
+Structured uncertainty and unassessed qualifiers remain visible beside every
+applicable summary. No numerical score. Retain exact input snapshots, structured
+checks, per-label/criterion findings, explicit relationships, explanations, and
+source references. Missing/empty/all-blank condition text skips AI and is not an
+execution failure. Exact malformed-import handling remains slice design work.
 
 Biomarkers, laboratory results, treatment history, and unselected eligibility
 requirements are outside the focused assessment. Consent, willingness, and final
 enrollment/investigator approval are downstream human steps; POC 1 implements no
 fields, checks, or workflows for them. Their absence does not automatically block
-a Potential match. Every result must clearly disclose the assessment limits.
+label alignment within scope. Every result must clearly disclose assessment limits.
 
 If an out-of-scope condition determines which in-scope cohort rule applies and
-the applicable rule cannot be established, report Insufficient information rather
+the applicable rule cannot be established, report an Undetermined label result rather
 than ignoring the condition or choosing the favorable cohort. Another clear
-in-scope exclusion can still establish Nonmatch. Do not add out-of-scope patient
+independent applicable conflict can still establish a label conflict. Do not add out-of-scope patient
 attributes merely to force a conclusion.
+
+The agreed working notice is:
+
+> This assessment checks structured age and sex requirements and compares cancer type, stage, and disease state with the study's listed conditions. Biomarkers, treatment history, other requirements, and free-text eligibility criteria are not assessed. Results do not establish clinical eligibility or enrollment approval.
+
+Exact UI placement and later wording refinements are deferred to results UI
+design. No popup, acknowledgement, or list-row reminder is required by this decision.
 
 ## Inference, evidence validation, and recovery
 
-The inference endpoint and model name are configurable. Qwen3 8B is an initial
-candidate, not a validated choice. Prefer one simple integration, not a provider
+The inference endpoint and model name are configurable. No model has been selected;
+the completed narrative trials did not meet their quality gate and do not validate
+the narrowed task. Prefer one simple integration, not a provider
 framework. Native Ollama versus OpenAI-compatible requests remains open for
 evaluation. A compatible API format does not require OpenAI cloud inference.
 Other server/model combinations are not promised compatible merely because their
@@ -171,13 +211,14 @@ evaluation; valid JSON is not proof of correctness. Authentic evidence may still
 be misinterpreted, and POC 1 cannot detect every hallucination or wrong outcome.
 Completed incorrect assessments are not given a correction/rematching workflow.
 
-Failure is an execution state, separate from the three assessment outcomes.
+Failure is an execution state, separate from completed pair summaries.
 Retain completed work if a pair times out or returns invalid output; record that
 attempt as failed and continue remaining work. If inference is unavailable at the
-outset, stop clearly. Exact failure classification remains design work.
+outset, stop clearly. Reject the whole invalid model response without salvaging
+partial label findings; retain completed age/sex checks. No automatic repair.
 
 Operators may explicitly retry failed evaluations and continue unfinished pairs
-after cancellation. Completed assessments, including Insufficient information,
+after cancellation. Completed assessments, including undetermined or mixed summaries,
 are not eligible for retry. No automatic retries or recovery jobs.
 
 Matching stays attached to the initiating dashboard request, which streams
@@ -200,22 +241,36 @@ features. Agree testing boundaries before implementation. Use deterministic
 fixtures and mock ClinicalTrials.gov/Ollama for automated tests. Fixtures do not
 replace or supplement live imports to force a desired mix.
 
-The approved inference evaluation plan covers clear alignment/exclusions, missing
-facts, equivalent stage wording, disease state, absent restrictions, ambiguous
-cohorts, scope boundaries, invented evidence, malformed output, and service
-failures. Evaluate outcome/evidence quality, uncertainty, repeated-run consistency,
-and latency. Propose independently reviewed expected results and acceptance
-thresholds before running experiments. Compare native/compatible endpoints on
-the same examples; measure hardware use and context needs rather than assuming
-performance. Running experiments is not yet authorized.
+The initial discussion agreed 16 development cases and 16 separate acceptance
+cases (12 controlled and 4 frozen real-study cases), with three acceptance
+repetitions: 48 responses per frozen candidate configuration. The human then
+requested fresh analysis of real-study coverage rather than inheriting four from
+the historical plan. An approved bounded lookup retrieved 120 distinct studies
+across 12 pages. The human approved the revised allocation of seven varied
+real-study cases, making 19 acceptance cases and 57 responses per configuration.
+All scored responses must meet the structure, evidence,
+interpretation, and uncertainty expectations. All 35 case expectations were
+reviewed in discussion, and the final written fixture records and serialized
+examples were approved. No execution is authorized by that approval.
+
+Keep acceptance reserved; using its failures to guide changes retires those cases
+from acceptance. Old narrative results do not become new-scope passes. Controlled
+application checks are separate from model-quality requests. Measure a separately
+approved small development run before agreeing a numerical latency limit; freeze
+that limit, deadline, prompt, model, and settings before acceptance. Record request
+durations, median, slowest request, and total time including failures.
+Native/compatible-route selection remains open; equivalent inputs and controls
+must be reviewed before a comparison. Settings, budgets, downloads, research, and
+execution require separate approval. No new experiment is authorized here.
 
 ## First development slice
 
-Approved direction: start both applications, log in with a predefined demo user,
-browse the 10 synthetic patients, open details, and log out so protected access
-is no longer available. Both roles may browse. Meaningful Operator-only operation
-tests arrive with importing/matching. Detailed specification and testing boundaries
-are pending approval. No implementation is authorized by this baseline.
+Delivered through [PR #9](https://github.com/dayloryanes/onco-match/pull/9): start
+both applications, log in with a predefined demo user, browse the 10 synthetic
+patients, open details, and log out so protected access is no longer available.
+Both roles may browse. Meaningful Operator-only operation tests arrive with
+importing/matching. This scope revision changes no delivered application behavior
+and authorizes no further implementation.
 
 ## Documentation and future boundaries
 
@@ -231,6 +286,7 @@ POC 1 release and final README/setup documentation.
 | Refresh, change detection, stale assessments, automatic/selective reassessment | Provisional POC 2 exploration |
 | Persistence, background execution, scheduling, queues, durable recovery, scale | Provisional POC 3 exploration where justified |
 | Structured/narrative consistency checking | Evaluate a study-level check once per study; measure overhead and correctness |
+| Narrative eligibility interpretation | Independent scope and quality evaluation; no promised release |
 | Broader cohort and clinical eligibility assessment | Explicit cohort rules, additional patient facts, and professional review |
 | Independent execution after dashboard disconnection | Reconnecting to progress with an explicitly expanded execution model |
 | Additional inference servers, mobile clients, agent-based matching, interoperability | Separate future decisions |

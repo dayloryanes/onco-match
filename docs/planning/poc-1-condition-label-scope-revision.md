@@ -1,5 +1,88 @@
 # POC 1 condition-label scope revision and checkpoint
 
+## Current local design checkpoint: 2026-10-30
+
+The maintainer approved the focused discussion and then local documentation
+preparation on branch `docs/condition-label-design`. The discussion established
+label findings, pair summaries, AND/OR handling, response responsibilities,
+failure separation, a working scope notice, and evaluation boundaries.
+
+The resulting records are [Condition-label assessment design](condition-label-assessment-design.md)
+and [Condition-label evaluation design](condition-label-evaluation-design.md).
+The baseline and root glossary now reflect the discussed scope. The earlier
+narrative designs retain their contents with historical notices. All 35 case
+expectations were reviewed in discussion. The human then approved the complete
+written package, including exact fixtures and field-level serialized examples,
+on 2026-10-30. Design approval does not authorize implementation or publication.
+
+This authorization covers local documentation and the subsequently approved
+single local documentation commit only. No implementation, experiment, model
+download, push, PR, issue publication/closure, or merge is authorized.
+GitHub #1/#12 still describe the preceding checkpoint until an
+approved update is published; the conversation authorizes this local work.
+UI placement, numerical latency acceptance, exact candidate settings, execution
+budgets, and later implementation contracts remain separate decisions.
+
+The maintainer subsequently approved a fresh two-page registry lookup, then
+requested continued pagination for more varied real-study sources. The extension
+was bounded to ten additional pages: 120 distinct studies across 12 pages,
+with 54 distinct Conditions arrays. Seven selected source snapshots and their
+[provenance](fixtures/condition-label-evaluation/provenance.json) are retained
+under the new fixture directory, leaving historical snapshots untouched.
+The human approved the revised allocation of 16 development cases and 19 acceptance cases
+(12 controlled plus seven real), with 57 acceptance responses per configuration.
+This replaces, rather than adds seven to, the initial four-real-case proposal.
+The 35 case expectations, including real-label ambiguity and unsupported-term
+handling, were subsequently reviewed and the final written records approved.
+
+During review, the human agreed to retain the narrower per-label
+`unassessedQualifiers` array, with item wording in `qualifier`. It records
+unsupported modifiers within a condition label, such as HER2-positive in
+HER2-positive breast cancer. Unsupported standalone SSTR2/PET labels instead
+retain their own Undetermined assessments, with stage/state Not specified,
+empty qualifier arrays, original source evidence, and explanations. They are
+not omitted or treated as requirements attached to another label. Pair-summary
+rules and assessed patient fields are unchanged. Final written-record approval
+is complete.
+
+The CL-R05 Primary/Second case was subsequently reviewed: supplied newly
+diagnosed breast cancer conflicts with Recurrent, while Primary and Second
+remain unassessed qualifiers with broad cancer correspondence retained.
+The pair summary is Mixed condition-label findings. This approval
+does not add patient history/origin fields or authorize an experiment.
+
+The human also reviewed CL-R06: current metastatic status is outside the
+supported patient comparisons. Metastatic is retained in `unassessedQualifiers`;
+cancer type aligns, stage/state are Not specified within their supported scope,
+and the complete label supports alignment within scope. The previous proposed
+Undetermined stage/label expectation is replaced. No current-metastasis patient
+field or stage conversion is added, and source evidence/limits remain visible.
+
+The human approved the CL-D01 through CL-D16 development expectations,
+CL-A01 through CL-A12 controlled acceptance expectations, and CL-R01 through
+CL-R07 real-study expectations after case-by-case summaries. Final record and
+serialized-example approval is now complete; this authorizes no model run
+or publication. The human then separately approved one local documentation
+commit, titled `docs: define condition-label assessment and evaluation`.
+This pre-commit checkpoint is included in that approved commit; Git history is
+the authority for its resulting identifier/completion. Publication and tracker
+resolution remain awaiting approval. No push, PR, merge, or GitHub update has been
+performed for these documents.
+
+Document checks verified JSON parsing, local links, all fixture pair
+aggregations, example evidence references, snapshot identities/hashes, and exact
+snapshot Conditions arrays. Historical narrative design bodies, old snapshots,
+application code/data, and runner files are unchanged. No application tests,
+independent automated code review, inference, or clinical validation is claimed.
+
+The material below is the preserved **2026-10-29 historical checkpoint**. Its
+open-question and pre-merge file-status statements describe that earlier point,
+not the current local branch or authorization. Retained experiment evidence is
+unchanged. Resume through [overview #1](https://github.com/dayloryanes/onco-match/issues/1)
+and these current local design records while publication is pending.
+
+## Historical scope-revision checkpoint
+
 Date: 2026-10-29. Status: agreed direction, with detailed contract decisions still
 open. This planning draft is preserved in a local commit separate from the
 experimental runner checkpoint. The linked GitHub issue checkpoint is published;
