@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { api, ApiError } from './api'
 import type { PatientDetails, PatientSummary } from './api'
+import { useListScroll } from './listNavigation'
+import type { ListNavigation } from './listNavigation'
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'notFound' } |
   { status: 'ready'; data: PatientSummary[] | PatientDetails }
@@ -18,10 +20,11 @@ function fact(status: string, value: string | null) {
   return status === 'notApplicable' ? 'Not applicable' : status === 'unknown' ? 'Unknown' : label(value)
 }
 
-export default function PatientPage({ onExpired }: { onExpired: () => void }) {
+export default function PatientPage({ onExpired, navigation, isVisible }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean }) {
   const { id } = useParams()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  useListScroll(navigation, !id, state.status === 'ready' && isVisible)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -36,17 +39,20 @@ export default function PatientPage({ onExpired }: { onExpired: () => void }) {
     return () => controller.abort()
   }, [id, attempt, onExpired])
 
+  const notice = <p className="notice">Fictional patient data for demonstration only.</p>
   let content
   if (state.status === 'loading') content = <p role="status">Loading patients…</p>
   else if (state.status === 'error') content = <div role="alert"><p>Unable to load patient information.</p><button onClick={() => { setState({ status: 'loading' }); setAttempt(value => value + 1) }}>Retry</button></div>
   else if (state.status === 'notFound') content = <h1>Patient not found</h1>
   else if (Array.isArray(state.data)) content = <>
     <p className="eyebrow">Patient directory</p><h1>Patients</h1>
-    <p>{state.data.length} fictional patient records</p>
+    <p className="record-count">{state.data.length} fictional {state.data.length === 1 ? 'patient' : 'patients'}</p>
+    {notice}
     <div className="table-scroll"><table>
       <thead><tr><th scope="col">Patient</th><th scope="col">Age</th><th scope="col">Sex</th><th scope="col">Cancer type</th></tr></thead>
-      <tbody>{state.data.map(patient => <tr key={patient.id}>
-        <th scope="row"><Link to={`/patients/${encodeURIComponent(patient.id)}`}>{patient.id}</Link></th>
+      <tbody>{state.data.map(patient => <tr key={patient.id} className={navigation.lastViewedId === patient.id ? 'last-viewed' : undefined}>
+        <th scope="row"><Link to={`/patients/${encodeURIComponent(patient.id)}`} onClick={event => navigation.remember(patient.id, event)}>{patient.id}</Link>
+          {navigation.lastViewedId === patient.id && <span className="last-viewed-label">Last viewed</span>}</th>
         <td>{patient.ageYears === null ? 'Unknown' : `${patient.ageYears} years`}</td>
         <td>{label(patient.sex)}</td><td>{label(patient.cancerType)}</td>
       </tr>)}</tbody>
@@ -55,6 +61,7 @@ export default function PatientPage({ onExpired }: { onExpired: () => void }) {
   else {
     const patient = state.data
     content = <><p className="eyebrow">Patient details</p><h1>Patient {patient.id}</h1>
+      {notice}
       <dl className="patient-facts">
         <div><dt>Age</dt><dd>{patient.ageYears === null ? 'Unknown' : `${patient.ageYears} years`}</dd></div>
         <div><dt>Sex</dt><dd>{label(patient.sex)}</dd></div>
@@ -67,8 +74,8 @@ export default function PatientPage({ onExpired }: { onExpired: () => void }) {
   }
 
   return <section>
-    <nav aria-label="Patient navigation"><Link to="/">Dashboard</Link>{id && <Link to="/patients">All patients</Link>}</nav>
-    <p className="notice">Fictional patient data for demonstration only.</p>
+    {id && <nav aria-label="Patient navigation"><Link to="/patients">All patients</Link></nav>}
     {content}
+    {state.status !== 'ready' && notice}
   </section>
 }

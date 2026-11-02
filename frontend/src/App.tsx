@@ -1,13 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
-import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { FormEvent, ReactElement } from 'react'
+import { BrowserRouter, Link, matchRoutes, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { api, ApiError } from './api'
 import type { CurrentUser } from './api'
 import './App.css'
 import PatientPage from './PatientPage'
+import StudyPage from './StudyPage'
+import Dashboard from './Dashboard'
+import { useListNavigation } from './listNavigation'
+
+type PageRoute = {
+  path: string
+  title: string | ((params: Record<string, string | undefined>) => string)
+  element: ReactElement
+}
 
 function returnDestination(value: unknown) {
-  return typeof value === 'string' && /^(\/|\/patients(?:\/[A-Za-z0-9_-]+)?)$/.test(value) ? value : '/'
+  return typeof value === 'string' && /^(\/|\/(?:patients|studies)(?:\/[A-Za-z0-9_-]+)?)$/.test(value) ? value : '/'
 }
 
 function Login({ onLogin }: { onLogin: (user: CurrentUser) => void }) {
@@ -50,13 +59,26 @@ function Login({ onLogin }: { onLogin: (user: CurrentUser) => void }) {
     </form>
     <aside className="demo-accounts" aria-label="Demo credentials">
       <h2>Try a demo account</h2>
-      <p>Viewer: <code>viewer</code> / <code>ViewerDemo!1</code></p>
-      <p>Operator: <code>operator</code> / <code>OperatorDemo!1</code></p>
+      <p>
+        <span className="fact-label">Viewer</span><br />
+        <span className="fact-label">Username:</span> <code>viewer</code> · <span className="fact-label">Password:</span> <code>ViewerDemo1!</code>
+      </p>
+      <p>
+        <span className="fact-label">Operator</span><br />
+        <span className="fact-label">Username:</span> <code>operator</code> · <span className="fact-label">Password:</span> <code>OperatorDemo1!</code>
+      </p>
     </aside>
   </section>
 }
 
 function SessionApp() {
+  const patientsNavigation = useListNavigation()
+  const studiesNavigation = useListNavigation()
+  const clearPatientsNavigation = patientsNavigation.clear
+  const clearStudiesNavigation = studiesNavigation.clear
+  const clearNavigation = useCallback(() => {
+    clearPatientsNavigation(); clearStudiesNavigation()
+  }, [clearPatientsNavigation, clearStudiesNavigation])
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [checking, setChecking] = useState(true)
   const [sessionError, setSessionError] = useState(false)
@@ -65,9 +87,10 @@ function SessionApp() {
   const [logoutError, setLogoutError] = useState(false)
   const [loginReturn, setLoginReturn] = useState<{ key: string; destination: string } | null>(null)
   const sessionEpoch = useRef(0)
+  const focusPosition = useRef<{ key: string; x: number; y: number } | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const expire = useCallback(() => { sessionEpoch.current++; setUser(null) }, [])
+  const expire = useCallback(() => { sessionEpoch.current++; focusPosition.current = null; clearNavigation(); setUser(null); setChecking(false); setSessionError(false) }, [clearNavigation])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -76,23 +99,40 @@ function SessionApp() {
       if (!controller.signal.aborted && epoch === sessionEpoch.current) { setUser(value); setSessionError(false); setChecking(false) }
     }).catch(failure => {
       if (controller.signal.aborted || epoch !== sessionEpoch.current) return
-      if (failure instanceof ApiError && failure.status === 401) { setUser(null); setSessionError(false) }
+      focusPosition.current = null
+      if (failure instanceof ApiError && failure.status === 401) { clearNavigation(); setUser(null); setSessionError(false) }
       else setSessionError(true)
       setChecking(false)
     })
     return () => controller.abort()
-  }, [checkId])
+  }, [checkId, clearNavigation])
+
+  useLayoutEffect(() => {
+    if (checking) return
+    const position = focusPosition.current
+    focusPosition.current = null
+    // Session checks temporarily hide protected content, which collapses the
+    // page. Resume only the same history entry after a successful check.
+    if (position && user && !sessionError && !logoutPending && position.key === location.key) {
+      window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' })
+    }
+  }, [checking, location.key, logoutPending, sessionError, user])
 
   useEffect(() => {
     function onFocus() {
-      if (user) { setChecking(true); setCheckId(value => value + 1) }
+      if (user && !logoutPending) {
+        if (!focusPosition.current) focusPosition.current = { key: location.key, x: window.scrollX, y: window.scrollY }
+        setChecking(true); setCheckId(value => value + 1)
+      }
     }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
-  }, [user])
+  }, [user, logoutPending, location.key])
 
   function finishLogin(value: CurrentUser) {
     sessionEpoch.current++
+    focusPosition.current = null
+    clearNavigation()
     const requested = location.state?.returnTo ?? new URLSearchParams(location.search).get('returnTo')
     setLoginReturn({ key: location.key, destination: returnDestination(requested) })
     setUser(value)
@@ -100,6 +140,8 @@ function SessionApp() {
 
   function finishLogout() {
     sessionEpoch.current++
+    focusPosition.current = null
+    clearNavigation()
     setUser(null)
     setChecking(false)
     setSessionError(false)
@@ -111,6 +153,7 @@ function SessionApp() {
   async function logout() {
     if (logoutPending) return
     sessionEpoch.current++
+    focusPosition.current = null
     setLogoutPending(true)
     setLogoutError(false)
     try {
@@ -125,8 +168,29 @@ function SessionApp() {
     } finally { setLogoutPending(false) }
   }
 
+  // Every application route declares its title here, alongside its rendered page.
+  const pageRoutes: PageRoute[] = [
+    { path: '/', title: 'Dashboard', element: <Dashboard user={user!} onExpired={expire} /> },
+    { path: '/login', title: 'Log in', element: <Navigate to={loginReturn?.key === location.key ? loginReturn.destination : '/'} replace /> },
+    { path: '/patients', title: 'Patients', element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
+    { path: '/patients/:id', title: params => `Patient ${params.id}`, element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
+    { path: '/studies', title: 'Studies', element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} /> },
+    { path: '/studies/:nctId', title: params => `Study ${params.nctId}`, element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} /> },
+    { path: '*', title: 'Page not found', element: <h1>Page not found</h1> },
+  ]
+  const matchedPage = matchRoutes(pageRoutes, location)?.at(-1)
+  const routeTitle = matchedPage && (typeof matchedPage.route.title === 'function'
+    ? matchedPage.route.title(matchedPage.params) : matchedPage.route.title)
+  const title = logoutPending ? 'Logging out'
+    : checking ? 'Checking session'
+      : sessionError ? 'Unable to check session'
+        : !user ? 'Log in'
+          : routeTitle ?? 'Page not found'
+  useEffect(() => { document.title = `${title} — OncoMatch` }, [title])
+
   return <>
     <header className="site-header"><Link className="brand" to="/">OncoMatch<span>Research screening POC</span></Link>
+      {user && !checking && !sessionError && !logoutPending && <nav className="main-navigation" aria-label="Main navigation"><Link to="/">Dashboard</Link><Link to="/patients">Patients</Link><Link to="/studies">Studies</Link></nav>}
       {user && !checking && !sessionError && <div className="account"><span>{user.username} · {user.role}</span><button className="secondary" disabled={logoutPending} onClick={logout}>{logoutPending ? 'Logging out…' : logoutError ? 'Retry logout' : 'Log out'}</button></div>}
     </header>
     <main>
@@ -137,14 +201,12 @@ function SessionApp() {
           : !user ? <Routes>
             <Route path="/login" element={<Login onLogin={finishLogin} />} />
             <Route path="*" element={<Navigate to="/login" state={{ returnTo: location.pathname }} replace />} />
-          </Routes>
-            : <Routes>
-              <Route path="/" element={<><p className="eyebrow">Your workspace</p><h1>Dashboard</h1><p>Browse the fictional patients available for this demonstration.</p><Link className="card" to="/patients">Browse patients</Link></>} />
-              <Route path="/login" element={<Navigate to={loginReturn?.key === location.key ? loginReturn.destination : '/'} replace />} />
-              <Route path="/patients" element={<PatientPage key={location.pathname} onExpired={expire} />} />
-              <Route path="/patients/:id" element={<PatientPage key={location.pathname} onExpired={expire} />} />
-              <Route path="*" element={<h1>Page not found</h1>} />
-            </Routes>}
+          </Routes> : null}
+      {user && !logoutPending && !sessionError && <div hidden={checking}>
+            <Routes>
+              {pageRoutes.map(page => <Route key={page.path} path={page.path} element={page.element} />)}
+            </Routes>
+      </div>}
     </main>
     <footer>Independent portfolio proof of concept. Fictional patients only. No clinical eligibility decisions.</footer>
   </>

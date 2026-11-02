@@ -1,9 +1,9 @@
-# Demo login, dashboard, and protected patient browsing
+# Login and patient browsing
 
 Status: specification approved and published; implementation complete and manually
 reviewed by the human in the running application; local commit approved, 2026-10-27.
 
-Canonical specification: [Demo login, dashboard, and protected patient browsing](https://github.com/dayloryanes/onco-match/issues/8).
+Canonical specification: [Login and patient browsing](https://github.com/dayloryanes/onco-match/issues/8).
 Delivery checkpoints are recorded on the canonical issue and development overview.
 
 The human approved this specification's contents, publication, and subsequently
@@ -125,12 +125,20 @@ Approved browser routes:
 
 ### Demo accounts and session behavior
 
+Later approved refinement: the shared [list-return navigation behavior](study-import-browsing.md#local-navigation-refinement)
+also applies to Patients. It was approved after the original login/patient slice;
+it does not change the ten patient records or introduce filtering/pagination.
+
 - Provide one predefined Viewer and one predefined Operator. Credentials are
   intentionally public demonstration credentials, displayed on Login. There is
   no registration, password reset, user administration, or real-user onboarding.
-- Approved fixture credentials: username `viewer`, password `ViewerDemo!1`, role
-  `Viewer`; username `operator`, password `OperatorDemo!1`, role `Operator`.
+- Approved fixture credentials: username `viewer`, password `ViewerDemo1!`, role
+  `Viewer`; username `operator`, password `OperatorDemo1!`, role `Operator`.
   Do not reuse these credentials for any other service.
+  Credential update approved on 2026-11-02: these values apply to the current
+  local refinement after restarting the updated backend. The code change
+  remains unpublished; historical commits and PR snapshots retain
+  their original credentials.
 - Trim surrounding username whitespace and compare it
   case-insensitively; compare passwords exactly without trimming. Missing or
   whitespace-only required inputs receive validation feedback. A supplied but

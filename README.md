@@ -6,14 +6,20 @@ eligibility or approve enrollment.
 
 ## Current behavior
 
-The first slice provides demo login, Dashboard, a directory of 10 fictional
-patients, patient details, and logout. Viewer and Operator both browse the same
-data. API permissions are enforced independently of the UI.
+Demo login opens Dashboard, with navigation to the 10 fictional patients and
+imported studies. Operators can explicitly import registry pages and retry failed
+attempts. Both roles can browse the same studies, details, and import history.
+API permissions are enforced independently of the UI.
 
-Studies, importing, matching, and Ollama integration are not implemented in this
-slice. See the [approved specification](https://github.com/dayloryanes/onco-match/issues/8)
+Dashboard, Patients, and Studies share one primary navigation in the header.
+Dashboard keeps Refresh with its Study imports section; it does not repeat
+directory navigation links inside the page. Detail pages retain their contextual
+All patients/All studies return links.
+
+Matching and Ollama integration are not implemented. See the
+[study-import specification](https://github.com/dayloryanes/onco-match/issues/16)
 and [development overview](https://github.com/dayloryanes/onco-match/issues/1)
-for scope and current authorization. Licensing is undecided.
+for scope and current authorization/review status. Licensing is undecided.
 
 See the [documentation index](docs/README.md) for current designs, the selected
 development baseline and its known limitations.
@@ -70,18 +76,25 @@ hosting arrangement.
 
 | Role | Username | Password |
 | --- | --- | --- |
-| Viewer | `viewer` | `ViewerDemo!1` |
-| Operator | `operator` | `OperatorDemo!1` |
+| Viewer | `viewer` | `ViewerDemo1!` |
+| Operator | `operator` | `OperatorDemo1!` |
 
 These credentials are intentionally public and also displayed on Login. Do not
-reuse them elsewhere. Normal login opens Dashboard; a protected patient link
-returns to that patient after login. Patient views show supplied age, sex,
+reuse them elsewhere. Normal login opens Dashboard; a protected patient or study
+link returns to that record after login. Patient views show supplied age, sex,
 diagnosis, stage/classification system, and disease state. Unknown and Not
 applicable have different meanings. Fixture contents can change through review.
 
+When returning from patient or study details through All patients/All studies or
+browser Back, the list restores the position saved when you opened the record.
+The most recently opened row has a subtle highlight and a Last viewed label.
+Each list remembers its own record within the current tab. Logout/session expiry
+clears this navigation memory, and a full browser reload starts fresh. Last viewed
+indicates navigation history only, not a clinical assessment or review status.
+
 ## Session and data lifetime
 
-- Secure, HttpOnly, nonpersistent cookies; CSRF tokens protect login/logout.
+- Secure, HttpOnly, nonpersistent cookies; CSRF tokens protect login/logout/imports.
 - A 30-minute authentication ticket uses standard sliding expiration. Eligible
   requests after the halfway point renew it; earlier requests do not reset an
   exact idle timer. There is no background session polling or Remember me option.
@@ -93,6 +106,40 @@ applicable have different meanings. Fixture contents can change through review.
   them; restarting the backend reloads them. There is no database or patient editor.
 - Invalid fixture structure fails startup with record/field context. Do not
   substitute invented clinical facts for missing values.
+- Imported studies, history, and pagination are shared in process memory. Logout
+  keeps completed imports; backend restart clears them. There is no database.
+
+## Study importing
+
+Dashboard offers Import first 10, Load Next 10, or Retry import to Operators.
+Each action requests one ClinicalTrials.gov page using the fixed cancer search,
+Recruiting/Not Yet Recruiting statuses, interventional/observational study types,
+and registry relevance ordering. No geography or age filter is applied. Relevance
+is to the search, not a patient; no particular patient alignment or age mix is
+guaranteed. Importing does not perform patient screening or start inference.
+
+Usable records are retained, duplicates skipped, and malformed records reported
+with their one-based position in the page. History preserves fetched/imported/
+duplicate/rejected counts and relevant identifiers. No replacement pages are
+fetched. Completed empty, duplicate-only, or rejection-only pages still advance
+using the returned token. Exhaustion disables further imports.
+
+Failed/cancelled attempts preserve completed data and pagination. Their counts
+are unavailable rather than zero. Retry is explicit and creates a linked new
+attempt. A lost response is reconciled against server history without automatic
+resubmission. Only one import runs across the application; stale controls require
+reviewing refreshed state before another action.
+
+The registry deadline is 30 seconds, including reading the response. Leaving
+Dashboard or logging out requests cancellation; logout also signals the backend
+for that login session, including shared tabs. Disconnect detection is best
+effort. Cancellation before publication discards staged work; cancellation after
+publication cannot undo a completed import.
+
+Both roles can inspect study lists/details and history. Refresh reads current
+application memory; it never refreshes a record from the registry. There is no
+polling. Study fields retain supplied source text. Not available indicates absent
+display information, not an eligibility conclusion.
 
 ## Checks
 
@@ -116,7 +163,13 @@ The API tests use real authentication/antiforgery with an in-memory test server.
 Cookie expiry tests control time. Fixture unit tests check meaningful validation
 rules. React tests control HTTP responses with MSW. Browser tests start both
 applications over HTTPS and exercise both roles, deep links, refresh, and logout
-across tabs. Stop manually running servers on ports 7132 and 5173 before running
+across tabs. Study API tests replace only outbound registry HTTP; browser import
+tests run a controlled registry service on 7133, with the real API, proxy, cookies,
+and storage. The test backend uses `Registry__BaseUrl` to select that local
+service; normal startup uses ClinicalTrials.gov. No dependency installation or
+live registry check is part of a test run.
+
+Stop manually running servers on ports 7132, 7133, and 5173 before running
 the browser suite; it deliberately does not reuse existing processes.
 
 Playwright accepts the local self-signed certificate without installing a system
@@ -135,6 +188,9 @@ been verified. Automated tests use no live registry or inference services.
   the test-managed servers and manually started servers together.
 - A stale CSRF token after a session change rejects the mutation. Retry explicitly;
   the client obtains a current token before each mutation.
+- Registry unavailable/timeout/invalid response: inspect history and choose Retry
+  import explicitly. A failed history retrieval must succeed before importing
+  again. Other users' completed imports become visible after Refresh.
 
 ## Project Structure
 

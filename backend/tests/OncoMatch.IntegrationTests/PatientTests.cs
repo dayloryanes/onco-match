@@ -80,8 +80,8 @@ public class PatientTests
     }
 
     [Theory]
-    [InlineData("viewer", "ViewerDemo!1")]
-    [InlineData("operator", "OperatorDemo!1")]
+    [InlineData("viewer", "ViewerDemo1!")]
+    [InlineData("operator", "OperatorDemo1!")]
     public async Task Both_roles_can_browse_the_same_ten_patients_and_details(string username, string password)
     {
         await using var app = new TestApp();
