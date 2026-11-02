@@ -17,7 +17,7 @@ evidence; compatible-route quality and acceptance remain unestablished.
   metadata, development inputs and all 16 frozen requests.
 - `baseline.sha256.json` and `audit-baseline.cjs`: portable byte-integrity check.
 - `Labels.cs` and `SchemaGuidance.cs`: retained schema, validator, pair aggregation
-  and original descriptions. Unused narrative/Qwen code has been removed.
+  and original descriptions.
 - `results/`, `bin/`, `obj/`: ignored, disposable outputs.
 
 From the repository root, with the .NET 10 SDK:
