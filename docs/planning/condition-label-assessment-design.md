@@ -2,18 +2,17 @@
 
 Date: 2026-10-30. Decision: [Revise POC 1 assessment scope to condition-label alignment (#12)](https://github.com/dayloryanes/onco-match/issues/12).
 
-Status: the human approved this written design package on 2026-10-30, including
-the exact fixture records and serialized examples, after the focused discussion
-and local preparation on `docs/condition-label-design`. This approved local
-record is not an implementation ticket or a published GitHub resolution.
-No application implementation, model run/download, or publication is authorized.
-After design approval, the human separately authorized one local documentation
-commit; Git history records its completion. GitHub #1/#12 have not been updated
-with this conversation, and publication remains separately authorized.
+Status: approved on 2026-10-30, including exact fixture records and serialized
+examples, and published through [PR #14](https://github.com/dayloryanes/onco-match/pull/14).
+This is the assessment contract, not evidence of implemented application behavior
+or a passed model-quality gate. The [development baseline](../evaluation/condition-label-baseline.md)
+records the selected configuration and known limitations. See the
+[development overview](https://github.com/dayloryanes/onco-match/issues/1)
+for work stages and authorization.
 
 Read the [baseline](poc-1-baseline.md), [glossary](../../GLOSSARY.md), and
 [condition-label evaluation design](condition-label-evaluation-design.md). The preceding
-[narrative contract](assessment-contract-design.md) is historical. Its structured
+[narrative contract](https://github.com/dayloryanes/onco-match/blob/da8799de73b6bb324eb1e84eb746b925e7b70e0d/docs/planning/assessment-contract-design.md) is historical. Its structured
 age/sex and unaffected execution/lifecycle rules are retained as described below;
 its narrative inputs, three narrative results, and aggregation are not reused.
 
@@ -377,9 +376,9 @@ documentation, not this notice.
 
 ## Review and next boundaries
 
-The nested serialized fields, two JSON examples, and exact new fixtures are
-approved as written design records. Numerical latency acceptance, candidate settings,
-route selection, request budgets, and execution approvals remain open under
-[#6](https://github.com/dayloryanes/onco-match/issues/6), which is still blocked by
-open #12 on GitHub. No issue closure or publication is implied by local drafting.
-No implementation specification/tickets are created here.
+The nested serialized fields, two JSON examples, and exact fixtures are approved
+design records. The scope decision is resolved. The selected development
+configuration does not establish acceptance; quality and numerical latency
+approval remain separate questions under
+[Evaluate and choose the initial model settings and inference API](https://github.com/dayloryanes/onco-match/issues/6).
+Application slices still require their own specification and approval.

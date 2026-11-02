@@ -1,0 +1,2 @@
+# Preserve evaluated baseline bytes and their recorded SHA256 hashes.
+tools/condition-label-evaluation/baseline/** -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

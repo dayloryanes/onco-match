@@ -2,17 +2,17 @@
 
 Date: 2026-10-30. Decision: [scope revision #12](https://github.com/dayloryanes/onco-match/issues/12).
 
-Status: approved local design record. The human approved all 35 case expectations
-through case-by-case summaries and then approved the complete written package,
-including exact fixture text and serialized examples, on 2026-10-30.
-This design approval does not authorize execution or publication.
-The human approved seven real-study cases, replacing the initial four, after
-reviewing the coverage recommendation. No inference has been run for this task. No model,
-prompt, API route, or inference settings are selected by this document.
+Status: approved on 2026-10-30 and published through
+[PR #14](https://github.com/dayloryanes/onco-match/pull/14), including all 35 case
+expectations, exact fixture text and serialized examples. Seven reviewed
+real-study cases replaced the initial four. This document defines the fixtures
+and quality gate; the [development baseline](../evaluation/condition-label-baseline.md)
+records the selected configuration and observed limitations. Development
+evaluation does not establish acceptance. All 19 acceptance cases remain reserved.
 
 Read [Condition-label assessment design](condition-label-assessment-design.md),
 the [baseline](poc-1-baseline.md), and [glossary](../../GLOSSARY.md). Preserve the
-[old narrative evaluation](inference-evaluation-design.md), its fixtures, and
+[old narrative evaluation](https://github.com/dayloryanes/onco-match/blob/da8799de73b6bb324eb1e84eb746b925e7b70e0d/docs/planning/inference-evaluation-design.md), its fixtures, and
 retained outputs as history. These new cases are not relabelled old passes.
 The ten application patients and live import behavior are unchanged.
 
@@ -628,21 +628,16 @@ implementation slices require their own specification/approval. A deliberately
 injected failure passes its application check when handled correctly; an unexpected
 failed scored model request still fails the model-quality gate.
 
-## Remaining review and next authorization
+## Remaining evaluation decisions
 
-The written records, exact inputs/expectations, evidence requirements, and
-serialized contract examples are approved. Next steps need their own authorization:
+The written records, exact inputs/expectations, evidence requirements and
+serialized examples are approved. The condition-label scope decision is resolved.
+The working development baseline does not pass the acceptance gate by selection
+alone. Agree numerical latency acceptance and freeze a configuration before any
+separately approved acceptance execution. Keep reserved fixtures out of tuning.
 
-1. Separately approve committing and publishing the design records if wanted.
-2. Resolve #12 through separately approved tracker updates. #6 remains blocked
-   on GitHub until that happens; local document preparation does not close it.
-3. Separately propose/review candidate controls and a bounded development pilot.
-   Measure latency, agree the limit, then freeze a configuration before acceptance.
-
-No numerical latency limit, model choice, download, pilot execution, publication,
-commit, or implementation is authorized by this design approval.
-
-After design approval, the human separately authorized one local documentation
-commit containing the 15 approved files. That bounded approval does not authorize
-push, PR creation, tracker updates, implementation, or inference. The local Git
-log records completion; further commits/publication require their own approval.
+The [development overview](https://github.com/dayloryanes/onco-match/issues/1)
+tracks current authorization, and
+[Evaluate and choose the initial model settings and inference API](https://github.com/dayloryanes/onco-match/issues/6)
+tracks the remaining evaluation decision. Application implementation, new model
+requests and publication remain separate approved stages.
