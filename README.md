@@ -11,26 +11,16 @@ imported studies. Operators can explicitly import registry pages and retry faile
 attempts. Both roles can browse the same studies, details, and import history.
 API permissions are enforced independently of the UI.
 
-Dashboard, Patients, and Studies share one primary navigation in the header.
-Dashboard keeps Refresh with its Study imports section; it does not repeat
-directory navigation links inside the page. Detail pages retain their contextual
-All patients/All studies return links.
-
-Matching and Ollama integration are not implemented. See the
-[study-import specification](https://github.com/dayloryanes/onco-match/issues/16)
-and [development overview](https://github.com/dayloryanes/onco-match/issues/1)
-for scope and current authorization/review status. Licensing is undecided.
+Application matching and inference are not implemented. Ollama is not required
+to run the application. Licensing is undecided.
 
 The separate [evaluation runner](tools/condition-label-evaluation/README.md)
-supports offline preparation and fake-transport checks for native and
-OpenAI-compatible local Ollama requests. It is independent of the application;
-ordinary live execution is disabled. Both routes passed one development-case
-live smoke request using low reasoning. The runner README records the evidence
-and limits; compatible-route quality/acceptance remain unestablished, and the
-one-time smoke scope is consumed and disabled.
+supports native and OpenAI-compatible local Ollama requests for development
+evaluation. Its README covers offline checks, configuration, and the limited live
+evidence. Live execution is currently disabled.
 
-See the [documentation index](docs/README.md) for current designs, the selected
-development baseline and its known limitations.
+See the [documentation index](docs/README.md) for specifications, evaluation
+findings, and project status.
 
 ## Run locally
 
@@ -89,33 +79,22 @@ hosting arrangement.
 
 These credentials are intentionally public and also displayed on Login. Do not
 reuse them elsewhere. Normal login opens Dashboard; a protected patient or study
-link returns to that record after login. Patient views show supplied age, sex,
-diagnosis, stage/classification system, and disease state. Unknown and Not
-applicable have different meanings. Fixture contents can change through review.
-
-When returning from patient or study details through All patients/All studies or
-browser Back, the list restores the position saved when you opened the record.
-The most recently opened row has a subtle highlight and a Last viewed label.
-Each list remembers its own record within the current tab. Logout/session expiry
-clears this navigation memory, and a full browser reload starts fresh. Last viewed
-indicates navigation history only, not a clinical assessment or review status.
+link returns to that record after login. Use the header to browse Patients and
+Studies. Patient details show supplied age, sex, diagnosis, stage, and disease
+state. Unknown means a missing fact; Not applicable means the concept does not
+apply. Last viewed marks navigation history, not a clinical review.
 
 ## Session and data lifetime
 
-- Secure, HttpOnly, nonpersistent cookies; CSRF tokens protect login/logout/imports.
-- A 30-minute authentication ticket uses standard sliding expiration. Eligible
-  requests after the halfway point renew it; earlier requests do not reset an
-  exact idle timer. There is no background session polling or Remember me option.
-- Logout removes this browser's cookie and protected UI. Other tabs recheck when
-  focused, and authenticated requests that receive 401 clear the UI. Independent
-  browser sessions remain signed in. Server-side revocation of copied cookies
-  is not part of this POC slice.
-- The 10 JSON patient fixtures load into shared process memory. Logout preserves
-  them; restarting the backend reloads them. There is no database or patient editor.
-- Invalid fixture structure fails startup with record/field context. Do not
-  substitute invented clinical facts for missing values.
-- Imported studies, history, and pagination are shared in process memory. Logout
-  keeps completed imports; backend restart clears them. There is no database.
+- Login uses secure cookies with a 30-minute lifetime that can renew during use.
+  Logout ends the current browser session; shared tabs recheck when focused.
+  Independently signed-in browsers remain signed in.
+- Both roles share the same in-memory data. Logout preserves completed imports;
+  restarting the backend clears imported studies and history and reloads the ten
+  fictional patient fixtures. There is no database or patient editor.
+
+Detailed authentication and fixture behavior is documented in the
+[login and patient browsing specification](docs/specs/login-patient-browsing.md).
 
 ## Study importing
 
@@ -127,27 +106,17 @@ is to the search, not a patient; no particular patient alignment or age mix is
 guaranteed. Importing does not perform patient screening or start inference.
 
 Usable records are retained, duplicates skipped, and malformed records reported
-with their one-based position in the page. History preserves fetched/imported/
-duplicate/rejected counts and relevant identifiers. No replacement pages are
-fetched. Completed empty, duplicate-only, or rejection-only pages still advance
-using the returned token. Exhaustion disables further imports.
-
-Failed/cancelled attempts preserve completed data and pagination. Their counts
-are unavailable rather than zero. Retry is explicit and creates a linked new
-attempt. A lost response is reconciled against server history without automatic
-resubmission. Only one import runs across the application; stale controls require
-reviewing refreshed state before another action.
-
-The registry deadline is 30 seconds, including reading the response. Leaving
-Dashboard or logging out requests cancellation; logout also signals the backend
-for that login session, including shared tabs. Disconnect detection is best
-effort. Cancellation before publication discards staged work; cancellation after
-publication cannot undo a completed import.
+in import history. Only one import can run at a time. Requests time out after
+30 seconds. After a failure, review history and choose Retry import explicitly.
+Leaving Dashboard or logging out requests cancellation; completed imports remain.
 
 Both roles can inspect study lists/details and history. Refresh reads current
-application memory; it never refreshes a record from the registry. There is no
-polling. Study fields retain supplied source text. Not available indicates absent
-display information, not an eligibility conclusion.
+application memory; it does not fetch updates from the registry. Other users'
+completed imports appear after Refresh. Study fields retain supplied source text;
+Not available means display information is missing.
+
+See the [study importing and browsing specification](docs/specs/study-import-browsing.md)
+for pagination, validation, recovery, cancellation, and navigation details.
 
 ## Checks
 
@@ -167,15 +136,11 @@ npm.cmd exec -- playwright install chromium
 npm.cmd run test:e2e
 ```
 
-The API tests use real authentication/antiforgery with an in-memory test server.
-Cookie expiry tests control time. Fixture unit tests check meaningful validation
-rules. React tests control HTTP responses with MSW. Browser tests start both
-applications over HTTPS and exercise both roles, deep links, refresh, and logout
-across tabs. Study API tests replace only outbound registry HTTP; browser import
-tests run a controlled registry service on 7133, with the real API, proxy, cookies,
-and storage. The test backend uses `Registry__BaseUrl` to select that local
-service; normal startup uses ClinicalTrials.gov. No dependency installation or
-live registry check is part of a test run.
+Automated tests use controlled responses rather than live registry or inference
+services. API tests exercise authentication and CSRF protection; React tests use
+MSW. Browser tests start both applications over HTTPS and a controlled registry
+service on port 7133. The test backend selects that service with
+`Registry__BaseUrl`; normal startup uses ClinicalTrials.gov.
 
 Stop manually running servers on ports 7132, 7133, and 5173 before running
 the browser suite; it deliberately does not reuse existing processes.
@@ -191,20 +156,21 @@ been verified. Automated tests use no live registry or inference services.
 - Browser certificate warning: complete the development-certificate trust step,
   then restart the browser if needed. Check that you opened `https://localhost`.
 - API unavailable or login service error: confirm the backend is running on 7132.
-  Retrieval failures offer Retry and do not masquerade as an empty patient list.
 - Port already in use: stop the process you started on that port; avoid running
   the test-managed servers and manually started servers together.
-- A stale CSRF token after a session change rejects the mutation. Retry explicitly;
-  the client obtains a current token before each mutation.
 - Registry unavailable/timeout/invalid response: inspect history and choose Retry
   import explicitly. A failed history retrieval must succeed before importing
-  again. Other users' completed imports become visible after Refresh.
+  again.
+- Backend startup reports an invalid patient fixture: check the identified record
+  and field. Preserve missing values rather than inventing clinical facts.
 
 ## Project Structure
 
 - `backend/` — ASP.NET Core API, fictional JSON fixtures, and xUnit tests.
 - `frontend/` — React/TypeScript/Vite UI, React behavior tests, and Playwright.
-- `docs/` — planning baseline, project workflow, and the local specification copy.
+- `docs/` — specifications, planning, evaluation findings, and project workflow.
+- `tools/condition-label-evaluation/` — independent inference evaluation runner.
 
 Implementation and documentation are AI-assisted. Automated checks do not replace
-human review; see the development overview for the current review/merge status.
+human review. See the [development overview](https://github.com/dayloryanes/onco-match/issues/1)
+for current work and review status.
