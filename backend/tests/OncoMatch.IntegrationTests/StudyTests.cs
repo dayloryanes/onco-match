@@ -39,7 +39,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         var initial = Version(await State(client));
         var hold = new ResponseBarrier();
         app.ImportResponse = hold;
@@ -65,7 +65,7 @@ public class StudyTests
             await Assert.ThrowsAnyAsync<OperationCanceledException>(async () => await pending);
         }
         finally { hold.Release.TrySetResult(); app.ImportResponse = null; }
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         var state = await State(client);
         Assert.Single(state.GetProperty("attempts").EnumerateArray());
         Assert.Equal("completed", state.GetProperty("attempts")[0].GetProperty("status").GetString());
@@ -104,7 +104,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         app.Registry.Respond = (_, _) => Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)
         { Content = new StreamContent(new HeldBody(entered)) });
@@ -115,7 +115,7 @@ public class StudyTests
         if (logout) await AuthTests.PostWithToken(client, "/api/auth/logout");
         else app.Clock.Advance(TimeSpan.FromSeconds(30));
         if (!logout) Assert.Equal(HttpStatusCode.GatewayTimeout, (await pending.WaitAsync(TimeSpan.FromSeconds(5))).StatusCode);
-        else { await Disconnected(pending); await AuthTests.Login(client, "operator", "OperatorDemo!1"); }
+        else { await Disconnected(pending); await AuthTests.Login(client, "operator", "OperatorDemo1!"); }
         var state = await State(client);
         Assert.Equal(logout ? "cancelled" : "failed", state.GetProperty("attempts")[0].GetProperty("status").GetString());
         Assert.Equal(0, state.GetProperty("totalImportedStudyCount").GetInt32());
@@ -145,7 +145,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         var extra = fields.Length > 2 ? "," + fields[1..^1] : "";
         Page(app, "{\"protocolSection\":{\"identificationModule\":{\"nctId\":\"NCT00000001\"}" + extra + ",\"unrelated\":42},\"other\":true}");
         Assert.Equal(HttpStatusCode.OK, (await Import(client, Version(await State(client)))).StatusCode);
@@ -161,7 +161,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         app.Registry.Respond = async (_, token) =>
         {
@@ -200,7 +200,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         Page(app, Record("NCT00000001"), "second");
         await Import(client, Version(await State(client)));
         app.Registry.Respond = (_, _) => body switch
@@ -244,7 +244,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         Page(app, record, "more");
         await Import(client, Version(await State(client)));
         var state = await State(client);
@@ -267,7 +267,7 @@ public class StudyTests
         Assert.Equal(HttpStatusCode.Unauthorized, (await Import(client, "x")).StatusCode);
         await AuthTests.Login(client);
         Assert.Equal(HttpStatusCode.Forbidden, (await Import(client, "x")).StatusCode);
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         Assert.Equal(HttpStatusCode.BadRequest, (await client.PostAsJsonAsync("/api/study-imports", new { expectedVersion = "x" })).StatusCode);
         foreach (var input in new object[] { new { }, new { expectedVersion = " " }, new { expectedVersion = 2 }, new { expectedVersion = "x", pageToken = "client-token" } })
             Assert.Equal(HttpStatusCode.BadRequest, (await AuthTests.PostWithToken(client, "/api/study-imports", input)).StatusCode);
@@ -285,8 +285,8 @@ public class StudyTests
         await using var app = new TestApp();
         using var owner = app.Browser();
         using var independent = app.Browser();
-        await AuthTests.Login(owner, "operator", "OperatorDemo!1");
-        await AuthTests.Login(independent, "operator", "OperatorDemo!1");
+        await AuthTests.Login(owner, "operator", "OperatorDemo1!");
+        await AuthTests.Login(independent, "operator", "OperatorDemo1!");
         var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         app.Registry.Respond = async (_, token) =>
         {
@@ -308,7 +308,7 @@ public class StudyTests
         // Same-cookie logout models another tab in the initiating session.
         await AuthTests.PostWithToken(owner, "/api/auth/logout");
         await Disconnected(pending);
-        await AuthTests.Login(owner, "operator", "OperatorDemo!1");
+        await AuthTests.Login(owner, "operator", "OperatorDemo1!");
         var state = await State(owner);
         Assert.Equal("cancelled", state.GetProperty("attempts")[0].GetProperty("status").GetString());
         Assert.Equal("retry", state.GetProperty("nextAction").GetString());
@@ -330,7 +330,7 @@ public class StudyTests
     {
         await using var app = new TestApp();
         using var client = app.Browser();
-        await AuthTests.Login(client, "operator", "OperatorDemo!1");
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
         Page(app, Record("NCT00000001", " Original ") + "," + Record("NCT00000001", "Replacement") +
             ",null," + Record("invalid") + "," + Record("NCT00000002"), "opaque +/=");
         var response = await Import(client, Version(await State(client)));
@@ -379,7 +379,7 @@ public class StudyTests
         foreach (var role in new[] { "viewer", "operator" })
         {
             using var client = app.Browser();
-            await AuthTests.Login(client, role, role == "viewer" ? "ViewerDemo!1" : "OperatorDemo!1");
+            await AuthTests.Login(client, role, role == "viewer" ? "ViewerDemo1!" : "OperatorDemo1!");
             Assert.Empty((await client.GetFromJsonAsync<JsonElement>("/api/studies")).EnumerateArray());
             var state = await client.GetFromJsonAsync<JsonElement>("/api/study-imports");
             Assert.Equal("initial", state.GetProperty("nextAction").GetString());

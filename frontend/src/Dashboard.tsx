@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
 import { api, ApiError } from './api'
 import type { CurrentUser, ImportAttempt, ImportState } from './api'
 
@@ -15,18 +14,19 @@ const errors: Record<string, string> = {
 }
 
 function Attempt({ attempt }: { attempt: ImportAttempt }) {
-  return <li className="import-attempt">
-    <h3>{attempt.status[0].toUpperCase() + attempt.status.slice(1)} import</h3>
-    <p><time dateTime={attempt.startedAt}>{new Date(attempt.startedAt).toLocaleString()}</time>
-      {attempt.finishedAt && <> · Finished <time dateTime={attempt.finishedAt}>{new Date(attempt.finishedAt).toLocaleString()}</time></>}</p>
-    <p className="attempt-id">Attempt {attempt.id}{attempt.retryOfAttemptId && <> · Retry of {attempt.retryOfAttemptId}</>}</p>
-    <p>Fetched: {attempt.fetchedCount ?? 'Not available'} · Imported: {attempt.importedCount ?? 'Not available'} · Duplicates: {attempt.duplicateCount ?? 'Not available'} · Rejected: {attempt.rejectedCount ?? 'Not available'}</p>
+  const headingId = `import-attempt-${attempt.id}`
+  return <li className="import-attempt" aria-labelledby={headingId}>
+    <h3 id={headingId}>{attempt.status[0].toUpperCase() + attempt.status.slice(1)} import</h3>
+    <p className="attempt-id"><span className="fact-label">Attempt:</span> {attempt.id}{attempt.retryOfAttemptId && <> · <span className="fact-label">Retry of:</span> {attempt.retryOfAttemptId}</>}</p>
+    <p><span className="fact-label">Started:</span> <time dateTime={attempt.startedAt}>{new Date(attempt.startedAt).toLocaleString()}</time>
+      {attempt.finishedAt && <> · <span className="fact-label">Finished:</span> <time dateTime={attempt.finishedAt}>{new Date(attempt.finishedAt).toLocaleString()}</time></>}</p>
+    <p><span className="fact-label">Fetched:</span> {attempt.fetchedCount ?? 'Not available'} · <span className="fact-label">Imported:</span> {attempt.importedCount ?? 'Not available'} · <span className="fact-label">Duplicates:</span> {attempt.duplicateCount ?? 'Not available'} · <span className="fact-label">Rejected:</span> {attempt.rejectedCount ?? 'Not available'}</p>
     {attempt.failureCode && <p>{errors[attempt.failureCode] ?? 'Import failed. You can explicitly retry.'}</p>}
     {attempt.status === 'cancelled' && <p>Import cancelled. No staged studies were saved.</p>}
-    {attempt.importedNctIds.length > 0 && <p>Imported: {attempt.importedNctIds.join(', ')}</p>}
-    {attempt.duplicateNctIds.length > 0 && <p>Duplicates: {attempt.duplicateNctIds.join(', ')}</p>}
+    {attempt.importedNctIds.length > 0 && <p><span className="fact-label">Imported studies:</span> {attempt.importedNctIds.join(', ')}</p>}
+    {attempt.duplicateNctIds.length > 0 && <p><span className="fact-label">Duplicates:</span> {attempt.duplicateNctIds.join(', ')}</p>}
     {attempt.rejections.length > 0 && <ul>{attempt.rejections.map(rejection => <li key={rejection.recordNumber}>
-      Record {rejection.recordNumber}: {rejection.reason}{rejection.nctId && <> ({rejection.nctId})</>}
+      <span className="fact-label">Record {rejection.recordNumber}:</span> {rejection.reason}{rejection.nctId && <> ({rejection.nctId})</>}
     </li>)}</ul>}
   </li>
 }
@@ -84,22 +84,25 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
 
   return <section>
     <p className="eyebrow">Your workspace</p><h1>Dashboard</h1>
-    <p>Import registry studies and browse the shared demonstration data.</p>
-    <p className="notice">Fixed cancer search: Recruiting and Not Yet Recruiting interventional and observational studies, in registry relevance order. Relevance is to the search, not to a patient. No age or geography filter is applied, and no pediatric/adult distribution is guaranteed. Importing does not start matching.</p>
-    <div className="actions"><Link to="/patients">Browse patients</Link><Link to="/studies">Browse studies</Link>
-      <button onClick={reload} disabled={loading || pending}>{state ? 'Refresh' : 'Retry'}</button></div>
-    <h2>Study imports</h2>
-    {error && <p role="alert">{error}</p>}
-    {loading && <p role="status">Loading import history…</p>}
-    {state && <>
-      <p>{state.totalImportedStudyCount} imported studies · Shared until backend restart</p>
-      {(pending || state.isImporting) && <p role="status">Importing…</p>}
-      {state.isExhausted && <p>No more registry pages.</p>}
-      {user.role === 'Operator' && <button onClick={importPage} disabled={pending || state.isImporting || state.isExhausted || state.nextAction === 'none'}>
-        {pending || state.isImporting ? 'Importing…' : state.nextAction === 'initial' ? 'Import first 10' : state.nextAction === 'retry' ? 'Retry import' : 'Load Next 10'}
-      </button>}
-      <h2 className="history-heading">Import history</h2>
+    <p>Import studies and review import history.</p>
+    <p className="notice">Fixed cancer search: Recruiting and Not Yet Recruiting interventional and observational studies, in registry relevance order. Relevance is to the search, not to a patient. No age, sex, or geography filter is applied, and no pediatric/adult distribution is guaranteed. Importing does not start matching.</p>
+    <section aria-labelledby="study-imports-heading">
+      <h2 id="study-imports-heading">Study imports</h2>
+      {state && <p className="record-count">{state.totalImportedStudyCount} imported {state.totalImportedStudyCount === 1 ? 'study' : 'studies'} · Shared until server restart</p>}
+      {error && <p role="alert">{error}</p>}
+      {loading && <p role="status">Loading import history…</p>}
+      {state && (pending || state.isImporting) && <p role="status">Importing…</p>}
+      {state?.isExhausted && <p>No more registry pages.</p>}
+      <div className="actions import-actions">
+        {state && user.role === 'Operator' && <button onClick={importPage} disabled={pending || state.isImporting || state.isExhausted || state.nextAction === 'none'}>
+          {pending || state.isImporting ? 'Importing…' : state.nextAction === 'initial' ? 'Import first 10' : state.nextAction === 'retry' ? 'Retry import' : 'Load Next 10'}
+        </button>}
+        <button className="quiet-button" onClick={reload} disabled={loading || pending}>{state ? 'Refresh' : 'Retry'}</button>
+      </div>
+    </section>
+    {state && <section className="history-section" aria-labelledby="import-history-heading">
+      <h2 id="import-history-heading">Import history</h2>
       {state.attempts.length === 0 ? <p>No import attempts yet.</p> : <ol className="import-history">{state.attempts.map(attempt => <Attempt key={attempt.id} attempt={attempt} />)}</ol>}
-    </>}
+    </section>}
   </section>
 }

@@ -10,8 +10,8 @@ public class DemoAccounts
 
     public DemoAccounts()
     {
-        Add("viewer", "Viewer", "ViewerDemo!1");
-        Add("operator", "Operator", "OperatorDemo!1");
+        Add("viewer", "Viewer", "ViewerDemo1!");
+        Add("operator", "Operator", "OperatorDemo1!");
     }
 
     private void Add(string username, string role, string password)

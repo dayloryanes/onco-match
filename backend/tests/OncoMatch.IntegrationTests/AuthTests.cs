@@ -10,8 +10,10 @@ public class AuthTests
     [Theory]
     [InlineData("viewer", "wrong", 401, "invalid_credentials")]
     [InlineData("nobody", "wrong", 401, "invalid_credentials")]
-    [InlineData("viewer", " ViewerDemo!1 ", 401, "invalid_credentials")]
-    [InlineData("", "ViewerDemo!1", 400, "invalid_request")]
+    [InlineData("viewer", "ViewerDemo!1", 401, "invalid_credentials")]
+    [InlineData("operator", "OperatorDemo!1", 401, "invalid_credentials")]
+    [InlineData("viewer", " ViewerDemo1! ", 401, "invalid_credentials")]
+    [InlineData("", "ViewerDemo1!", 400, "invalid_request")]
     [InlineData("viewer", "", 400, "invalid_request")]
     public async Task Failed_login_reports_a_stable_error_without_creating_a_session(
         string username, string password, int status, string code)
@@ -36,7 +38,7 @@ public class AuthTests
         using var client = app.Browser();
         await Login(client);
         using var request = new HttpRequestMessage(HttpMethod.Post, $"/api/auth/{action}");
-        request.Content = JsonContent.Create(new { username = "operator", password = "OperatorDemo!1" });
+        request.Content = JsonContent.Create(new { username = "operator", password = "OperatorDemo1!" });
         if (invalidToken) request.Headers.Add("X-CSRF-TOKEN", "invalid-token");
         var response = await client.SendAsync(request);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -117,15 +119,15 @@ public class AuthTests
         return await client.SendAsync(request);
     }
 
-    internal static async Task Login(HttpClient client, string username = "viewer", string password = "ViewerDemo!1")
+    internal static async Task Login(HttpClient client, string username = "viewer", string password = "ViewerDemo1!")
     {
         var response = await PostWithToken(client, "/api/auth/login", new { username, password });
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Theory]
-    [InlineData("viewer", "ViewerDemo!1", "Viewer")]
-    [InlineData(" OPERATOR ", "OperatorDemo!1", "Operator")]
+    [InlineData("viewer", "ViewerDemo1!", "Viewer")]
+    [InlineData(" OPERATOR ", "OperatorDemo1!", "Operator")]
     public async Task Demo_users_can_login_and_read_their_session(string username, string password, string role)
     {
         await using var app = new WebApplicationFactory<Program>();

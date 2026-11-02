@@ -468,3 +468,185 @@ model changes, and inference/acceptance execution remain unapproved. The reporte
 loss of list position when returning from details is a proposed follow-up; no
 scroll-restoration change is included in this implementation commit. The published
 issue remains the canonical behavior specification; this checkpoint is local.
+
+### Local navigation refinement
+
+**Current checkpoint (2026-11-02):** The navigation and presentation refinements
+described below are complete. The human approved keeping them on
+`feat/study-import-browsing` and creating a separate local commit,
+`feat(ui): refine navigation and presentation`. The earlier implementation
+commit is `4d01797`. Earlier validation/checkpoint paragraphs below describe the
+progression of this work; this paragraph records the final state.
+
+The final approved adjustment uses the same outlined Refresh style on Dashboard
+and Studies for both roles. Operator import actions retain their solid emphasis;
+Viewer sees Refresh aligned left without an import control or placeholder.
+After this adjustment, all 36 React tests, all 17 browser workflows, frontend
+build, and lint passed again. A separate controlled Chromium check confirmed
+matching Refresh color, border, padding, font, and height in all four
+role/page combinations, plus the expected Operator-only import visibility.
+
+Final automated validation: 53 backend integration tests, seven backend unit
+tests, 36 React tests, and all 17 Chromium browser workflows passed. Frontend
+typecheck/build, lint, and Git whitespace checks passed. The full browser suite
+used isolated API/frontend/registry processes on alternate ports, temporary copies
+of the tests with only the hard-coded frontend URL adjusted, and the existing
+controlled registry fixture. No live registry or inference calls were made by
+these final checks, and the maintainer's app was left running. Backend tests used
+isolated build outputs. Fresh automated Standards and Spec source reviews against
+`4d01797` found zero actionable findings. The maintainer previously reported the
+navigation and real-registry preview looked good; that manual report is separate
+from these automated checks.
+
+Next action: review the local branch's two commits, obtain approval to push and
+open a PR using the `pr` skill, and publish the updated development-overview
+checkpoint. No push, PR, merge, new implementation slice, model change, or
+inference/acceptance execution is authorized by this local commit. Resume from
+this current checkpoint before reading the historical notes below. The remote
+overview still predates implementation; its update is pending publication.
+
+After local implementation commit `4d01797`, the human separately approved this
+bounded frontend refinement on the same branch, with browser regression tests:
+
+- Opening a patient/study from its list remembers that list's current vertical
+  scroll position and the selected record. Returning through All patients/All
+  studies or browser Back restores the saved position after the list data loads.
+- The selected row has a subtle background highlight and a visible Last viewed
+  label. Selecting another record moves the marker; each list remembers its own
+  record. This is navigation context, not a clinical conclusion or review status.
+- Preserve the existing behavior of opening details at the top. Read application
+  data again on entry; this is not a data cache, search, filter, or pagination feature.
+- Memory is private to the current tab and resets on logout, confirmed session
+  expiry, a new login, or full browser reload. Opening a separate tab/window does
+  not change the originating tab's saved selection/position.
+
+The local refinement remains uncommitted pending separate approval. Its six new
+Chromium tests verify both lists through links and browser Back, delayed data
+loading, visible marking, independent list memory, marker changes, and logout
+reset, including list data arriving before a pending session check reveals the
+page. These frontend navigation tests control API responses; the existing import
+browser workflow still uses the real API with a controlled external registry.
+All ten Chromium workflows, 35 React tests, frontend typecheck/build, and lint
+passed. Backend behavior is unchanged; its suite was not repeated for this
+frontend-only refinement. No live registry or inference calls were made.
+Separate automated Standards and Spec source reviews against `4d01797` found no
+remaining actionable findings after the visibility-timing fix and re-review.
+This does not claim maintainer manual validation of the refinement.
+
+The maintainer subsequently reported that the navigation looked good and requested
+matching presentation for Patients and Studies: Study directory/Study details
+captions, equally spaced All patients/All studies navigation rows, and page-specific
+notices below the page title and introductory text, before controls or records.
+The shared portfolio disclaimer stays in the footer. These presentation refinements
+remain uncommitted with the navigation change. After them, 35 React tests, six
+focused Chromium navigation workflows, frontend typecheck/build, and lint passed.
+The full browser-suite rerun could not start because the maintainer's API was
+already using port 7132; focused checks used an isolated frontend and controlled
+API responses without interrupting it. Desktop/mobile link alignment was also
+checked at widths of 1280 and 390 pixels.
+
+The human also approved moving primary Dashboard/Patients/Studies navigation into
+the header, removing the repeated Browse patients/Browse studies links from
+Dashboard, keeping Refresh with Study imports, and retaining contextual All
+patients/All studies links on detail pages. Header navigation wraps below the
+brand/account row on narrow screens. Updated React assertions use the header
+navigation, and the existing patient browser workflow uses its Patients link.
+After this header change, all 35 React tests, six isolated navigation browser
+workflows, typecheck/build, and lint passed. Chromium checks at widths 1280, 800,
+390, and 320 confirmed visible header links and no horizontal page overflow.
+These changes remain uncommitted with the other local UI refinements.
+
+The human then approved grouping Dashboard's Study imports heading, imported
+count, status, and actions in one bordered panel matching the directory surfaces.
+The import action is primary, Refresh is outlined/secondary, and Import history
+remains a separate section below. No import/history behavior changed. All 35
+React tests, frontend typecheck/build, and lint passed after the panel change.
+Controlled Chromium layout checks at widths 1280, 390, and 320 covered initial,
+next-page, retry, exhausted, and Viewer displays without horizontal overflow.
+
+After inspecting the panel, the human requested removing its white background,
+rounded border, and padding. The import heading/count/actions remain grouped
+directly on the page, with the primary import and secondary Refresh buttons.
+The Study imports heading and state-dependent action labels remain unchanged.
+
+The human requested normalizing the Dashboard/Patients/Studies summary wording.
+Record counts now share the same styling and a simple count/noun format, with
+singular/plural handling: fictional patient(s) and imported study/studies.
+The human clarified that supporting text should stay on the same line as before:
+Dashboard uses imported study/studies · Shared until server restart, Studies uses
+imported study/studies · Listed in import order, and Patients uses fictional
+patient(s). Dashboard's introduction is Import studies and review import
+history. These summaries wrap naturally on narrow screens. This changes display
+copy only; counts and data-loading behavior are
+unchanged. All 35 React tests, typecheck/build, and lint passed after this change.
+
+The maintainer reported that switching browser tabs after scrolling reset the
+page to the top. A browser regression reproduced position 1400 becoming 0 during
+the focus-triggered session check. The frontend now saves the current viewport
+before that check hides protected content and restores it after success only if
+the same history entry is still open. This is separate from the last-opened
+record's list-return position. Repeated focus events retain the original viewport;
+navigation to another entry, logout, expiry, or a failed session check prevents
+an obsolete viewport from being restored.
+
+After the focus fix, all 12 isolated Chromium navigation checks, 35 React tests,
+typecheck/build, and lint passed. The checks cover list/detail pages, repeated
+focus after scrolling beyond the last-opened record, expiry/login, and navigation
+during a pending check. Separate automated Standards and Spec source reviews
+found no remaining actionable findings. These are controlled frontend checks,
+not a new live-registry or inference run. This fix remains uncommitted with the
+other approved local refinements.
+
+The human approved matching detail typography across Patients and Studies:
+semibold field labels and regular-weight values, including longer study text.
+The same emphasis was then approved for import-history cards, retaining compact
+counts, identifiers, and rejection explanations. Labels now include Started,
+Finished, Attempt, Retry of, count labels, and imported/duplicate identifiers.
+The cards are named by their status heading for accessible navigation and test
+queries. All 35 React tests, frontend typecheck/build, and lint passed afterward.
+Controlled Chromium checks at 1280 and 390 pixels confirmed semibold labels,
+regular values, retained counts/rejections, and no horizontal page overflow.
+All field text is 16 px. The human requested placing the Attempt/Retry identifier
+row directly below the status
+heading, before Started/Finished, counts, and study identifiers. The semibold
+field labels on all three views use the darker main text color, retaining
+600 weight; values remain regular. After initially retaining smaller ID text,
+the human requested matching the Attempt/Retry row to the other 16 px fields.
+The typography changes remain uncommitted
+with the other local UI refinements.
+
+The human approved keeping study-list recruitment status and study type values
+on one line while allowing long titles to wrap. These two columns no longer
+break words to fit narrow widths; the table scrolls horizontally within its
+existing container. Titles retain a readable minimum width. Controlled Chromium
+checks at widths 1280, 390, and 320 verified Recruiting/Not Yet Recruiting and
+Interventional/Observational source values stay intact, with no horizontal page
+overflow. The two existing study-list return-navigation browser checks,
+frontend typecheck/build, and lint passed after the responsive-table adjustment.
+
+The human approved page-first browser titles, such as Dashboard — OncoMatch,
+Patients — OncoMatch, and Study NCT00000001 — OncoMatch. Titles are declared
+alongside application routes and formatted centrally, with patient/study IDs
+on detail views and separate login/session-state titles. All 36 React tests,
+13 controlled navigation browser tests, frontend build, and lint passed.
+
+The human subsequently requested demo passwords ViewerDemo1! and OperatorDemo1!.
+The API account definitions, displayed credentials, setup documentation, and test
+credentials now agree. Both old passwords are explicitly rejected in integration
+tests. After this change, all 53 backend integration tests, seven unit tests,
+36 React tests, frontend build, and lint passed. Backend tests used isolated
+build outputs to leave the maintainer's running API untouched; that API must be
+restarted to pick up the new credentials. The human then approved the clearer
+username/password labels beneath each role on Login. These are implemented;
+all 36 React tests, frontend build, and lint passed afterward. Controlled Chromium
+checks at viewport widths 1280, 390, and 320 confirmed visible credentials and no
+horizontal page overflow, with a screenshot inspected at 320 pixels.
+
+The human authorized updating password references on GitHub. Issue #8's credential
+paragraph now agrees and explicitly notes the uncommitted/unpublished code state.
+All issue/PR bodies, issue comments, review comments/summaries, commit messages,
+and commit comments were checked; no other editable old-password references were
+found. Local tracked files retain the old strings only in two intentional
+rejection tests. Historical commit contents, PR diffs, and published branch files
+remain historical; changing them requires a separate code publication, without
+rewriting history. Local application and documentation changes remain uncommitted.

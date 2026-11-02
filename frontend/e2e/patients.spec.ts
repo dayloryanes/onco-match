@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 for (const account of [
-  { username: 'viewer', password: 'ViewerDemo!1', role: 'Viewer' },
-  { username: 'operator', password: 'OperatorDemo!1', role: 'Operator' },
+  { username: 'viewer', password: 'ViewerDemo1!', role: 'Viewer' },
+  { username: 'operator', password: 'OperatorDemo1!', role: 'Operator' },
 ]) {
   test(`${account.role} can login, browse, refresh, and logout`, async ({ page, context }) => {
     await page.goto('/')
@@ -14,7 +14,7 @@ for (const account of [
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
     await expect(page.getByText(`${account.username} · ${account.role}`)).toBeVisible()
     if (account.role === 'Viewer') await page.screenshot({ path: 'test-results/viewer-dashboard.png', fullPage: true })
-    await page.getByRole('link', { name: 'Browse patients' }).click()
+    await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Patients', exact: true }).click()
     await expect(page.getByRole('row')).toHaveCount(11)
     if (account.role === 'Viewer') await page.screenshot({ path: 'test-results/viewer-patients.png', fullPage: true })
     await page.getByRole('link', { name: 'P005', exact: true }).click()
@@ -42,7 +42,7 @@ for (const account of [
 test('a protected deep link survives login and another tab detects logout on focus', async ({ page, context }) => {
   await page.goto('/patients/P003')
   await page.getByLabel('Username').fill('viewer')
-  await page.getByLabel('Password', { exact: true }).fill('ViewerDemo!1')
+  await page.getByLabel('Password', { exact: true }).fill('ViewerDemo1!')
   await page.getByRole('button', { name: 'Log in', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Patient P003' })).toBeVisible()
   const second = await context.newPage()

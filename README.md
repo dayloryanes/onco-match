@@ -11,6 +11,11 @@ imported studies. Operators can explicitly import registry pages and retry faile
 attempts. Both roles can browse the same studies, details, and import history.
 API permissions are enforced independently of the UI.
 
+Dashboard, Patients, and Studies share one primary navigation in the header.
+Dashboard keeps Refresh with its Study imports section; it does not repeat
+directory navigation links inside the page. Detail pages retain their contextual
+All patients/All studies return links.
+
 Matching and Ollama integration are not implemented. See the
 [study-import specification](https://github.com/dayloryanes/onco-match/issues/16)
 and [development overview](https://github.com/dayloryanes/onco-match/issues/1)
@@ -71,14 +76,21 @@ hosting arrangement.
 
 | Role | Username | Password |
 | --- | --- | --- |
-| Viewer | `viewer` | `ViewerDemo!1` |
-| Operator | `operator` | `OperatorDemo!1` |
+| Viewer | `viewer` | `ViewerDemo1!` |
+| Operator | `operator` | `OperatorDemo1!` |
 
 These credentials are intentionally public and also displayed on Login. Do not
 reuse them elsewhere. Normal login opens Dashboard; a protected patient or study
 link returns to that record after login. Patient views show supplied age, sex,
 diagnosis, stage/classification system, and disease state. Unknown and Not
 applicable have different meanings. Fixture contents can change through review.
+
+When returning from patient or study details through All patients/All studies or
+browser Back, the list restores the position saved when you opened the record.
+The most recently opened row has a subtle highlight and a Last viewed label.
+Each list remembers its own record within the current tab. Logout/session expiry
+clears this navigation memory, and a full browser reload starts fresh. Last viewed
+indicates navigation history only, not a clinical assessment or review status.
 
 ## Session and data lifetime
 

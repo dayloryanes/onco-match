@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, test } from 'vitest'
@@ -24,11 +24,20 @@ test('Patients opens directly addressable details with distinct missing-fact lab
   window.history.replaceState(null, '', '/patients')
   const user = userEvent.setup()
   render(<App />)
-  await user.click(await screen.findByRole('link', { name: 'P001' }))
+  const patientLink = await screen.findByRole('link', { name: 'P001' })
+  expect(document.title).toBe('Patients — OncoMatch')
+  await user.click(patientLink)
   expect(await screen.findByRole('heading', { name: 'Patient P001' })).toBeVisible()
   expect(window.location.pathname).toBe('/patients/P001')
   expect(screen.getAllByText('Not applicable')).toHaveLength(2)
   expect(screen.getByText('Newly diagnosed')).toBeVisible()
+  expect(document.title).toBe('Patient P001 — OncoMatch')
+  await user.click(screen.getByRole('link', { name: 'All patients' }))
+  await screen.findByRole('heading', { name: 'Patients' })
+  expect(document.title).toBe('Patients — OncoMatch')
+  await user.click(screen.getByRole('link', { name: 'Dashboard' }))
+  await screen.findByRole('heading', { name: 'Dashboard' })
+  expect(document.title).toBe('Dashboard — OncoMatch')
 })
 
 test('ordinary login opens Dashboard with the current role and Patients navigation', async () => {
@@ -36,11 +45,15 @@ test('ordinary login opens Dashboard with the current role and Patients navigati
   const user = userEvent.setup()
   render(<App />)
   await user.type(await screen.findByLabelText('Username'), 'viewer')
-  await user.type(screen.getByLabelText('Password'), 'ViewerDemo!1')
+  await user.type(screen.getByLabelText('Password'), 'ViewerDemo1!')
   await user.click(screen.getByRole('button', { name: 'Log in' }))
   expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
   expect(screen.getByText('viewer · Viewer')).toBeVisible()
-  expect(screen.getByRole('link', { name: 'Browse patients' })).toHaveAttribute('href', '/patients')
+  const navigation = within(screen.getByRole('banner')).getByRole('navigation', { name: 'Main navigation' })
+  expect(within(navigation).getByRole('link', { name: 'Patients' })).toHaveAttribute('href', '/patients')
+  expect(within(navigation).getByRole('link', { name: 'Studies' })).toHaveAttribute('href', '/studies')
+  expect(screen.queryByRole('link', { name: 'Browse patients' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('link', { name: 'Browse studies' })).not.toBeInTheDocument()
 })
 
 test('successful logout returns to Login and a protected link requires login again', async () => {
@@ -52,6 +65,7 @@ test('successful logout returns to Login and a protected link requires login aga
   expect(await screen.findByLabelText('Username')).toBeVisible()
   expect(screen.queryByText('viewer · Viewer')).not.toBeInTheDocument()
   expect(window.location.pathname).toBe('/login')
+  expect(document.title).toBe('Log in — OncoMatch')
 })
 
 test.each([
@@ -86,7 +100,7 @@ test('a protected patient deep link returns to that patient after login', async 
   const user = userEvent.setup()
   render(<App />)
   await user.type(await screen.findByLabelText('Username'), 'viewer')
-  await user.type(screen.getByLabelText('Password'), 'ViewerDemo!1')
+  await user.type(screen.getByLabelText('Password'), 'ViewerDemo1!')
   await user.click(screen.getByRole('button', { name: 'Log in' }))
   expect(await screen.findByRole('heading', { name: 'Patient P001' })).toBeVisible()
 })
@@ -97,7 +111,7 @@ test('an external return URL is ignored', async () => {
   const user = userEvent.setup()
   render(<App />)
   await user.type(await screen.findByLabelText('Username'), 'operator')
-  await user.type(screen.getByLabelText('Password'), 'OperatorDemo!1')
+  await user.type(screen.getByLabelText('Password'), 'OperatorDemo1!')
   await user.click(screen.getByRole('button', { name: 'Log in' }))
   expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
   expect(window.location.pathname).toBe('/')
@@ -151,14 +165,17 @@ test('focusing a tab hides protected content until its session is checked', asyn
   signedIn()
   render(<App />)
   await screen.findByRole('heading', { name: 'Dashboard' })
+  await screen.findByText('No import attempts yet.')
   let release!: () => void
   const wait = new Promise<void>(resolve => { release = resolve })
   server.use(http.get('*/api/auth/me', async () => { await wait; return HttpResponse.json({}, { status: 401 }) }))
   fireEvent.focus(window)
-  expect(screen.getByRole('status')).toHaveTextContent('Checking your session')
+  expect(await screen.findByText('Checking your session…')).toBeVisible()
+  expect(document.title).toBe('Checking session — OncoMatch')
   expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument()
   await act(async () => release())
   expect(await screen.findByLabelText('Username')).toBeVisible()
+  expect(document.title).toBe('Log in — OncoMatch')
 })
 
 test('late patient responses cannot restore content after logout', async () => {
@@ -189,7 +206,7 @@ test('login cannot be submitted again while its request is pending', async () =>
   const user = userEvent.setup()
   render(<App />)
   await user.type(await screen.findByLabelText('Username'), 'viewer')
-  await user.type(screen.getByLabelText('Password'), 'ViewerDemo!1')
+  await user.type(screen.getByLabelText('Password'), 'ViewerDemo1!')
   await user.click(screen.getByRole('button', { name: 'Log in' }))
   expect(await screen.findByRole('button', { name: 'Logging in…' })).toBeDisabled()
   await act(async () => release())
@@ -201,10 +218,19 @@ test('session discovery failure offers Retry without exposing protected content'
   const user = userEvent.setup()
   render(<App />)
   expect(await screen.findByRole('heading', { name: 'Unable to check your session' })).toBeVisible()
-  expect(screen.queryByRole('link', { name: 'Browse patients' })).not.toBeInTheDocument()
+  expect(document.title).toBe('Unable to check session — OncoMatch')
+  expect(screen.queryByRole('navigation', { name: 'Main navigation' })).not.toBeInTheDocument()
   signedIn()
   await user.click(screen.getByRole('button', { name: 'Retry' }))
   expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
+})
+
+test('an unknown authenticated route has a descriptive browser title', async () => {
+  signedIn()
+  window.history.replaceState(null, '', '/missing-page')
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Page not found' })
+  expect(document.title).toBe('Page not found — OncoMatch')
 })
 
 test('unknown facts and a supplied stage without a system retain their distinct labels', async () => {
@@ -252,7 +278,7 @@ test('successful login survives a failed CSRF refresh by confirming its session'
   const user = userEvent.setup()
   render(<App />)
   await user.type(await screen.findByLabelText('Username'), 'viewer')
-  await user.type(screen.getByLabelText('Password'), 'ViewerDemo!1')
+  await user.type(screen.getByLabelText('Password'), 'ViewerDemo1!')
   await user.click(screen.getByRole('button', { name: 'Log in' }))
   expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
 })

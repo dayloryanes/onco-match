@@ -11,7 +11,7 @@ async function login(page: Page, username: string, password: string) {
 // parallel because they neither import nor depend on study/history contents.
 test('Operator imports mixed records and retries a failure while Viewer browses shared studies', async ({ page, browser }) => {
   await page.goto('/')
-  await login(page, 'operator', 'OperatorDemo!1')
+  await login(page, 'operator', 'OperatorDemo1!')
   await page.getByRole('button', { name: 'Import first 10', exact: true }).click()
   await expect(page.getByText('Fetched: 3 · Imported: 1 · Duplicates: 1 · Rejected: 1')).toBeVisible()
   await expect(page.getByText('Record 3: Record must be an object.')).toBeVisible()
@@ -30,7 +30,7 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
   const viewerContext = await browser.newContext({ ignoreHTTPSErrors: true })
   const viewer = await viewerContext.newPage()
   await viewer.goto('https://localhost:5173/studies/NCT00000001')
-  await login(viewer, 'viewer', 'ViewerDemo!1')
+  await login(viewer, 'viewer', 'ViewerDemo1!')
   await expect(viewer.getByRole('heading', { name: 'Study NCT00000001' })).toBeVisible()
   await viewer.getByRole('link', { name: 'Dashboard', exact: true }).click()
   await expect(viewer.getByText('Fetched: 3 · Imported: 1 · Duplicates: 1 · Rejected: 1')).toBeVisible()
@@ -45,7 +45,7 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
   await expect(page.getByRole('button', { name: 'Load Next 10', exact: true })).toBeDisabled()
   await expect(page.getByText('Completed import', { exact: true })).toHaveCount(2)
   await viewer.getByRole('button', { name: 'Refresh', exact: true }).click()
-  await expect(viewer.getByText('2 imported studies · Shared until backend restart')).toBeVisible()
+  await expect(viewer.getByText('2 imported studies · Shared until server restart', { exact: true })).toBeVisible()
   await viewer.getByRole('link', { name: 'Studies', exact: true }).click()
   await expect(viewer.getByRole('link', { name: 'NCT00000002', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Log out', exact: true }).click()
