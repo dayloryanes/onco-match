@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using OncoMatch.Api.Features.Studies;
 
 namespace OncoMatch.Api.Features.Auth;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery) : ControllerBase
+public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, StudyStore studies) : ControllerBase
 {
     [HttpGet("csrf")]
     public IActionResult Csrf()
@@ -33,7 +34,8 @@ public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery) : C
         var identity = new ClaimsIdentity(new[]
         {
             new Claim(ClaimTypes.Name, account.Username),
-            new Claim(ClaimTypes.Role, account.Role)
+            new Claim(ClaimTypes.Role, account.Role),
+            new Claim("session_id", Guid.NewGuid().ToString("N"))
         }, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity), new AuthenticationProperties { IsPersistent = false });
@@ -51,6 +53,7 @@ public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery) : C
     [ServiceFilter(typeof(CsrfFilter))]
     public async Task<IActionResult> Logout()
     {
+        await studies.CancelSession(User.FindFirstValue("session_id"));
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return NoContent();
     }

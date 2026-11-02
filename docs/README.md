@@ -7,7 +7,8 @@ For installation and delivered behavior, start with the [project README](../READ
 - [Condition-label evaluation design and fixtures](planning/condition-label-evaluation-design.md)
 - [Selected development baseline, findings and limitations](evaluation/condition-label-baseline.md)
 - [Evaluation runner and offline verification](../tools/condition-label-evaluation/README.md)
-- [Delivered login and patient-browsing specification](specs/first-slice-demo-login-patients.md)
+- [Login and patient browsing specification](specs/login-patient-browsing.md) (delivered)
+- [Study importing and browsing specification](specs/study-import-browsing.md) (implemented; local commit approved, publication pending)
 - [Domain vocabulary](../GLOSSARY.md)
 
 The [development overview](https://github.com/dayloryanes/onco-match/issues/1)

@@ -67,7 +67,7 @@ export default function PatientPage({ onExpired }: { onExpired: () => void }) {
   }
 
   return <section>
-    <nav aria-label="Patient navigation"><Link to="/">Dashboard</Link>{id && <Link to="/patients">All patients</Link>}</nav>
+    {id && <nav aria-label="Patient navigation"><Link to="/patients">All patients</Link></nav>}
     <p className="notice">Fictional patient data for demonstration only.</p>
     {content}
   </section>

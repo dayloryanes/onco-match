@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using OncoMatch.Api.Features.Auth;
 using Microsoft.AspNetCore.Mvc;
 using OncoMatch.Api.Features.Patients;
+using OncoMatch.Api.Features.Studies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,14 @@ builder.Services.AddAntiforgery(options =>
 });
 builder.Services.AddScoped<CsrfFilter>();
 builder.Services.AddSingleton<DemoAccounts>();
+builder.Services.AddSingleton<StudyStore>();
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton<RegistryClient>();
+builder.Services.AddHttpClient("Registry", client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["Registry:BaseUrl"] ?? "https://clinicaltrials.gov/api/v2/");
+    client.Timeout = Timeout.InfiniteTimeSpan;
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
 await using (var patientJson = File.OpenRead(Path.Combine(builder.Environment.ContentRootPath,
     "Features", "Patients", "patients.json")))
 {

@@ -1,4 +1,20 @@
 export interface CurrentUser { username: string; role: 'Viewer' | 'Operator' }
+export interface StudySummary {
+  nctId: string; title: string | null; recruitmentStatus: string | null; studyType: string | null; conditions: string[] | null
+}
+export interface StudyDetails extends StudySummary {
+  briefSummary: string | null; minimumAge: string | null; maximumAge: string | null; sex: string | null; registryUrl: string
+}
+export interface ImportAttempt {
+  id: string; startedAt: string; finishedAt: string | null; status: 'running' | 'completed' | 'failed' | 'cancelled'
+  retryOfAttemptId: string | null; fetchedCount: number | null; importedCount: number | null
+  duplicateCount: number | null; rejectedCount: number | null; importedNctIds: string[]; duplicateNctIds: string[]
+  rejections: { recordNumber: number; nctId: string | null; code: string; reason: string }[]; failureCode: string | null
+}
+export interface ImportState {
+  version: string; isImporting: boolean; isExhausted: boolean; nextAction: 'initial' | 'next' | 'retry' | 'none'
+  totalImportedStudyCount: number; attempts: ImportAttempt[]
+}
 export interface PatientSummary { id: string; ageYears: number | null; sex: string; cancerType: string | null }
 export interface PatientDetails extends PatientSummary {
   stage: { status: 'known' | 'unknown' | 'notApplicable'; value: string | null; classificationSystem: string | null }
@@ -55,4 +71,8 @@ export const api = {
   },
   patients: (signal?: AbortSignal) => request<PatientSummary[]>('/patients', { signal }),
   patient: (id: string, signal?: AbortSignal) => request<PatientDetails>(`/patients/${encodeURIComponent(id)}`, { signal }),
+  studies: (signal?: AbortSignal) => request<StudySummary[]>('/studies', { signal }),
+  study: (id: string, signal?: AbortSignal) => request<StudyDetails>(`/studies/${encodeURIComponent(id)}`, { signal }),
+  importState: (signal?: AbortSignal) => request<ImportState>('/study-imports', { signal }),
+  importStudies: (expectedVersion: string, signal?: AbortSignal) => post<ImportState>('/study-imports', { expectedVersion }, signal),
 }

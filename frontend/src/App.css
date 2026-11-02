@@ -29,6 +29,15 @@ tbody tr:hover { background: #f4f9fa; }
 .patient-facts { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: .5rem 1.5rem; margin-top: 1.8rem; }
 .patient-facts div { display: grid; grid-template-columns: minmax(160px, 1fr) 2fr; gap: 1.5rem; padding: 1.2rem 0; border-bottom: 1px solid #e1e9ed; }
 .patient-facts div:last-child { border: 0; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin: 1.5rem 0; }
+.import-history { list-style: none; padding: 0; }
+.history-heading { margin-top: 2rem; }
+.import-attempt { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: 1.3rem; margin: 1rem 0; overflow-wrap: anywhere; }
+.import-attempt h3 { margin-top: 0; }
+.attempt-id { color: #526b7a; font-size: .8rem; }
+.study-facts dd { white-space: pre-wrap; font-weight: 400; }
+.study-facts ul, td ul { padding-left: 1.2rem; margin: 0; }
+td { overflow-wrap: anywhere; }
 dt { color: #526b7a; }
 dd { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
 @media (max-width: 600px) { .site-header { align-items: flex-start; } .account { flex-direction: column; align-items: flex-end; gap: .6rem; } .login-panel { padding: 1.5rem; } .patient-facts div { grid-template-columns: 1fr; gap: .5rem; } th, td { padding: .9rem; } }

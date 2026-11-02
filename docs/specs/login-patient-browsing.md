@@ -1,9 +1,9 @@
-# Demo login, dashboard, and protected patient browsing
+# Login and patient browsing
 
 Status: specification approved and published; implementation complete and manually
 reviewed by the human in the running application; local commit approved, 2026-10-27.
 
-Canonical specification: [Demo login, dashboard, and protected patient browsing](https://github.com/dayloryanes/onco-match/issues/8).
+Canonical specification: [Login and patient browsing](https://github.com/dayloryanes/onco-match/issues/8).
 Delivery checkpoints are recorded on the canonical issue and development overview.
 
 The human approved this specification's contents, publication, and subsequently

@@ -5,9 +5,11 @@ import { api, ApiError } from './api'
 import type { CurrentUser } from './api'
 import './App.css'
 import PatientPage from './PatientPage'
+import StudyPage from './StudyPage'
+import Dashboard from './Dashboard'
 
 function returnDestination(value: unknown) {
-  return typeof value === 'string' && /^(\/|\/patients(?:\/[A-Za-z0-9_-]+)?)$/.test(value) ? value : '/'
+  return typeof value === 'string' && /^(\/|\/(?:patients|studies)(?:\/[A-Za-z0-9_-]+)?)$/.test(value) ? value : '/'
 }
 
 function Login({ onLogin }: { onLogin: (user: CurrentUser) => void }) {
@@ -67,7 +69,7 @@ function SessionApp() {
   const sessionEpoch = useRef(0)
   const location = useLocation()
   const navigate = useNavigate()
-  const expire = useCallback(() => { sessionEpoch.current++; setUser(null) }, [])
+  const expire = useCallback(() => { sessionEpoch.current++; setUser(null); setChecking(false); setSessionError(false) }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -130,6 +132,7 @@ function SessionApp() {
       {user && !checking && !sessionError && <div className="account"><span>{user.username} · {user.role}</span><button className="secondary" disabled={logoutPending} onClick={logout}>{logoutPending ? 'Logging out…' : logoutError ? 'Retry logout' : 'Log out'}</button></div>}
     </header>
     <main>
+      {user && !checking && !sessionError && !logoutPending && <nav aria-label="Main navigation"><Link to="/">Dashboard</Link><Link to="/patients">Patients</Link><Link to="/studies">Studies</Link></nav>}
       {logoutError && <p role="alert">Unable to confirm logout. Please retry.</p>}
       {logoutPending ? <p role="status">Logging out…</p>
         : checking ? <p role="status">Checking your session…</p>
@@ -137,14 +140,18 @@ function SessionApp() {
           : !user ? <Routes>
             <Route path="/login" element={<Login onLogin={finishLogin} />} />
             <Route path="*" element={<Navigate to="/login" state={{ returnTo: location.pathname }} replace />} />
-          </Routes>
-            : <Routes>
-              <Route path="/" element={<><p className="eyebrow">Your workspace</p><h1>Dashboard</h1><p>Browse the fictional patients available for this demonstration.</p><Link className="card" to="/patients">Browse patients</Link></>} />
+          </Routes> : null}
+      {user && !logoutPending && !sessionError && <div hidden={checking}>
+            <Routes>
+              <Route path="/" element={<Dashboard user={user} onExpired={expire} />} />
               <Route path="/login" element={<Navigate to={loginReturn?.key === location.key ? loginReturn.destination : '/'} replace />} />
               <Route path="/patients" element={<PatientPage key={location.pathname} onExpired={expire} />} />
               <Route path="/patients/:id" element={<PatientPage key={location.pathname} onExpired={expire} />} />
+              <Route path="/studies" element={<StudyPage key={location.pathname} onExpired={expire} />} />
+              <Route path="/studies/:nctId" element={<StudyPage key={location.pathname} onExpired={expire} />} />
               <Route path="*" element={<h1>Page not found</h1>} />
-            </Routes>}
+            </Routes>
+      </div>}
     </main>
     <footer>Independent portfolio proof of concept. Fictional patients only. No clinical eligibility decisions.</footer>
   </>
