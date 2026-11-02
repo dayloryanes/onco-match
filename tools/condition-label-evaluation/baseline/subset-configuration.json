@@ -1,0 +1,46 @@
+{
+  "profileId": "direct-first-low-gpt-oss-20b",
+  "model": "gpt-oss:20b",
+  "phase": "reasoning",
+  "route": "native",
+  "modelDigest": "f38aa0c53da5f8c49d08c43a99df24ff53167fe68e24664a7777288e7656fdfe",
+  "templateSha256": "fa6710a93d78da62641e192361344be7a8c0a1c3737f139cf89f20ce1626b99c",
+  "ollamaVersion": "0.40.13",
+  "runner": "llamacpp",
+  "preTokenizer": "gpt-4o",
+  "thinkingMetadata": {
+    "values": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "default": "medium"
+  },
+  "templateSource": "harmony",
+  "renderer": null,
+  "parser": null,
+  "caseIds": [
+    "CL-D01",
+    "CL-D07",
+    "CL-D12",
+    "CL-D13",
+    "CL-D14",
+    "CL-D15"
+  ],
+  "temperature": 0.7,
+  "topP": 0.8,
+  "topK": 20,
+  "minP": 0,
+  "seed": 42,
+  "repeatPenalty": 1,
+  "presencePenalty": 0,
+  "contextTokens": 24576,
+  "maxOutputTokens": 8192,
+  "framingReserveTokens": 4096,
+  "requestTimeoutSeconds": 600,
+  "operationTimeoutSeconds": 3660,
+  "allowCpuOffload": true,
+  "automaticRetries": 0,
+  "repetitions": 1,
+  "think": "low"
+}

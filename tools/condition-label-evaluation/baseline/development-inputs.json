@@ -1,0 +1,586 @@
+[
+  {
+    "id": "CL-D01",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "BREAST CANCER"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022BREAST CANCER\u0022]\u0060.\r\n\r\nExpected: \u0060(S,N,N;S)\u0060; pair S. Case variation does not create a cancer conflict.\r\nCite the actual uppercase label and exact supplied patient value."
+  },
+  {
+    "id": "CL-D02",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Lung cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "conflictIdentified",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "conflictIdentified"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelConflictsIdentified",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Lung cancer\u0022]\u0060.\r\n\r\nExpected: \u0060(C,N,N;C)\u0060; pair C. Cite lung versus supplied breast cancer. Do not\r\nclaim full-study exclusion or use patient sex to infer diagnosis."
+  },
+  {
+    "id": "CL-D03",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "All cancers"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022All cancers\u0022]\u0060.\r\n\r\nExpected: \u0060(S,N,N;S)\u0060; pair S. Broad cancer wording supports correspondence with\r\nthe supplied cancer type. No stage/state restriction is asserted or invented."
+  },
+  {
+    "id": "CL-D04",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": null,
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "undetermined",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "undetermined"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentUndetermined",
+    "reviewGuidance": "Patient changes: \u0060{\u0022cancerType\u0022:null}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer\u0022]\u0060.\r\n\r\nExpected: \u0060(U,N,N;U)\u0060; pair U. Cite the supplied null. Do not infer a cancer type\r\nfrom sex, stage, disease state, or the study label."
+  },
+  {
+    "id": "CL-D05",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage II at diagnosis under Demo staging system A"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "alignmentSupported",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage II at diagnosis under Demo staging system A\u0022]\u0060.\r\n\r\nExpected: \u0060(S,S,N;S)\u0060; pair S. Cite stage value, classification, known status, and\r\nthe complete relevant stage qualifier. No equivalence to another system is needed."
+  },
+  {
+    "id": "CL-D06",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage III at diagnosis under Demo staging system A"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "conflictIdentified",
+        "diseaseState": "notSpecified",
+        "result": "conflictIdentified"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelConflictsIdentified",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage III at diagnosis under Demo staging system A\u0022]\u0060.\r\n\r\nExpected: \u0060(S,C,N;C)\u0060; pair C. Same comparable classification/context; II differs\r\nfrom III. Preserve cancer alignment instead of calling the cancer type a conflict."
+  },
+  {
+    "id": "CL-D07",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "unknown",
+        "value": null,
+        "classificationSystem": null
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage II at diagnosis under Demo staging system A"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "undetermined",
+        "diseaseState": "notSpecified",
+        "result": "undetermined"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentUndetermined",
+    "reviewGuidance": "Patient changes: \u0060{\u0022stage\u0022:{\u0022status\u0022:\u0022unknown\u0022,\u0022value\u0022:null,\u0022classificationSystem\u0022:null}}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage II at diagnosis under Demo staging system A\u0022]\u0060.\r\n\r\nExpected: \u0060(S,U,N;U)\u0060; pair U. Cite unknown/null facts, not the base stage.\r\nDo not fabricate a classification because the label names one."
+  },
+  {
+    "id": "CL-D08",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system B"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage II at diagnosis under Demo staging system A"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "undetermined",
+        "diseaseState": "notSpecified",
+        "result": "undetermined"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentUndetermined",
+    "reviewGuidance": "Patient changes: \u0060{\u0022stage\u0022:{\u0022status\u0022:\u0022known\u0022,\u0022value\u0022:\u0022II\u0022,\u0022classificationSystem\u0022:\u0022Demo staging system B\u0022}}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage II at diagnosis under Demo staging system A\u0022]\u0060.\r\n\r\nExpected: \u0060(S,U,N;U)\u0060; pair U. Equal numerals do not establish equivalence between\r\ntwo different supplied classification names."
+  },
+  {
+    "id": "CL-D09",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "unknown",
+        "value": null,
+        "classificationSystem": null
+      },
+      "diseaseState": {
+        "status": "unknown",
+        "value": null
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{\u0022stage\u0022:{\u0022status\u0022:\u0022unknown\u0022,\u0022value\u0022:null,\u0022classificationSystem\u0022:null},\u0022diseaseState\u0022:{\u0022status\u0022:\u0022unknown\u0022,\u0022value\u0022:null}}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer\u0022]\u0060.\r\n\r\nExpected: \u0060(S,N,N;S)\u0060; pair S. Unknown facts do not create restrictions absent\r\nfrom the label. Do not say the full study has no stage/state restrictions."
+  },
+  {
+    "id": "CL-D10",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "newlyDiagnosed"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Recurrent breast cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "conflictIdentified",
+        "result": "conflictIdentified"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelConflictsIdentified",
+    "reviewGuidance": "Patient changes: \u0060{\u0022diseaseState\u0022:{\u0022status\u0022:\u0022known\u0022,\u0022value\u0022:\u0022newlyDiagnosed\u0022}}\u0060.\r\n\r\nConditions: \u0060[\u0022Recurrent breast cancer\u0022]\u0060.\r\n\r\nExpected: \u0060(S,N,C;C)\u0060; pair C. Cite supplied newly diagnosed state versus recurrent;\r\ndo not infer recurrence from the cancer type."
+  },
+  {
+    "id": "CL-D11",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "HER2-positive breast cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022HER2-positive breast cancer\u0022]\u0060.\r\n\r\nExpected: \u0060(S,N,N;S)\u0060; pair S. Required unassessed qualifier: HER2-positive, with\r\nan authentic quotation and biomarker-scope reason. Do not assert HER2 status or\r\nturn this simple unsupported qualifier into an automatic in-scope conflict."
+  },
+  {
+    "id": "CL-D12",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer: if biomarker X is present, stage III at diagnosis under Demo staging system A; if biomarker X is absent, recurrent disease"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "conflictIdentified",
+        "diseaseState": "alignmentSupported",
+        "result": "undetermined"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentUndetermined",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer: if biomarker X is present, stage III at diagnosis under Demo staging system A; if biomarker X is absent, recurrent disease\u0022]\u0060.\r\n\r\nExpected: \u0060(S,C,S;U)\u0060; pair U. Direct stage comparison conflicts; recurrence aligns.\r\nRequired unassessed qualifier: biomarker X present/absent selection. Complete-label\r\napplicability is unknown. Do not choose the favorable branch or treat the\r\nconditional stage conflict as mandatory. References must preserve both branches."
+  },
+  {
+    "id": "CL-D13",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer",
+        "Lung cancer"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "alignmentSupported"
+      },
+      {
+        "labelId": "study.conditions.1",
+        "cancerType": "conflictIdentified",
+        "stage": "notSpecified",
+        "diseaseState": "notSpecified",
+        "result": "conflictIdentified"
+      }
+    ],
+    "expectedPairSummary": "mixedConditionLabelFindings",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer\u0022,\u0022Lung cancer\u0022]\u0060.\r\n\r\nExpected in order: \u0060(S,N,N;S)\u0060, \u0060(C,N,N;C)\u0060; pair M. Both complete labels are\r\nrequired. Do not assume both cancers are mandatory or discard the conflicting one."
+  },
+  {
+    "id": "CL-D14",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage III at diagnosis under Demo staging system A OR recurrent"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "conflictIdentified",
+        "diseaseState": "alignmentSupported",
+        "result": "alignmentSupported"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentSupported",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage III at diagnosis under Demo staging system A OR recurrent\u0022]\u0060.\r\n\r\nExpected: \u0060(S,C,S;S)\u0060; pair S. Recurrence satisfies OR; retain the stage difference.\r\nThis is the serialized contract example, available for development rather than\r\nreserved as a novel acceptance case."
+  },
+  {
+    "id": "CL-D15",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage III at diagnosis under Demo staging system A AND recurrent"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "conflictIdentified",
+        "diseaseState": "alignmentSupported",
+        "result": "conflictIdentified"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelConflictsIdentified",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage III at diagnosis under Demo staging system A AND recurrent\u0022]\u0060.\r\n\r\nExpected: \u0060(S,C,S;C)\u0060; pair C. Same direct comparisons as CL-D14 but AND makes\r\nthe stage requirement mandatory. An authentic quote with label result S is wrong."
+  },
+  {
+    "id": "CL-D16",
+    "patient": {
+      "ageYears": 52,
+      "sex": "female",
+      "cancerType": "Breast cancer",
+      "stage": {
+        "status": "known",
+        "value": "II",
+        "classificationSystem": "Demo staging system A"
+      },
+      "diseaseState": {
+        "status": "known",
+        "value": "recurrent"
+      }
+    },
+    "study": {
+      "conditions": [
+        "Breast cancer, stage III at diagnosis under Demo staging system A / recurrent (relationship unspecified)"
+      ],
+      "minimumAge": "18 Years",
+      "maximumAge": "65 Years",
+      "sex": "ALL"
+    },
+    "expected": [
+      {
+        "labelId": "study.conditions.0",
+        "cancerType": "alignmentSupported",
+        "stage": "conflictIdentified",
+        "diseaseState": "alignmentSupported",
+        "result": "undetermined"
+      }
+    ],
+    "expectedPairSummary": "conditionLabelAlignmentUndetermined",
+    "reviewGuidance": "Patient changes: \u0060{}\u0060.\r\n\r\nConditions: \u0060[\u0022Breast cancer, stage III at diagnosis under Demo staging system A / recurrent (relationship unspecified)\u0022]\u0060.\r\n\r\nExpected: \u0060(S,C,S;U)\u0060; pair U. Do not invent AND/OR. Keep the direct comparisons\r\nand explain that their relationship prevents a complete-label conclusion."
+  }
+]

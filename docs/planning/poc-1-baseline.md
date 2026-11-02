@@ -5,13 +5,14 @@ decision record, not a detailed implementation specification. Read the developme
 overview for current authorization. Remaining decisions live in the Wayfinder map;
 do not duplicate their eventual resolutions across competing planning records.
 
-Local revision, 2026-10-30: incorporates the focused discussion for
-[scope decision #12](https://github.com/dayloryanes/onco-match/issues/12).
-The human approved local document preparation, not implementation or publication.
+The 2026-10-30 revision incorporates the approved
+[condition-label scope decision](https://github.com/dayloryanes/onco-match/issues/12),
+published through [PR #14](https://github.com/dayloryanes/onco-match/pull/14).
 The [condition-label assessment](condition-label-assessment-design.md) and
 [evaluation](condition-label-evaluation-design.md) records contain the contract
-and approved exact fixtures. GitHub records await separately approved
-publication; the old narrative designs and fixtures remain historical evidence.
+and approved exact fixtures. The [development baseline](../evaluation/condition-label-baseline.md)
+records the selected configuration and its limitations. Superseded narrative
+records remain available in Git history; they do not define the current scope.
 
 ## Purpose
 

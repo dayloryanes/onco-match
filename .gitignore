@@ -492,3 +492,6 @@ $RECYCLE.BIN/
 # Local HTTPS private key/certificate and browser test reports
 .certs/
 playwright-report/
+
+# Local evaluation evidence, drafts and audit records
+.local/

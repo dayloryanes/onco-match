@@ -15,6 +15,9 @@ slice. See the [approved specification](https://github.com/dayloryanes/onco-matc
 and [development overview](https://github.com/dayloryanes/onco-match/issues/1)
 for scope and current authorization. Licensing is undecided.
 
+See the [documentation index](docs/README.md) for current designs, the selected
+development baseline and its known limitations.
+
 ## Run locally
 
 Prerequisites: .NET 10 SDK and Node.js 24 with npm. Commands below use PowerShell
