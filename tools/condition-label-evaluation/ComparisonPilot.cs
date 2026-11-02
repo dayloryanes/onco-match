@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 internal static class ComparisonPilot
 {
+    // The approved native/compatible smoke requests completed. Further live work needs fresh scope approval.
+    private const bool SmokeProductionEnabled = false;
     internal const string ReviewedPreparation = "2df57b35d043143ccce8bf48dcfcdd8a31ab32e814ad3d5c0ac9b7865b2b8a98";
     internal static JsonObject Fingerprint(string root) => ComparisonProfile.Fingerprint(root);
 
@@ -16,7 +18,7 @@ internal static class ComparisonPilot
         throw new InvalidDataException("Inference deferred; all previous approvals consumed. Fresh execution design and human approval required.");
     }
 
-    internal static void ValidateApproval(JsonNode approval, JsonNode config, JsonNode fingerprint)
+    internal static void ValidateApproval(JsonNode approval, JsonNode config, JsonNode fingerprint, bool smoke = false)
     {
         if (approval["candidatePreparationFingerprintSha256"]?.GetValue<string>() != ComparisonProfile.CandidatePreparation
             || approval["promptSha256"]?.GetValue<string>() != ComparisonProfile.CandidatePromptSha256
@@ -30,12 +32,14 @@ internal static class ComparisonPilot
             || Evaluation.Text(approval["profileId"]) != Evaluation.Text(config["profileId"])
             || Evaluation.Text(approval["model"]) != Evaluation.Text(config["model"])
             || !JsonNode.DeepEquals(approval["think"], config["think"])
-            || Evaluation.Text(approval["modelDigest"]) != Evaluation.Text(config["modelDigest"])
+            || (config["modelDigest"] is not null && Evaluation.Text(approval["modelDigest"]) != Evaluation.Text(config["modelDigest"]))
             || Evaluation.Text(approval["templateSha256"]) != Evaluation.Text(config["templateSha256"])
             || Evaluation.Text(approval["ollamaVersion"]) != Evaluation.Text(config["ollamaVersion"])
-            || Evaluation.Text(approval["route"]) != "native"
-            || approval["maxRequests"]?.GetValue<int>() != config["caseIds"]!.AsArray().Count
-            || !JsonNode.DeepEquals(approval["caseIds"], config["caseIds"]))
+            || Evaluation.Text(approval["route"]) != Evaluation.Text(config["route"])
+            || ((smoke || Evaluation.Text(config["route"]) == "openai-compatible")
+                && Evaluation.Text(approval["configurationSha256"]) != Evaluation.Hash(Encoding.UTF8.GetBytes(config.ToJsonString())))
+            || approval["maxRequests"]?.GetValue<int>() != (smoke ? 1 : config["caseIds"]!.AsArray().Count)
+            || !JsonNode.DeepEquals(approval["caseIds"], smoke ? new JsonArray("CL-D01") : config["caseIds"]))
             throw new InvalidDataException("Missing/mismatched fresh approval for this exact installed-model comparison profile");
         var runId = Evaluation.Text(approval["runId"]);
         if (!Regex.IsMatch(runId, "^[a-z0-9][a-z0-9-]{0,63}$") || runId == "preparation")
@@ -47,6 +51,22 @@ internal static class ComparisonPilot
             throw new InvalidDataException("Actual human execution approval and installed version required");
     }
 
+    internal static void ValidateSmokeApproval(JsonNode approval, JsonNode config, JsonNode fingerprint, JsonNode fixture, string prompt, bool offline)
+    {
+        ValidateApproval(approval, config, fingerprint, smoke: true);
+        if (!offline && !SmokeProductionEnabled)
+            throw new InvalidDataException("Approved smoke scope consumed; further live execution requires fresh review and approval");
+        var runId = Evaluation.Text(approval["runId"]);
+        if (Evaluation.Text(approval["scope"]) != "oncomatch-local-smoke-20261102"
+            || (offline ? !runId.StartsWith("offline-", StringComparison.Ordinal)
+                : runId != "smoke-20261102-" + Evaluation.Text(config["route"]) + "-1")
+            || Evaluation.Text(config["think"]) != "low"
+            || approval["requestTimeoutSeconds"]?.GetValue<int>() != 600 || approval["maxOutputTokens"]?.GetValue<int>() != 8192
+            || Evaluation.Text(approval["requestSha256"]) != Evaluation.Hash(Encoding.UTF8.GetBytes(ComparisonProfile.Request(fixture, config, prompt).ToJsonString()))
+            || (Evaluation.Text(config["route"]) == "openai-compatible" && Evaluation.Text(approval["modelDigest"]) == Evaluation.Text(config["sourceModelDigest"])))
+            throw new InvalidDataException("Smoke approval must bind this exact low-reasoning CL-D01 request and fixed one-use route budget");
+    }
+
     internal static void ValidatePreviews(string root, JsonArray fixtures, JsonNode config, string prompt)
     {
         var fingerprint = Fingerprint(root);
@@ -54,13 +74,21 @@ internal static class ComparisonPilot
         var manifest = Evaluation.Read(Path.Combine(directory, "manifest.json"));
         var profileId = Evaluation.Text(config["profileId"]);
         var entry = manifest["profiles"]!.AsArray().Single(p => Evaluation.Text(p!["profileId"]) == profileId)!;
-        if (!JsonNode.DeepEquals(entry["configuration"], config)) throw new InvalidDataException("Prepared profile configuration differs");
+        if (!JsonNode.DeepEquals(manifest["fingerprint"], fingerprint)
+            || !JsonNode.DeepEquals(entry["configuration"], config)
+            || !JsonNode.DeepEquals(Evaluation.Read(Path.Combine(directory, profileId, "configuration.json")), config)
+            || Evaluation.Text(entry["route"]) != Evaluation.Text(config["route"])
+            || Evaluation.Text(entry["endpoint"]) != ComparisonProfile.Endpoint(config)
+            || Evaluation.Text(entry["configurationSha256"]) != Evaluation.Hash(Encoding.UTF8.GetBytes(config.ToJsonString()))
+            || !entry["requests"]!.AsArray().Select(r => Evaluation.Text(r!["caseId"])).SequenceEqual(ComparisonProfile.CaseIds))
+            throw new InvalidDataException("Prepared configuration, fingerprint or case coverage differs");
         foreach (var item in entry["requests"]!.AsArray())
         {
             var id = Evaluation.Text(item!["caseId"]);
             var fixture = fixtures.Single(f => Evaluation.Text(f!["id"]) == id)!;
             var bytes = File.ReadAllBytes(Path.Combine(directory, profileId, id + ".request.json"));
             if (Evaluation.Hash(bytes) != Evaluation.Text(item["requestFileSha256"])
+                || Evaluation.Text(item["requestSha256"]) != Evaluation.Hash(Encoding.UTF8.GetBytes(ComparisonProfile.Request(fixture, config, prompt).ToJsonString()))
                 || !JsonNode.DeepEquals(Evaluation.Parse(Encoding.UTF8.GetString(bytes)), ComparisonProfile.Request(fixture, config, prompt)))
                 throw new InvalidDataException("Prepared request changed: " + id);
         }
@@ -78,19 +106,17 @@ internal static class ComparisonPilot
         };
     }
 
-    internal static async Task RunAsync(string root, JsonArray fixtures, string prompt, JsonNode config, string approvalPath, HttpMessageHandler? testHandler = null)
+    internal static async Task RunAsync(string root, JsonArray fixtures, string prompt, JsonNode config, string approvalPath, HttpMessageHandler? testHandler = null, CancellationToken stop = default, bool liveSmoke = false, TimeProvider? timeProvider = null)
     {
+        // Ordinary live runs remain disabled. The separately approved smoke has fixed one-use route IDs.
+        if (testHandler is null && !liveSmoke) ValidateProductionRun(root, config, Evaluation.Read(approvalPath));
         ComparisonProfile.ValidateConfig(root, config, fixtures);
         var fingerprint = Fingerprint(root);
         var approval = Evaluation.Read(approvalPath);
-        ValidateApproval(approval, config, fingerprint);
+        if (liveSmoke) ValidateSmokeApproval(approval, config, fingerprint, fixtures.Single(f => Evaluation.Text(f!["id"]) == "CL-D01")!, prompt, testHandler is not null);
+        else ValidateApproval(approval, config, fingerprint);
         ValidatePreviews(root, fixtures, config, prompt);
-        if (testHandler is null)
-        {
-            ValidateProductionRun(root, config, approval);
-            ComparisonProfile.ValidateOrder(root, config, approval);
-        }
-        var ids = config["caseIds"]!.AsArray().Select(Evaluation.Text).ToArray();
+        var ids = liveSmoke ? new[] { "CL-D01" } : config["caseIds"]!.AsArray().Select(Evaluation.Text).ToArray();
         var selected = ids.Select(id => fixtures.Single(f => Evaluation.Text(f!["id"]) == id)!).ToArray();
         foreach (var fixture in selected)
             if (!Evaluation.Sizing(ComparisonProfile.Request(fixture, config, prompt), config)["withinConservativeBound"]!.GetValue<bool>())
@@ -118,16 +144,18 @@ internal static class ComparisonPilot
             File.WriteAllBytes(Path.Combine(snapshots, $"{index++:00}-{Path.GetFileName(file.Key)}"), bytes);
         }
         using var userStop = new CancellationTokenSource();
-        using var operation = CancellationTokenSource.CreateLinkedTokenSource(userStop.Token);
-        operation.CancelAfter(TimeSpan.FromSeconds(config["operationTimeoutSeconds"]!.GetValue<int>()));
+        var clock = timeProvider ?? TimeProvider.System;
+        var operationSeconds = liveSmoke ? 600 : config["operationTimeoutSeconds"]!.GetValue<int>();
+        using var operationDeadlineStop = new CancellationTokenSource(TimeSpan.FromSeconds(operationSeconds), clock);
+        using var operation = CancellationTokenSource.CreateLinkedTokenSource(userStop.Token, stop, operationDeadlineStop.Token);
         ConsoleCancelEventHandler cancel = (_, e) => { e.Cancel = true; userStop.Cancel(); };
         Console.CancelKeyPress += cancel;
         using var handler = testHandler ?? new HttpClientHandler { AllowAutoRedirect = false, UseProxy = false };
         using var client = new HttpClient(handler) { BaseAddress = new Uri("http://127.0.0.1:11434/"), Timeout = Timeout.InfiniteTimeSpan };
         var total = Stopwatch.StartNew();
-        var utcStarted = DateTimeOffset.UtcNow;
-        var operationDeadline = utcStarted.AddSeconds(config["operationTimeoutSeconds"]!.GetValue<int>());
-        var deadlineWatch = WatchDeadlineAsync(operationDeadline, operation);
+        var utcStarted = clock.GetUtcNow();
+        var operationDeadline = utcStarted.AddSeconds(operationSeconds);
+        var deadlineWatch = WatchDeadlineAsync(operationDeadline, operation, clock);
         var timings = new List<double>();
         var counts = new Dictionary<string, int> { ["completed"] = 0, ["failed"] = 0, ["interrupted"] = 0 };
         try
@@ -152,9 +180,17 @@ internal static class ComparisonPilot
                     || !JsonNode.DeepEquals(show["renderer"], config["renderer"]) || !JsonNode.DeepEquals(show["parser"], config["parser"])
                     || model["remote_host"] is not null || model["remote_model"] is not null || show["remote_host"] is not null || show["remote_model"] is not null)
                     throw new InvalidDataException("Installed version/model/template/tokenizer differs or model is remote");
+                if (Evaluation.Text(config["route"]) == "openai-compatible")
+                {
+                    var source = tags["models"]!.AsArray().SingleOrDefault(m => Evaluation.Text(m!["name"]) == Evaluation.Text(config["sourceModel"]));
+                    if (source is null || Evaluation.Text(source["digest"]) != Evaluation.Text(config["sourceModelDigest"])
+                        || source["remote_host"] is not null || source["remote_model"] is not null)
+                        throw new InvalidDataException("Source model identity differs");
+                    ComparisonProfile.ValidateModelParameters(config, Evaluation.Text(show["parameters"]));
+                }
                 Write("metadata.json", new JsonObject
                 {
-                    ["profileId"] = config["profileId"]!.DeepClone(), ["phase"] = config["phase"]!.DeepClone(),
+                    ["profileId"] = config["profileId"]!.DeepClone(), ["route"] = config["route"]!.DeepClone(), ["phase"] = config["phase"]!.DeepClone(),
                     ["runner"] = model["details"]?["runner"]?.DeepClone(), ["renderer"] = show["renderer"]?.DeepClone(),
                     ["thinkingMetadata"] = show["thinking"]?.DeepClone(),
                     ["preTokenizer"] = show["model_info"]?["tokenizer.ggml.pre"]?.DeepClone(),
@@ -166,43 +202,47 @@ internal static class ComparisonPilot
             }
             catch (Exception ex) when (ex is not OutOfMemoryException)
             {
-                Write("stopped.json", new JsonObject { ["code"] = operation.IsCancellationRequested ? "interrupted" : "inferenceUnavailable", ["message"] = ex.Message, ["inferenceRequests"] = 0 });
+                Write("stopped.json", new JsonObject { ["route"] = config["route"]!.DeepClone(), ["profileId"] = config["profileId"]!.DeepClone(),
+                    ["code"] = operation.IsCancellationRequested ? "interrupted" : "inferenceUnavailable",
+                    ["message"] = "Metadata verification stopped; no inference was attempted", ["inferenceRequests"] = 0 });
                 throw new InvalidDataException("Preflight stopped; no inference requests; approval consumed", ex);
             }
             for (var i = 0; i < selected.Length && !operation.IsCancellationRequested; i++)
             {
-                if (DateTimeOffset.UtcNow >= operationDeadline) { operation.Cancel(); break; }
+                if (clock.GetUtcNow() >= operationDeadline) { operation.Cancel(); break; }
                 var fixture = selected[i];
                 Console.WriteLine($"Starting {Evaluation.Text(config["profileId"])} development case D{int.Parse(ids[i][4..])} ({ids[i]})");
                 var body = ComparisonProfile.Request(fixture, config, prompt);
                 Write($"{ids[i]}.request.json", body);
                 var ledger = Path.Combine(directory, "attempts.jsonl");
-                await File.AppendAllTextAsync(ledger, new JsonObject { ["event"] = "started", ["caseId"] = ids[i], ["atUtc"] = DateTimeOffset.UtcNow.ToString("O") }.ToJsonString() + "\n");
+                await File.AppendAllTextAsync(ledger, new JsonObject { ["event"] = "started", ["caseId"] = ids[i],
+                    ["profileId"] = config["profileId"]!.DeepClone(), ["route"] = config["route"]!.DeepClone(), ["atUtc"] = DateTimeOffset.UtcNow.ToString("O") }.ToJsonString() + "\n");
                 var record = new JsonObject
                 {
                     ["event"] = "finished", ["caseId"] = ids[i], ["semanticReview"] = "pending",
-                    ["profileId"] = config["profileId"]!.DeepClone(), ["phase"] = config["phase"]!.DeepClone(),
+                    ["profileId"] = config["profileId"]!.DeepClone(), ["route"] = config["route"]!.DeepClone(), ["phase"] = config["phase"]!.DeepClone(),
                     ["requestedThink"] = config["think"]?.DeepClone(),
-                    ["thinkFieldPresent"] = config["think"] is not null
+                    ["thinkFieldPresent"] = body["think"] is not null,
+                    ["reasoningControlField"] = Evaluation.Text(config["route"]) == "native" ? "think" : "reasoning_effort"
                 };
                 var watch = Stopwatch.StartNew();
                 var requestStarted = DateTimeOffset.UtcNow;
                 var stopAfter = false;
                 try
                 {
-                    var raw = await SendInferenceAsync(client, body, TimeSpan.FromSeconds(config["requestTimeoutSeconds"]!.GetValue<int>()), operation.Token);
+                    var raw = await SendInferenceAsync(client, body, TimeSpan.FromSeconds(config["requestTimeoutSeconds"]!.GetValue<int>()), operation.Token, ComparisonProfile.Endpoint(config));
                     var envelope = Evaluation.Parse(raw);
                     if (Evaluation.Text(envelope["model"]) != Evaluation.Text(config["model"]))
                         throw new EvaluationFailure("modeMismatch", "Returned model identity differs");
                     // Never save the raw provider response or message.thinking.
-                    var content = Evaluation.Text(envelope["message"]?["content"]);
+                    var unpacked = Evaluation.Unpack(raw, Evaluation.Text(config["route"]));
+                    var content = unpacked.Content;
                     if (content.Contains("<think>", StringComparison.OrdinalIgnoreCase) || content.Contains("</think>", StringComparison.OrdinalIgnoreCase)
                         || content.Contains("<|channel|>", StringComparison.Ordinal) || content.Contains("<|start|>", StringComparison.Ordinal))
                         throw new EvaluationFailure("invalidResponse", "Inline thinking content withheld from evidence");
                     record["content"] = content;
-                    record["doneReason"] = Evaluation.Text(envelope["done_reason"]) is "stop" or "length" ? Evaluation.Text(envelope["done_reason"]) : "other";
-                    record["metrics"] = Evaluation.NativeMetrics(envelope);
-                    var unpacked = Evaluation.Unpack(raw, "native");
+                    record["doneReason"] = "stop";
+                    record["metrics"] = unpacked.Metrics;
                     if (Evaluation.Text(config["phase"]) == "off" && unpacked.Metrics["reasoningObserved"]!.GetValue<bool>())
                         throw new EvaluationFailure("modeMismatch", "Observed thinking in an off profile; stop for review");
                     record["validation"] = Labels.Validate(unpacked.Content, fixture);
@@ -213,19 +253,24 @@ internal static class ComparisonPilot
                 catch (EvaluationFailure ex)
                 {
                     record["state"] = "failed";
-                    record["failure"] = new JsonObject { ["code"] = ex.Code, ["message"] = ex.Message };
+                    record["failure"] = new JsonObject { ["code"] = ex.Code, ["message"] = ex.Code switch
+                    {
+                        "invalidEvidence" => "Assessment evidence validation failed", "invalidResponse" => "Response validation failed",
+                        "inferenceTimeout" => "Request deadline exceeded", "modeMismatch" => "Model identity or reasoning mode differs",
+                        _ => "Inference request failed"
+                    } };
                     stopAfter = ex.Code is "inferenceError" or "modeMismatch";
                 }
-                catch (HttpRequestException ex)
+                catch (HttpRequestException)
                 {
                     record["state"] = "failed";
-                    record["failure"] = new JsonObject { ["code"] = "inferenceError", ["message"] = ex.Message };
+                    record["failure"] = new JsonObject { ["code"] = "inferenceError", ["message"] = "Inference transport failed" };
                     stopAfter = true;
                 }
                 catch (Exception ex) when (ex is JsonException or InvalidDataException or InvalidOperationException)
                 {
                     record["state"] = "failed";
-                    record["failure"] = new JsonObject { ["code"] = "invalidResponse", ["message"] = ex.Message };
+                    record["failure"] = new JsonObject { ["code"] = "invalidResponse", ["message"] = "Response could not be decoded or validated" };
                 }
                 var elapsed = (DateTimeOffset.UtcNow - requestStarted).TotalMilliseconds;
                 timings.Add(elapsed);
@@ -253,17 +298,20 @@ internal static class ComparisonPilot
         finally
         {
             Console.CancelKeyPress -= cancel;
-            var aggregateDeadlineReached = DateTimeOffset.UtcNow >= operationDeadline && !userStop.IsCancellationRequested;
+            var aggregateDeadlineReached = (operationDeadlineStop.IsCancellationRequested || clock.GetUtcNow() >= operationDeadline)
+                && !userStop.IsCancellationRequested;
             operation.Cancel();
             await deadlineWatch;
             var ordered = timings.Order().ToArray();
             Write("checkpoint.json", new JsonObject
             {
                 ["status"] = "profile recorded; no retries; next profile requires valid ordering and fresh approval",
+                ["profileId"] = config["profileId"]!.DeepClone(), ["route"] = config["route"]!.DeepClone(),
+                ["scope"] = liveSmoke ? "live-smoke-one-request" : "development-offline-controls",
                 ["attemptedRequests"] = timings.Count,
                 ["completed"] = counts["completed"], ["failed"] = counts["failed"], ["interrupted"] = counts["interrupted"],
                 ["medianMs"] = ordered.Length == 0 ? null : ordered.Length % 2 == 1 ? ordered[ordered.Length / 2] : (ordered[ordered.Length / 2 - 1] + ordered[ordered.Length / 2]) / 2,
-                ["slowestMs"] = ordered.Length == 0 ? null : ordered[^1], ["requestTotalMs"] = timings.Sum(), ["operationTotalMs"] = (DateTimeOffset.UtcNow - utcStarted).TotalMilliseconds,
+                ["slowestMs"] = ordered.Length == 0 ? null : ordered[^1], ["requestTotalMs"] = timings.Sum(), ["operationTotalMs"] = (clock.GetUtcNow() - utcStarted).TotalMilliseconds,
                 ["activeClockOperationMs"] = total.Elapsed.TotalMilliseconds,
                 ["aggregateDeadlineReached"] = aggregateDeadlineReached,
                 ["semanticReview"] = "pending", ["overallPass"] = null
@@ -271,20 +319,21 @@ internal static class ComparisonPilot
         }
     }
 
-    private static async Task WatchDeadlineAsync(DateTimeOffset deadline, CancellationTokenSource source)
+    private static async Task WatchDeadlineAsync(DateTimeOffset deadline, CancellationTokenSource source, TimeProvider? timeProvider = null)
     {
+        var clock = timeProvider ?? TimeProvider.System;
         try
         {
             while (!source.IsCancellationRequested)
             {
-                if (DateTimeOffset.UtcNow >= deadline) { source.Cancel(); return; }
-                await Task.Delay(TimeSpan.FromMilliseconds(250), source.Token);
+                if (clock.GetUtcNow() >= deadline) { source.Cancel(); return; }
+                await Task.Delay(TimeSpan.FromMilliseconds(250), clock, source.Token);
             }
         }
         catch (OperationCanceledException) when (source.IsCancellationRequested) { }
     }
 
-    internal static async Task<string> SendInferenceAsync(HttpClient client, JsonNode body, TimeSpan timeout, CancellationToken stop)
+    internal static async Task<string> SendInferenceAsync(HttpClient client, JsonNode body, TimeSpan timeout, CancellationToken stop, string endpoint = "/api/chat")
     {
         using var requestDeadline = CancellationTokenSource.CreateLinkedTokenSource(stop);
         requestDeadline.CancelAfter(timeout);
@@ -292,7 +341,7 @@ internal static class ComparisonPilot
         var watch = WatchDeadlineAsync(utcDeadline, requestDeadline);
         try
         {
-            var content = await Evaluation.SendAsync(client, "api/chat", body, timeout, requestDeadline.Token);
+            var content = await Evaluation.SendAsync(client, endpoint, body, timeout, requestDeadline.Token);
             if (DateTimeOffset.UtcNow >= utcDeadline) throw new EvaluationFailure("inferenceTimeout", "Wall-clock request deadline exceeded");
             return content;
         }
