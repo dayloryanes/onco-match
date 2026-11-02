@@ -78,6 +78,7 @@ internal static class Evaluation
 
     internal static (string Content, JsonObject Metrics) Unpack(string response, string route)
     {
+        if (route is not ("native" or "openai-compatible")) throw new InvalidDataException("Unknown inference route");
         var envelope = Parse(response);
         if (route == "native")
         {
@@ -88,15 +89,29 @@ internal static class Evaluation
         }
         if (envelope["choices"] is not JsonArray choices || choices.Count != 1 || Text(choices[0]?["finish_reason"]) != "stop")
             throw new EvaluationFailure("invalidResponse", "Incomplete/refused/ambiguous compatible response");
-        return (Text(choices[0]!["message"]?["content"]), new JsonObject
-        { ["usage"] = envelope["usage"]?.DeepClone(), ["loadTimingAvailable"] = false });
+        var message = choices[0]?["message"];
+        if (message is not JsonObject || Text(message["role"]) != "assistant" || message["refusal"] is not null
+            || message["tool_calls"] is not null || message["function_call"] is not null)
+            throw new EvaluationFailure("invalidResponse", "Expected one unambiguous assistant answer");
+        var usage = new JsonObject();
+        foreach (var field in new[] { "prompt_tokens", "completion_tokens", "total_tokens" })
+            usage[field] = CountMetric(envelope["usage"] is JsonObject usageObject ? usageObject[field] : null);
+        return (Text(message["content"]), new JsonObject
+        {
+            ["usage"] = usage, ["loadTimingAvailable"] = false,
+            ["reasoningObserved"] = message["reasoning"] is JsonValue value
+                && value.TryGetValue<string>(out var reasoning) && !string.IsNullOrWhiteSpace(reasoning)
+        });
     }
+
+    private static JsonNode? CountMetric(JsonNode? node) => node is JsonValue value
+        && value.TryGetValue<long>(out var count) && count >= 0 ? JsonValue.Create(count) : null;
 
     internal static JsonObject NativeMetrics(JsonNode envelope)
     {
         var metrics = new JsonObject();
         foreach (var key in new[] { "total_duration", "load_duration", "prompt_eval_count", "prompt_eval_duration", "eval_count", "eval_duration" })
-            metrics[key] = envelope[key]?.DeepClone();
+            metrics[key] = CountMetric(envelope[key]);
         // Retain only whether a separated reasoning field was observed, never its text.
         metrics["reasoningObserved"] = envelope["message"]?["thinking"] is JsonValue value
             && value.TryGetValue<string>(out var reasoning) && !string.IsNullOrWhiteSpace(reasoning);

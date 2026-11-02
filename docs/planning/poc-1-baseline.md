@@ -198,11 +198,17 @@ design. No popup, acknowledgement, or list-row reminder is required by this deci
 
 ## Inference, evidence validation, and recovery
 
-The inference endpoint and model name are configurable. No model has been selected;
-the completed narrative trials did not meet their quality gate and do not validate
-the narrowed task. Prefer one simple integration, not a provider
-framework. Native Ollama versus OpenAI-compatible requests remains open for
-evaluation. A compatible API format does not require OpenAI cloud inference.
+The application design retains configurable inference endpoint/model settings;
+inference is not yet integrated into the application. The selected working
+development baseline is original v5 with its two result-field descriptions,
+GPT-OSS 20B low through native Ollama; it has not passed acceptance. Historical
+narrative trials do not validate the narrowed task. Prefer one simple application
+integration, not a provider framework. The separately approved
+[runner extension](https://github.com/dayloryanes/onco-match/issues/18) supports
+offline preparation and fake-transport tests for native and OpenAI-compatible
+local Ollama requests within one runner. It does not select an application route,
+establish compatible-route quality, or authorize live evaluation.
+A compatible API format does not require OpenAI cloud inference.
 Other server/model combinations are not promised compatible merely because their
 address and model can be configured. Cloud inference is not approved.
 
@@ -260,8 +266,9 @@ application checks are separate from model-quality requests. Measure a separatel
 approved small development run before agreeing a numerical latency limit; freeze
 that limit, deadline, prompt, model, and settings before acceptance. Record request
 durations, median, slowest request, and total time including failures.
-Native/compatible-route selection remains open; equivalent inputs and controls
-must be reviewed before a comparison. Settings, budgets, downloads, research, and
+The native development baseline remains selected. A compatible-route live
+comparison remains separately approved work; equivalent inputs and controls
+must be reviewed before such a comparison. Settings, budgets, downloads, research, and
 execution require separate approval. No new experiment is authorized here.
 
 ## First development slice

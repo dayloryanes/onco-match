@@ -21,6 +21,14 @@ Matching and Ollama integration are not implemented. See the
 and [development overview](https://github.com/dayloryanes/onco-match/issues/1)
 for scope and current authorization/review status. Licensing is undecided.
 
+The separate [evaluation runner](tools/condition-label-evaluation/README.md)
+supports offline preparation and fake-transport checks for native and
+OpenAI-compatible local Ollama requests. It is independent of the application;
+ordinary live execution is disabled. Both routes passed one development-case
+live smoke request using low reasoning. The runner README records the evidence
+and limits; compatible-route quality/acceptance remain unestablished, and the
+one-time smoke scope is consumed and disabled.
+
 See the [documentation index](docs/README.md) for current designs, the selected
 development baseline and its known limitations.
 

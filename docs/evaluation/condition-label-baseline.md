@@ -5,6 +5,19 @@ original result-field schema descriptions, GPT-OSS 20B at low reasoning through
 native Ollama. Optimization is deferred while the application is completed.
 Condition-label assessment is not yet integrated into the delivered application.
 
+The isolated runner now supports offline preparation and fake-transport checks
+for native and OpenAI-compatible local Ollama requests. The compatible candidate
+uses an offline declaration that does not attest to actual installed identity. That
+extension does not change the selected native baseline or its historical results;
+no compatible-route acceptance is claimed. A separately approved CL-D01 smoke
+completed once per route with low reasoning: native 97.836 seconds, compatible
+52.541 seconds, both mechanically valid and matching the expected findings.
+This is one-case integration evidence, not a controlled performance comparison
+or quality gate. The smoke used a separately named compatible preset with the
+same weights/template and explicit model parameters; it leaves all 19 acceptance
+fixtures reserved. Both live commands are disabled after consuming that approval.
+See the runner README for both routes, evidence and execution restrictions.
+
 This is a working development choice, not an accepted or clinically validated
 configuration. All 19 acceptance cases remain reserved. The limitations below
 remain material even when an answer passes mechanical validation.
