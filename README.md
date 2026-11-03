@@ -86,15 +86,21 @@ apply. Last viewed marks navigation history, not a clinical review.
 
 ## Session and data lifetime
 
-- Login uses secure cookies with a 30-minute lifetime that can renew during use.
-  Logout ends the current browser session; shared tabs recheck when focused.
-  Independently signed-in browsers remain signed in.
+- Login uses secure cookies with a 30-minute lifetime. Ordinary requests renew
+  only after more than half the ticket lifetime has passed. The page displays
+  the confirmed expiry and warns five minutes beforehand. Choose Stay signed in
+  for a fresh 30 minutes without leaving the page; failed extensions offer Retry.
+  There is no periodic keepalive or mouse/keyboard inactivity timer.
+- Shared tabs receive confirmed renewals and login/logout changes; focus still
+  checks the session with the API. Independently signed-in browsers remain
+  separate. Expired sessions require login again.
 - Both roles share the same in-memory data. Logout preserves completed imports;
   restarting the backend clears imported studies and history and reloads the ten
   fictional patient fixtures. There is no database or patient editor.
 
-Detailed authentication and fixture behavior is documented in the
-[login and patient browsing specification](docs/specs/login-patient-browsing.md).
+See [session controls](docs/session-controls.md) for renewal behavior and testing
+boundaries, and the [login and patient browsing specification](docs/specs/login-patient-browsing.md)
+for the original authentication and fixture behavior.
 
 ## Study importing
 

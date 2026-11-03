@@ -4,8 +4,8 @@ namespace OncoMatch.Api.Features.Auth;
 
 public class DemoAccounts
 {
-    private readonly PasswordHasher<CurrentUser> hasher = new();
-    private readonly Dictionary<string, (CurrentUser User, string PasswordHash)> accounts =
+    private readonly PasswordHasher<DemoAccount> hasher = new();
+    private readonly Dictionary<string, (DemoAccount User, string PasswordHash)> accounts =
         new(StringComparer.OrdinalIgnoreCase);
 
     public DemoAccounts()
@@ -16,11 +16,11 @@ public class DemoAccounts
 
     private void Add(string username, string role, string password)
     {
-        var user = new CurrentUser(username, role);
+        var user = new DemoAccount(username, role);
         accounts.Add(username, (user, hasher.HashPassword(user, password)));
     }
 
-    public CurrentUser? Authenticate(string username, string password)
+    public DemoAccount? Authenticate(string username, string password)
     {
         if (!accounts.TryGetValue(username.Trim(), out var account))
         {
@@ -30,3 +30,5 @@ public class DemoAccounts
             == PasswordVerificationResult.Failed ? null : account.User;
     }
 }
+
+public record DemoAccount(string Username, string Role);
