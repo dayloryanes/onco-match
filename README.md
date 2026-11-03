@@ -101,7 +101,8 @@ apply. Last viewed marks navigation history, not a clinical review.
   fictional patient fixtures. There is no database or patient editor.
 
 See [session controls](docs/session-controls.md) for renewal behavior and testing
-boundaries, and the [login and patient browsing specification](docs/specs/login-patient-browsing.md)
+boundaries, including the optional short-session startup commands for manual
+testing, and the [login and patient browsing specification](docs/specs/login-patient-browsing.md)
 for the original authentication and fixture behavior.
 
 ## Study importing

@@ -4,6 +4,7 @@ using OncoMatch.Api.Features.Auth;
 using Microsoft.AspNetCore.Mvc;
 using OncoMatch.Api.Features.Patients;
 using OncoMatch.Api.Features.Studies;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             return Task.CompletedTask;
         };
     });
+builder.Services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
+    .Configure<IConfiguration, IHostEnvironment>((options, configuration, environment) =>
+    {
+        if (environment.IsDevelopment() && configuration.GetValue<bool>("SessionTesting:Enabled"))
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+    });
 builder.Services.AddAuthorization(options => options.AddPolicy("ReadPatients",
     policy => policy.RequireAuthenticatedUser().RequireRole("Viewer", "Operator")));
 builder.Services.AddAntiforgery(options =>
@@ -92,6 +99,12 @@ await using (var patientJson = File.OpenRead(Path.Combine(builder.Environment.Co
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+var shortSessionTesting = app.Environment.IsDevelopment()
+    && app.Configuration.GetValue<bool>("SessionTesting:Enabled");
+var sessionLifetime = app.Services.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>()
+    .Get(CookieAuthenticationDefaults.AuthenticationScheme).ExpireTimeSpan;
+app.Logger.LogInformation("Session lifetime: {Minutes} minutes ({Mode}). Changing timing requires a fresh login.",
+    sessionLifetime.TotalMinutes, shortSessionTesting ? "manual test mode" : "standard mode");
 app.UseExceptionHandler(handler => handler.Run(context => Results.Problem(
     statusCode: 500, title: "An unexpected error occurred",
     extensions: new Dictionary<string, object?> { ["code"] = "server_error" }).ExecuteAsync(context)));

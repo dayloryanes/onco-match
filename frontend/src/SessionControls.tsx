@@ -47,7 +47,8 @@ export default function SessionControls({ user, onExpired }: { user: CurrentUser
   const remainingText = remainingSeconds <= 60
     ? `${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
     : `${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`
-  const expiringSoon = remaining <= 5 * 60_000
+  const shortSessionTesting = import.meta.env.DEV && import.meta.env.VITE_SESSION_TEST_MODE === 'true'
+  const expiringSoon = remaining <= (shortSessionTesting ? 30_000 : 5 * 60_000)
 
   async function extend() {
     if (extension.current) return

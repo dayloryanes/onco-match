@@ -9,7 +9,33 @@ function session(minutes = 4) {
     expiresAt: `2026-10-27T12:${String(minutes).padStart(2, '0')}:00Z` }
 }
 
-afterEach(() => vi.useRealTimers())
+afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs() })
+
+test('manual test mode warns at thirty seconds and clears after a two-minute extension', async () => {
+  vi.stubEnv('VITE_SESSION_TEST_MODE', 'true')
+  vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval', 'performance'] })
+  server.use(
+    http.get('*/api/auth/me', () => HttpResponse.json({ ...session(), expiresAt: '2026-10-27T12:00:40Z' })),
+    http.post('*/api/auth/extend-session', () => HttpResponse.json({ ...session(),
+      expiresAt: '2026-10-27T12:02:10Z', serverTime: '2026-10-27T12:00:10Z' })),
+  )
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Dashboard' })
+  expect(screen.queryByRole('button', { name: 'Stay signed in' })).not.toBeInTheDocument()
+  await act(async () => { vi.advanceTimersByTime(10_000) })
+  expect(screen.getByText('Your session expires in 30 seconds. Stay signed in to continue.')).toBeVisible()
+  fireEvent.click(screen.getByRole('button', { name: 'Stay signed in' }))
+  await vi.waitFor(() => expect(screen.queryByText(/Stay signed in to continue/)).not.toBeInTheDocument())
+  expect(document.querySelector('.session-controls time')).toHaveAttribute('datetime', '2026-10-27T12:02:10Z')
+})
+
+test('production keeps the normal warning even if the manual-test flag is supplied', async () => {
+  vi.stubEnv('DEV', false)
+  vi.stubEnv('VITE_SESSION_TEST_MODE', 'true')
+  server.use(http.get('*/api/auth/me', () => HttpResponse.json(session())))
+  render(<App />)
+  expect(await screen.findByText(/Your session expires in 4 minutes/)).toBeVisible()
+})
 
 test('warning uses server time despite browser clock differences and successful extension preserves the page', async () => {
   server.use(
@@ -20,8 +46,8 @@ test('warning uses server time despite browser clock differences and successful 
   expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
   expect(await screen.findByText(/Your session expires in 4 minutes/)).toBeVisible()
   fireEvent.click(screen.getByRole('button', { name: 'Stay signed in' }))
-  expect(await screen.findByText(/Session expires at/)).toBeVisible()
-  expect(screen.queryByText(/Your session expires in/)).not.toBeInTheDocument()
+  await vi.waitFor(() => expect(screen.queryByText(/Your session expires in/)).not.toBeInTheDocument())
+  expect(screen.getByText(/Session expires at/)).toBeVisible()
   expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
 })
 

@@ -41,6 +41,34 @@ When it says "fetch the relevant ticket", read the GitHub issue.
 
 PRs as a request surface: no.
 
+## Delivery and post-merge cleanup
+
+Within the maintainer's authorized publication/cleanup scope:
+
+1. Verify the PR is merged and compare its merged files with the reviewed feature
+   tip. Explain that this confirms the merge preserved the reviewed code; retain
+   the original test settings and limits when reporting prior test results.
+2. Synchronize a clean local main with origin/main. Preserve local changes if the
+   working tree is dirty rather than overwriting them during cleanup.
+3. Verify the native PR closing relationship targets the delivered implementation
+   ticket, not an unfinished parent specification. Remove active readiness labels
+   such as ready-for-agent from the closed ticket; preserve Wayfinder labels.
+4. Put one delivery comment on the closed issue, linking the PR and recording
+   implementation, validation and known limits. Update an existing delivery
+   comment if one is already present. Keep PR evidence and stable source links in
+   the PR description; add a PR cleanup comment only if specifically requested.
+5. Update the overview, map, parent and next-ticket references where relevant.
+   Verify native dependency status and preserve the maintainer's recorded
+   authorization; an unblocked ticket is not automatically started or authorized.
+6. Replace branch-based document links with immutable merged-commit links before
+   removing the verified merged branch locally/remotely. Clean that task's
+   disposable files as described in the development workflow.
+
+Finish by reading back the issue state, labels, comments, PR closing references
+and updated links, then verify branch removal, synchronized main and a clean
+working tree. Historical source snapshots can remain unchanged when the current
+overview clearly supersedes their old authorization/publication checkpoints.
+
 ## Wayfinding
 
 Use one issue labelled wayfinder:map as the map.
