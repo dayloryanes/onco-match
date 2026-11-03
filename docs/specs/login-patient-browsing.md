@@ -39,14 +39,14 @@ fictional patients and open directly addressable patient details. Logout returns
 the browser to login and removes protected content.
 
 Dashboard is the application's home page. This slice introduces its navigation
-shell; study navigation, import controls, and matching operations arrive in their
+shell; study navigation, import controls, and match operations arrive in their
 respective slices. A login prompted by a protected patient link returns to that
 patient destination instead of the dashboard.
 
 The records are synthetic demonstration fixtures. Approving an initial set does
 not freeze their contents permanently. Later reviewed revisions update the
 fixtures and affected tests together, while the agreed POC scope remains exactly
-10 fictional patients. No particular matching outcome is promised by this slice.
+10 fictional patients. No particular match outcome is promised by this slice.
 
 ## User Stories
 
@@ -111,7 +111,7 @@ Approved browser routes:
 | `/patients/{id}` | Protected patient details or Patient not found |
 
 - Dashboard is available to both roles and shows the current username and role,
-  a Patients link, and Logout. Do not add inactive Studies/import/matching controls.
+  a Patients link, and Logout. Do not add inactive Studies/import/match controls.
 - Display the fictional-data notice on the patient views. Use readable labels,
   keyboard-operable links/buttons, and associated login field labels.
 - Preserve only a recognized local protected route as the return destination.
@@ -298,7 +298,7 @@ Review future fixture changes whenever later study examples expose gaps.
 The current records intentionally retain unspecified staging editions; a specific
 edition has not been selected. Revisit age granularity, diagnosis specificity, or staging editions
 if the assessment design needs them. Do not change a fixture simply to force a
-favorable outcome on a live study page. Expected matching results require a
+favorable outcome on a live study page. Expected match results require a
 separate review alongside study fixtures.
 
 ## Testing Decisions
@@ -390,7 +390,7 @@ slice's setup instructions.
 
 ## Out of Scope
 
-- Study browsing, importing, batches, matching, assessment results, inference
+- Study browsing, importing, batches, match execution, assessment results, inference
   integration, evaluation experiments, and dashboard operational controls.
 - Patient searching, filtering, pagination, editing, deletion, and additional
   clinical attributes such as biomarkers, labs, or treatment history.
@@ -398,7 +398,7 @@ slice's setup instructions.
   mobile clients, and universal inference-provider support.
 - Database persistence, independent background execution, scheduling, queues,
   refresh/staleness handling, and reassessment workflows.
-- A clinical eligibility claim, predetermined matching outcomes, or a universally
+- A clinical eligibility claim, predetermined match outcomes, or a universally
   numbered staging model. This slice displays supplied fictional facts only.
 - Blanket template cleanup, a production hosting design, a license selection,
   dependency installation during drafting, an implementation-ticket breakdown,

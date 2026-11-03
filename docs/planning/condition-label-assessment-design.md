@@ -355,7 +355,7 @@ work unfinished and preserves completed assessments. Continue starts unfinished
 work anew; it does not resume generated text. Pair identity, input snapshots,
 execution states, and failure details remain application-owned.
 
-Only one matching operation runs across the application; requests are sequential
+Only one match operation runs across the application; requests are sequential
 and attached to the initiating dashboard request. Logout/navigation/disconnection
 cancel the initiating work once detected. Shared in-memory state, immutable
 completed assessments, no background jobs, and no rematching remain unchanged.
