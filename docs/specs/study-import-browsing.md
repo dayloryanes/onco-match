@@ -35,7 +35,7 @@ discard the page's usable studies or trigger replacement requests.
 
 Both Viewer and Operator can browse studies and history. Only Operator can
 import or retry. Shared process memory preserves completed imports across logout
-and clears on backend restart. Importing never starts matching or inference.
+and clears on backend restart. Importing never starts a match operation or inference.
 
 ## User Stories
 
@@ -271,9 +271,9 @@ only Operator may POST. Use the existing secure-cookie, same-origin proxy,
   dispositions: their final counts are null, not fabricated zeroes; their detail
   arrays are empty. Failure/cancellation does not appear as a completed empty
   batch. Do not expose raw upstream bodies, exception details, or cursor tokens.
-- Only completed attempts define batches for future matching; retain the exact
-  newly imported identifiers for each. No matching execution state is introduced
-  by this slice, and zero-import batches never acquire matching work here.
+- Only completed attempts define batches for future match operations; retain the exact
+  newly imported identifiers for each. No match execution state is introduced
+  by this slice, and zero-import batches never acquire match work here.
 
 Approved error contract:
 
@@ -378,7 +378,7 @@ HTTP-client construction. The detailed coverage below was approved with the spec
 
 ## Out of Scope
 
-- Matching buttons, inference, age/sex pair checks, condition-label interpretation,
+- Match buttons, inference, age/sex pair checks, condition-label interpretation,
   pair results, streaming progress, and changes to the selected development model.
 - Registry search controls, changing fixed filters/sort/page size, geography or
   pediatric balancing, replacement-page fetching, and automatic imports/retries.

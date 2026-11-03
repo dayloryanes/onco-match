@@ -47,7 +47,7 @@ non-streaming Chat Completions. Retain Ollama-specific metadata verification.
 Deliver offline preparation, fake-transport execution checks, and documentation
 for both routes. Preserve the native baseline and leave all real-server
 execution disabled. This work precedes a separately specified application
-matching/results slice; the application remains independent of the runner.
+match results slice; the application remains independent of the runner.
 
 ## User Stories
 
@@ -74,7 +74,7 @@ matching/results slice; the application remains independent of the runner.
 21. As the maintainer, I want old and newly constructed execution approvals rejected by the production guard, so that adding a route cannot enable live execution.
 22. As the maintainer, I want instructions for selecting and preparing either route in the existing runner documentation, so that setup is understandable without another documentation tree.
 23. As the maintainer, I want documentation to distinguish implementation tests from live quality evidence, so that compatible support is not described as accepted model behavior.
-24. As the maintainer, I want the application unchanged, so that runner work stays separate from the later matching slice.
+24. As the maintainer, I want the application unchanged, so that runner work stays separate from the later match feature slice.
 
 ## Implementation Decisions
 
@@ -202,7 +202,7 @@ matching/results slice; the application remains independent of the runner.
   baseline report, and main README. Update current capability descriptions where
   needed; preserve historical native results and accurate historical statements.
 - Keep runner instructions together. Application inference setup remains for the
-  matching slice; the main README must continue to state its delivered behavior.
+  match feature slice; the main README must continue to state its delivered behavior.
 - Clearly separate offline support, actual server compatibility, live quality
   results, and acceptance. Neither route support nor fake-transport checks closes
   the evaluation gate or establishes clinical validity.
@@ -241,7 +241,7 @@ scope and must not describe synthetic answers as model-quality results.
 
 ## Out of Scope
 
-- Application/backend/frontend matching, inference integration, or setup changes.
+- Application/backend/frontend match functionality, inference integration, or setup changes.
 - A second runner, provider framework, generalized server compatibility, broad
   runner rewrite, or new test project/dependency.
 - Servers other than local Ollama; OpenAI cloud access; Responses, Completions,
@@ -273,7 +273,7 @@ scope and must not describe synthetic answers as model-quality results.
   registry, inference, acceptance, model creation, or download call was made.
 - The human approved a local commit of the reviewed working changes and
   specification. Code publication requires separate approval. Live execution
-  beyond the consumed smoke scope and the application matching slice remain
+  beyond the consumed smoke scope and the application match feature slice remain
   separate stages requiring approval.
 
 ## Automated source review
@@ -341,7 +341,7 @@ The human subsequently approved renaming the preset to
 documentation and local Ollama. Keep its digest/parameters unchanged and preserve
 completed request evidence under the historical alias. The rename authorizes no
 new inference. Instructions for creating/selecting any application preset belong
-to the later matching slice; the current application has no inference dependency.
+to the later match feature slice; the current application has no inference dependency.
 
 Both run identities are consumed and production smoke has been disabled in
 source. 124 offline checks and Release build pass afterward. No retries,
@@ -380,8 +380,8 @@ the bounded offline implementation is specified, but the label does not grant
 implementation approval or imply the declared model already exists.
 
 The human chose this runner work as a separate predecessor to the application
-matching/results discussion. Completing it does not automatically authorize a
-live comparison or the matching specification stage.
+match results discussion. Completing it does not automatically authorize a
+live comparison or the match specification stage.
 
 The route value, bounded command extension, testing boundary, and rejection of
 unresolved required settings are included in the approved design. An exact

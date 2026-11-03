@@ -57,7 +57,7 @@ Predefined demonstration users are acceptable.
 | Role | Permissions |
 | --- | --- |
 | Viewer | Read patients, studies, import history, and stored assessments |
-| Operator | All viewing permissions, plus importing and matching/recovery operations |
+| Operator | All viewing permissions, plus import, match, and recovery operations |
 
 Enforce permissions at the API. Do not assume a role hierarchy from names.
 Patients, studies, history, and results are shared across demo users for the
@@ -99,7 +99,7 @@ using NCT identifiers. Skip duplicates without fetching replacement pages.
 Maintain all imported studies in memory.
 
 Import history includes fetched/imported/duplicate counts and relevant NCT IDs.
-Retain duplicate-only batches with zero imported studies and no matching action.
+Retain duplicate-only batches with zero imported studies and no match action.
 A failed attempt preserves existing data and pagination position, supports an
 explicit retry, and is recorded without fabricated fetched/imported counts.
 When no next-page token remains, show exhaustion and disable Load Next 10.
@@ -111,21 +111,21 @@ unrestricted search guarantees pediatric representation or meaningful alignment
 on the first page. Consistent parameters do not freeze the live registry between
 requests. No automatic refresh is implied.
 
-## Dashboard and matching operations
+## Dashboard and match operations
 
 The dashboard is the Operator's central place to import studies, inspect batch
-summaries, explicitly start matching, and view progress/summaries. Import does not
-automatically start inference. A batch evaluates its newly imported studies
+summaries, explicitly start a match operation, and view progress/summaries. Import
+does not automatically start inference. A batch evaluates its newly imported studies
 against all 10 patients. A duplicate-only page produces no new pairs.
 
-Multiple batches may await matching. Only one matching operation is active across
-the application; other users may browse stored results. LLM requests are
+Multiple batches may await a match operation. Only one match operation is active
+across the application; other users may browse stored results. LLM requests are
 sequential initially. New imports do not change an active batch's pair set.
 
-There is one matching mechanism. Patients and Studies are read perspectives on
+There is one match workflow. Patients and Studies are read perspectives on
 the same stored pair assessments, including pair summaries and explanations.
-Neither view starts matching or offers Match Again. Completed assessments are
-snapshots; later imports leave them untouched.
+Neither view starts a match operation or offers Match Again. Completed assessments
+are snapshots; later imports leave them untouched.
 
 ## Assessment scope and pair summaries
 
@@ -228,8 +228,8 @@ Operators may explicitly retry failed evaluations and continue unfinished pairs
 after cancellation. Completed assessments, including undetermined or mixed summaries,
 are not eligible for retry. No automatic retries or recovery jobs.
 
-Matching stays attached to the initiating dashboard request, which streams
-progress and completed pair results. Show completed/total counts rather than
+Each match operation stays attached to the initiating dashboard request, which
+streams progress and completed pair results. Show completed/total counts rather than
 unvalidated time estimates or raw model reasoning. Cancel, logout, leaving the
 dashboard, or closing/disconnecting stops further work once detected; request
 cancellation of active inference. Logout must explicitly cancel the initiating
@@ -277,8 +277,8 @@ Delivered through [PR #9](https://github.com/dayloryanes/onco-match/pull/9): sta
 both applications, log in with a predefined demo user, browse the 10 synthetic
 patients, open details, and log out so protected access is no longer available.
 Both roles may browse. Meaningful Operator-only operation tests arrive with
-importing/matching. This scope revision changes no delivered application behavior
-and authorizes no further implementation.
+import and match operations. This scope revision changes no delivered application
+behavior and authorizes no further implementation.
 
 ## Documentation and future boundaries
 

@@ -4,6 +4,17 @@ OncoMatch screens fictional oncology patients against clinical research studies 
 
 ## Language
 
+**Match batch**:
+The fixed set of patient–study pairs associated with one completed study import.
+
+**Match operation**:
+One explicitly initiated run of work for a match batch, whether starting it,
+continuing unfinished pairs, or retrying failed evaluations.
+
+**Evaluation attempt**:
+One attempt to process a patient–study pair, which may complete, fail, or be
+interrupted. Another attempt does not create a different patient–study pair.
+
 **Pair assessment**:
 A completed screening assessment of one patient against one study within the limited assessment scope.
 _Avoid_: Match score, eligibility determination

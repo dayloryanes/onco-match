@@ -83,7 +83,7 @@ Preparation needs no model installed and generates no model in Ollama.
 Keep the named preset for future live use of this compatible-runner configuration.
 Native calls use the original model. Offline checks and the current application
 need neither preset setup nor a running inference service. Application inference
-instructions belong to the later matching slice; if it adopts this approach,
+instructions belong to the later match feature slice; if it adopts this approach,
 document how to create/select the preset from existing weights rather than
 presenting it as a separately downloaded OncoMatch model.
 

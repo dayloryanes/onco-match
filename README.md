@@ -11,8 +11,8 @@ imported studies. Operators can explicitly import registry pages and retry faile
 attempts. Both roles can browse the same studies, details, and import history.
 API permissions are enforced independently of the UI.
 
-Application matching and inference are not implemented. Ollama is not required
-to run the application. Licensing is undecided.
+The application's match workflow and inference integration are not implemented.
+Ollama is not required to run the application. Licensing is undecided.
 
 The separate [evaluation runner](tools/condition-label-evaluation/README.md)
 supports native and OpenAI-compatible local Ollama requests for development

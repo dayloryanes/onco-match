@@ -85,7 +85,7 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
   return <section>
     <p className="eyebrow">Your workspace</p><h1>Dashboard</h1>
     <p>Import studies and review import history.</p>
-    <p className="notice">Fixed cancer search: Recruiting and Not Yet Recruiting interventional and observational studies, in registry relevance order. Relevance is to the search, not to a patient. No age, sex, or geography filter is applied, and no pediatric/adult distribution is guaranteed. Importing does not start matching.</p>
+    <p className="notice">Fixed cancer search: Recruiting and Not Yet Recruiting interventional and observational studies, in registry relevance order. Relevance is to the search, not to a patient. No age, sex, or geography filter is applied, and no pediatric/adult distribution is guaranteed. Importing does not start a match operation.</p>
     <section aria-labelledby="study-imports-heading">
       <h2 id="study-imports-heading">Study imports</h2>
       {state && <p className="record-count">{state.totalImportedStudyCount} imported {state.totalImportedStudyCount === 1 ? 'study' : 'studies'} · Shared until server restart</p>}
