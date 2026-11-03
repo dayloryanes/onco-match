@@ -4,6 +4,7 @@ For installation and delivered behavior, start with the [project README](../READ
 
 - [POC 1 scope](planning/poc-1-baseline.md)
 - [Session controls and validation](session-controls.md)
+- [Batch assessments, local inference setup and limits](batch-assessments.md)
 - [Condition-label assessment contract](planning/condition-label-assessment-design.md)
 - [Condition-label evaluation design and fixtures](planning/condition-label-evaluation-design.md)
 - [Selected development baseline, findings and limitations](evaluation/condition-label-baseline.md)

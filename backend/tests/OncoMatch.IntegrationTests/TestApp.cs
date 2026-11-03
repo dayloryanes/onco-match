@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http.Features;
+using System.IO.Pipelines;
 
 namespace OncoMatch.IntegrationTests;
 
@@ -18,19 +21,27 @@ public class TestApp : WebApplicationFactory<Program>
 
     public TestClock Clock { get; } = new();
     public RegistryHandler Registry { get; } = new();
+    public RegistryHandler Ollama { get; } = new();
+    public OncoMatch.Api.Features.Match.Inference.MatchInferenceOptions Inference { get; } = new();
     public ResponseBarrier? ImportResponse { get; set; }
+    public ResponseBarrier? MatchAdmission { get; set; }
+    public ResponseBarrier? MatchResponseStart { get; set; }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<TimeProvider>(Clock);
+            services.AddSingleton(Inference);
+            services.AddHttpClient("Ollama").ConfigurePrimaryHttpMessageHandler(() => Ollama);
             // Keep approved fixtures deterministic while manual test settings
             // change locally; individual lifetime tests also exercise two minutes.
             services.PostConfigure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme,
                 options => options.ExpireTimeSpan = sessionLifetime);
             services.AddHttpClient("Registry").ConfigurePrimaryHttpMessageHandler(() => Registry);
             services.AddSingleton<IStartupFilter>(new ImportResponseFilter(() => ImportResponse));
+            services.AddSingleton<IStartupFilter>(new MatchAdmissionFilter(() => MatchAdmission));
+            services.AddSingleton<IStartupFilter>(new MatchResponseStartFilter(() => MatchResponseStart));
         });
     }
 
@@ -39,6 +50,60 @@ public class TestApp : WebApplicationFactory<Program>
         BaseAddress = new Uri("https://localhost"),
         AllowAutoRedirect = false
     });
+}
+
+public class MatchResponseStartFilter(Func<ResponseBarrier?> barrier) : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+    {
+        app.Use(async (context, proceed) =>
+        {
+            var hold = barrier();
+            if (hold is not null && context.Request.Method == "POST" && context.Request.Path.Value!.EndsWith("/operations", StringComparison.Ordinal))
+            {
+                var original = context.Features.Get<IHttpResponseBodyFeature>()!;
+                context.Features.Set<IHttpResponseBodyFeature>(new HeldResponseStart(original, hold));
+                try { await proceed(); }
+                finally { context.Features.Set(original); }
+            }
+            else await proceed();
+        });
+        next(app);
+    };
+}
+
+public class HeldResponseStart(IHttpResponseBodyFeature inner, ResponseBarrier barrier) : IHttpResponseBodyFeature
+{
+    public Stream Stream => inner.Stream;
+    public PipeWriter Writer => inner.Writer;
+    public void DisableBuffering() => inner.DisableBuffering();
+    public Task CompleteAsync() => inner.CompleteAsync();
+    public Task SendFileAsync(string path, long offset, long? count, CancellationToken token = default) => inner.SendFileAsync(path, offset, count, token);
+    public async Task StartAsync(CancellationToken token = default)
+    {
+        barrier.Reached.TrySetResult();
+        await barrier.Release.Task.WaitAsync(token);
+        await inner.StartAsync(token);
+    }
+}
+
+public class MatchAdmissionFilter(Func<ResponseBarrier?> barrier) : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+    {
+        app.Use(async (context, proceed) =>
+        {
+            var hold = barrier();
+            if (hold is not null && context.Request.Method == "POST" && context.Request.Path.Value!.EndsWith("/operations", StringComparison.Ordinal))
+            {
+                await context.AuthenticateAsync();
+                hold.Reached.TrySetResult();
+                await hold.Release.Task;
+            }
+            await proceed();
+        });
+        next(app);
+    };
 }
 
 public class ResponseBarrier

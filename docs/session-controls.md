@@ -102,7 +102,8 @@ and log out/in again. Normal timings are 30 minutes and five minutes.
   and settings. No live inference, clinical acceptance or complete manual pass is
   implied by an automated check.
 
-Match execution and its Auth-owned operation-lifetime coordinator belong to the
-next application slice. This session tooling adds no Match UI or server-side
-revocation store. The existing per-login `session_id` claim remains available for
-that work. Assessment baseline and acceptance assets are unchanged.
+The [batch assessment workflow](batch-assessments.md) uses an Auth-owned lifetime
+coordinator to observe actual cookie renewals and cancel active work at expiry
+or logout. The existing per-login `session_id` identifies that work without
+replacing cookie authentication or introducing a revocation store. Assessment
+baseline and acceptance assets remain separate from application validation.

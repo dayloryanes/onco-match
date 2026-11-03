@@ -15,6 +15,7 @@ export default defineConfig({
       env: {
         ASPNETCORE_ENVIRONMENT: 'Development',
         Registry__BaseUrl: 'http://127.0.0.1:7133/api/v2/',
+        Match__Inference__BaseUrl: 'http://127.0.0.1:7133',
         ASPNETCORE_Kestrel__Certificates__Default__Path: fileURLToPath(new URL('../.certs/localhost.pem', import.meta.url)),
         ASPNETCORE_Kestrel__Certificates__Default__KeyPath: fileURLToPath(new URL('../.certs/localhost.key', import.meta.url)),
       },

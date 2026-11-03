@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Content Update="Features/Patients/patients.json" CopyToOutputDirectory="PreserveNewest" />
+    <EmbeddedResource Include="Features/Match/Inference/instructions.txt" />
   </ItemGroup>
 
 </Project>

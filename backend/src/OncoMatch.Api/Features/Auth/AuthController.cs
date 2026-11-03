@@ -11,7 +11,7 @@ namespace OncoMatch.Api.Features.Auth;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, StudyStore studies) : ControllerBase
+public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, StudyStore studies, OperationLifetime lifetime) : ControllerBase
 {
     [HttpGet("csrf")]
     public IActionResult Csrf()
@@ -63,6 +63,7 @@ public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, Stu
     [ServiceFilter(typeof(CsrfFilter))]
     public async Task<IActionResult> Logout()
     {
+        lifetime.Logout(User.FindFirstValue("session_id"));
         await studies.CancelSession(User.FindFirstValue("session_id"));
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return NoContent();

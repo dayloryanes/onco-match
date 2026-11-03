@@ -59,5 +59,9 @@ td { overflow-wrap: anywhere; }
 .study-status, .study-type { white-space: nowrap; overflow-wrap: normal; }
 .patient-facts dt, .fact-label { color: #192f40; font-weight: 600; }
 .patient-facts dd { margin: 0; font-weight: 400; overflow-wrap: anywhere; }
+.assessment-detail { background: white; border: 1px solid #93b6bf; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; overflow-wrap: anywhere; }
+.assessment-detail h4, .assessment-detail h5 { margin: 1rem 0 .5rem; }
+.condition-assessment { border-top: 1px solid #d7e2e7; margin-top: 1.5rem; padding-top: .5rem; }
+.assessment-evidence { font-size: .85rem; white-space: pre-wrap; }
 @media (max-width: 800px) { .site-header .main-navigation { order: 3; flex-basis: 100%; justify-content: flex-start; } .account { margin-left: auto; } }
 @media (max-width: 600px) { .site-header { align-items: flex-start; } .account { flex-direction: column; align-items: flex-end; gap: .6rem; } .login-panel { padding: 1.5rem; } .patient-facts div { grid-template-columns: 1fr; gap: .5rem; } th, td { padding: .9rem; } }

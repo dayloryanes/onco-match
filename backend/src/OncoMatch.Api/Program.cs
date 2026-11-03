@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using OncoMatch.Api.Features.Patients;
 using OncoMatch.Api.Features.Studies;
 using Microsoft.Extensions.Options;
+using OncoMatch.Api.Features.Match;
+using OncoMatch.Api.Features.Match.Inference;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         {
             var path = context.Request.Path.Value?.TrimEnd('/');
             if (string.Equals(path, "/api/auth/csrf", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(path, "/api/auth/extend-session", StringComparison.OrdinalIgnoreCase))
+                || string.Equals(path, "/api/auth/extend-session", StringComparison.OrdinalIgnoreCase)
+                || (path?.StartsWith("/api/match/batches/", StringComparison.OrdinalIgnoreCase) == true
+                    && path.EndsWith("/operations", StringComparison.OrdinalIgnoreCase)))
             {
                 // Token acquisition and a rejected extension must not prolong
                 // the login. A successful extension explicitly issues its ticket.
@@ -52,6 +56,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         {
             SessionMetadata.Capture(context.HttpContext, new Microsoft.AspNetCore.Authentication.AuthenticationTicket(
                 context.Principal!, context.Properties, context.Scheme.Name));
+            var session = context.Principal?.FindFirst("session_id")?.Value;
+            if (session is not null && context.Properties.ExpiresUtc is { } expiry)
+                context.HttpContext.RequestServices.GetRequiredService<OperationLifetime>().Prepare(context.HttpContext, session, expiry);
             return Task.CompletedTask;
         };
         options.Events.OnRedirectToLogin = context =>
@@ -83,6 +90,19 @@ builder.Services.AddAntiforgery(options =>
 builder.Services.AddScoped<CsrfFilter>();
 builder.Services.AddSingleton<DemoAccounts>();
 builder.Services.AddSingleton<StudyStore>();
+builder.Services.AddSingleton<MatchStore>();
+builder.Services.AddSingleton<MatchExecution>();
+builder.Services.AddSingleton<OllamaClient>();
+builder.Services.AddHttpClient("Ollama", client => client.Timeout = Timeout.InfiniteTimeSpan)
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler { AllowAutoRedirect = false });
+builder.Services.AddSingleton<OperationLifetime>();
+builder.Services.AddSingleton(provider =>
+{
+    var options = new MatchInferenceOptions();
+    try { provider.GetRequiredService<IConfiguration>().GetSection("Match:Inference").Bind(options); }
+    catch (InvalidOperationException) { options.BindingError = "Match:Inference contains an invalid value. Check the configuration keys and numeric timeout."; }
+    return options;
+});
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<RegistryClient>();
 builder.Services.AddHttpClient("Registry", client =>
@@ -99,6 +119,8 @@ await using (var patientJson = File.OpenRead(Path.Combine(builder.Environment.Co
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+// Resolve once against final startup configuration, without runtime reload.
+_ = app.Services.GetRequiredService<MatchInferenceOptions>();
 var shortSessionTesting = app.Environment.IsDevelopment()
     && app.Configuration.GetValue<bool>("SessionTesting:Enabled");
 var sessionLifetime = app.Services.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>()
@@ -136,7 +158,8 @@ app.Use(async (context, next) =>
     {
         context.Response.Headers.CacheControl = "no-store";
     }
-    await next(context);
+    try { await next(context); }
+    finally { context.RequestServices.GetRequiredService<OperationLifetime>().EndRequest(context); }
 });
 
 // Register before authentication: OnStarting callbacks run in reverse order,

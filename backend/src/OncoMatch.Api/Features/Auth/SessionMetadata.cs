@@ -24,6 +24,17 @@ public record SessionMetadata(DateTimeOffset ExpiresAt, DateTimeOffset ServerTim
 
     public static void WriteHeaders(HttpContext context)
     {
+        if (!context.RequestServices.GetRequiredService<OperationLifetime>().ResponseAllowed(context))
+        {
+            // Sign-in queues headers before StartAsync. Suppress that queued
+            // renewal if logout/expiry won before the response publication point.
+            context.Response.Headers.SetCookie = new Microsoft.Extensions.Primitives.StringValues(
+                context.Response.Headers.SetCookie.Where(cookie => cookie is not null
+                    && !System.Text.RegularExpressions.Regex.IsMatch(cookie, @"^OncoMatch\.Auth(?:C[0-9]+)?=")).ToArray());
+            context.Response.Headers.Remove("X-Session-Renewed");
+            context.Items.Remove(Key);
+            return;
+        }
         var metadata = Read(context);
         if (metadata is null) return;
         context.Response.Headers["X-Session-Expires-At"] = metadata.ExpiresAt.ToString("O", CultureInfo.InvariantCulture);
@@ -41,13 +52,19 @@ public sealed class SessionCookieManager(CookieAuthenticationOptions authenticat
 
     public void AppendResponseCookie(HttpContext context, string key, string? value, CookieOptions options)
     {
-        cookies.AppendResponseCookie(context, key, value, options);
-        var ticket = authenticationOptions.TicketDataFormat.Unprotect(value);
-        if (ticket is not null)
+        context.RequestServices.GetRequiredService<OperationLifetime>().PublishCookie(context, () =>
         {
-            SessionMetadata.Capture(context, ticket);
-            context.Response.Headers["X-Session-Renewed"] = "true";
-        }
+            cookies.AppendResponseCookie(context, key, value, options);
+            var ticket = authenticationOptions.TicketDataFormat.Unprotect(value);
+            if (ticket is not null)
+            {
+                SessionMetadata.Capture(context, ticket);
+                var session = ticket.Principal.FindFirst("session_id")?.Value;
+                if (session is not null && ticket.Properties.ExpiresUtc is { } expiry)
+                    context.RequestServices.GetRequiredService<OperationLifetime>().Renew(session, expiry);
+                context.Response.Headers["X-Session-Renewed"] = "true";
+            }
+        });
     }
 
     public void DeleteCookie(HttpContext context, string key, CookieOptions options) => cookies.DeleteCookie(context, key, options);

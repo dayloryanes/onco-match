@@ -8,6 +8,10 @@ async function login(page: Page) {
   await page.getByRole('button', { name: 'Log in', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
   await expect(page.locator('.session-controls time')).toBeVisible()
+  // Settle Dashboard's initial responses before advancing only browser time;
+  // later real-server timing headers would correctly reset that simulated clock.
+  await expect(page.getByRole('heading', { name: 'Match batches', exact: true })).toBeVisible()
+  await expect(page.getByText('Loading match batches…', { exact: true })).toHaveCount(0)
 }
 
 async function waitForLaterTicketTime(page: Page) {

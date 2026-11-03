@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api, ApiError } from './api'
 import type { CurrentUser, ImportAttempt, ImportState } from './api'
+import MatchDashboard from './MatchDashboard'
 
 const errors: Record<string, string> = {
   import_in_progress: 'Another import is running. Refresh to check its progress.',
@@ -100,6 +101,7 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
         <button className="quiet-button" onClick={reload} disabled={loading || pending}>{state ? 'Refresh' : 'Retry'}</button>
       </div>
     </section>
+    <MatchDashboard user={user} onExpired={onExpired} importVersion={state?.version} importReady={!loading} refreshId={refresh} />
     {state && <section className="history-section" aria-labelledby="import-history-heading">
       <h2 id="import-history-heading">Import history</h2>
       {state.attempts.length === 0 ? <p>No import attempts yet.</p> : <ol className="import-history">{state.attempts.map(attempt => <Attempt key={attempt.id} attempt={attempt} />)}</ol>}

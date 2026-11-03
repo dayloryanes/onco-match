@@ -31,6 +31,7 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
       body = { username: 'viewer', role: 'Viewer' }
     }
     else if (path === '/api/study-imports') body = { version: 'v1', isImporting: false, isExhausted: false, nextAction: 'initial', totalImportedStudyCount: 0, attempts: [] }
+    else if (path === '/api/match/batches') body = { configurationError: null, activeOperation: null, batches: [] }
     else if (path === `/api/${kind}`) {
       listReads++
       if (delayList) await new Promise<void>(resolve => { releaseList = resolve })

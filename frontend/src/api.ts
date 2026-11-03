@@ -1,5 +1,7 @@
 import { sessionEvent } from './sessionEvents'
 import type { SessionTiming } from './sessionEvents'
+import type { MatchBatch, MatchEvent, MatchState, PairDetails } from './matchTypes'
+import { readMatchStream } from './matchStream'
 
 export interface CurrentUser extends SessionTiming { username: string; role: 'Viewer' | 'Operator' }
 export interface StudySummary {
@@ -48,7 +50,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const problem = await response.json().catch(() => ({}))
     throw new ApiError(response.status, problem.code ?? 'request_failed', problem.title ?? 'Request failed')
   }
-  const result = response.status === 204 ? undefined : await response.json()
+  const result = response.status === 204 || response.status === 202 ? undefined : await response.json()
   // Session endpoints also expose timing in their public JSON contract.
   if (!options.signal?.aborted && !response.headers.has('X-Session-Expires-At')
     && typeof result?.expiresAt === 'string' && typeof result?.serverTime === 'string') {
@@ -95,4 +97,26 @@ export const api = {
   study: (id: string, signal?: AbortSignal) => request<StudyDetails>(`/studies/${encodeURIComponent(id)}`, { signal }),
   importState: (signal?: AbortSignal) => request<ImportState>('/study-imports', { signal }),
   importStudies: (expectedVersion: string, signal?: AbortSignal) => post<ImportState>('/study-imports', { expectedVersion }, signal),
+}
+
+export const matchApi = {
+  batches: (signal?: AbortSignal) => request<MatchState>('/match/batches', { signal }),
+  batch: (id: string, signal?: AbortSignal) => request<MatchBatch>(`/match/batches/${encodeURIComponent(id)}`, { signal }),
+  pair: (patientId: string, nctId: string, signal?: AbortSignal) => request<PairDetails>(`/match/pairs/${encodeURIComponent(patientId)}/${encodeURIComponent(nctId)}`, { signal }),
+  cancel: (operationId: string, signal?: AbortSignal) => post<void>(`/match/operations/${encodeURIComponent(operationId)}/cancel`, undefined, signal),
+  start: async (batch: MatchBatch, signal: AbortSignal, receive: (event: MatchEvent) => void) => {
+    const token = await csrf(signal)
+    const response = await fetch(new URL(`/api/match/batches/${encodeURIComponent(batch.batchId)}/operations`, window.location.origin), {
+      method: 'POST', credentials: 'same-origin', signal,
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token.requestToken },
+      body: JSON.stringify({ action: 'start', expectedVersion: batch.version }),
+    })
+    const expiresAt = response.headers.get('X-Session-Expires-At'), serverTime = response.headers.get('X-Server-Time')
+    if (!signal.aborted && expiresAt && serverTime) sessionEvent({ kind: 'timing', timing: { expiresAt, serverTime }, renewed: response.headers.get('X-Session-Renewed') === 'true', sentAt: Date.now() })
+    if (!response.ok) {
+      const problem = await response.json().catch(() => ({}))
+      throw new ApiError(response.status, problem.code ?? 'request_failed', problem.title ?? 'Unable to start match')
+    }
+    await readMatchStream(response, batch.batchId, receive)
+  },
 }
