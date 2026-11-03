@@ -16,6 +16,9 @@ At a session checkpoint, update the overview within the authorized scope with
 the current stage, work links, validation performed, open questions, and next
 action. Mark the next stage as awaiting approval when it has not been authorized.
 Reference durable artifacts rather than creating a duplicate handoff document.
+Keep the overview focused on current stage, authorization, next action and links.
+Keep feature documentation focused on current behavior and setup; link to issue
+or PR evidence for delivery history rather than accumulating session transcripts.
 
 ## Human involvement and authorization
 
@@ -109,6 +112,35 @@ validation terminology. Describe application smoke testing and source-code
 review as distinct activities. In PRs, identify AI assistance and review status
 accurately; claim only review that has occurred.
 Use the installed pr skill for its visual summary, evidence, and risk format.
+
+During source review, trace a user action through its preparatory requests,
+authentication middleware and final mutation. Check which responses can change
+cookies or shared state when the final request fails. Verify the complete
+sequence at existing public test boundaries instead of relying only on isolated
+mocked responses. Wait for confirmed completion before asserting asynchronous
+results; advancing browser time does not advance backend time.
+
+Before asking the maintainer to reproduce a reported defect, reproduce the
+sequence where possible and give a short test recipe with prerequisites and
+observable expected results. Distinguish diagnosis, a UI-only correction and a
+completed behavior fix. Use the documented short-session startup profiles for
+manual timing checks, then return to normal startup and use a fresh login.
+
+Continuous integration remains deferred by maintainer choice. Run the existing
+approved checks locally; future retros may raise automation for reconsideration.
+
+## Temporary work and delivery records
+
+Put disposable drafts, captured tracker text and diagnostic scripts in one
+ignored repository-root `.local/<task>/` folder. Explain its purpose once when
+creating it. Remove that task's temporary files after their results or published
+records are verified; report any intentionally retained evidence and its purpose.
+Preserve existing evaluation evidence and unrelated local files. Avoid scattering
+temporary work across additional frontend/backend `.local` folders.
+
+For PR publication and post-merge cleanup, follow
+[issue-tracker.md](issue-tracker.md#delivery-and-post-merge-cleanup). Keep actual
+validation evidence and its limits attached to the delivered work item.
 
 ## Documentation and release
 
