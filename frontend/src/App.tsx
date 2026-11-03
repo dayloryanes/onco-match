@@ -8,6 +8,9 @@ import PatientPage from './PatientPage'
 import StudyPage from './StudyPage'
 import Dashboard from './Dashboard'
 import { useListNavigation } from './listNavigation'
+import SessionControls from './SessionControls'
+import { sessionEvent, sessionEventName } from './sessionEvents'
+import type { SessionEvent } from './sessionEvents'
 
 type PageRoute = {
   path: string
@@ -91,6 +94,24 @@ function SessionApp() {
   const location = useLocation()
   const navigate = useNavigate()
   const expire = useCallback(() => { sessionEpoch.current++; focusPosition.current = null; clearNavigation(); setUser(null); setChecking(false); setSessionError(false) }, [clearNavigation])
+
+  useEffect(() => {
+    if (!window.BroadcastChannel) return
+    const channel = new BroadcastChannel('oncomatch-session')
+    channel.onmessage = (message: MessageEvent<SessionEvent>) => {
+      if (message.data.kind === 'changed') {
+        sessionEpoch.current++
+        setChecking(true)
+        setCheckId(value => value + 1)
+      } else if (message.data.kind === 'timing') sessionEvent(message.data, false)
+    }
+    function publish(event: Event) {
+      const detail = (event as CustomEvent<{ event: SessionEvent; broadcast: boolean }>).detail
+      if (detail.broadcast && (detail.event.kind === 'changed' || detail.event.renewed)) channel.postMessage(detail.event)
+    }
+    window.addEventListener(sessionEventName, publish)
+    return () => { channel.close(); window.removeEventListener(sessionEventName, publish) }
+  }, [])
 
   useEffect(() => {
     const controller = new AbortController()
@@ -194,6 +215,7 @@ function SessionApp() {
       {user && !checking && !sessionError && <div className="account"><span>{user.username} · {user.role}</span><button className="secondary" disabled={logoutPending} onClick={logout}>{logoutPending ? 'Logging out…' : logoutError ? 'Retry logout' : 'Log out'}</button></div>}
     </header>
     <main>
+      {user && !logoutPending && !sessionError && <SessionControls user={user} onExpired={expire} />}
       {logoutError && <p role="alert">Unable to confirm logout. Please retry.</p>}
       {logoutPending ? <p role="status">Logging out…</p>
         : checking ? <p role="status">Checking your session…</p>

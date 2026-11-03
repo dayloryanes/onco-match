@@ -39,14 +39,24 @@ public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, Stu
         }, CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
             new ClaimsPrincipal(identity), new AuthenticationProperties { IsPersistent = false });
-        return Ok(new CurrentUser(account.Username, account.Role));
+        return new SessionUserResult(account.Username, account.Role);
     }
 
     [Authorize]
     [HttpGet("me")]
     public IActionResult Me()
     {
-        return Ok(new CurrentUser(User.Identity!.Name!, User.FindFirstValue(ClaimTypes.Role)!));
+        return new SessionUserResult(User.Identity!.Name!, User.FindFirstValue(ClaimTypes.Role)!);
+    }
+
+    [Authorize]
+    [HttpPost("extend-session")]
+    [ServiceFilter(typeof(CsrfFilter))]
+    public async Task<IActionResult> ExtendSession()
+    {
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+            User, new AuthenticationProperties { IsPersistent = false });
+        return new SessionUserResult(User.Identity!.Name!, User.FindFirstValue(ClaimTypes.Role)!);
     }
 
     [HttpPost("logout")]
@@ -59,7 +69,7 @@ public class AuthController(DemoAccounts accounts, IAntiforgery antiforgery, Stu
     }
 }
 
-public record CurrentUser(string Username, string Role);
+public record CurrentUser(string Username, string Role, DateTimeOffset ExpiresAt, DateTimeOffset ServerTime);
 
 public class LoginRequest
 {

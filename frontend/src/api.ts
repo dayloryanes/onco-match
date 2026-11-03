@@ -1,4 +1,7 @@
-export interface CurrentUser { username: string; role: 'Viewer' | 'Operator' }
+import { sessionEvent } from './sessionEvents'
+import type { SessionTiming } from './sessionEvents'
+
+export interface CurrentUser extends SessionTiming { username: string; role: 'Viewer' | 'Operator' }
 export interface StudySummary {
   nctId: string; title: string | null; recruitmentStatus: string | null; studyType: string | null; conditions: string[] | null
 }
@@ -35,11 +38,23 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const response = await fetch(new URL(`/api${path}`, window.location.origin), {
     credentials: 'same-origin', ...options,
   })
+  if (!options.signal?.aborted) {
+    const expiresAt = response.headers.get('X-Session-Expires-At')
+    const serverTime = response.headers.get('X-Server-Time')
+    if (expiresAt && serverTime) sessionEvent({ kind: 'timing', timing: { expiresAt, serverTime },
+      renewed: response.headers.get('X-Session-Renewed') === 'true', sentAt: Date.now() })
+  }
   if (!response.ok) {
     const problem = await response.json().catch(() => ({}))
     throw new ApiError(response.status, problem.code ?? 'request_failed', problem.title ?? 'Request failed')
   }
-  return response.status === 204 ? undefined as T : response.json() as Promise<T>
+  const result = response.status === 204 ? undefined : await response.json()
+  // Session endpoints also expose timing in their public JSON contract.
+  if (!options.signal?.aborted && !response.headers.has('X-Session-Expires-At')
+    && typeof result?.expiresAt === 'string' && typeof result?.serverTime === 'string') {
+    sessionEvent({ kind: 'timing', timing: result, renewed: path === '/auth/extend-session' || path === '/auth/login', sentAt: Date.now() })
+  }
+  return result as T
 }
 
 async function csrf(signal?: AbortSignal) {
@@ -57,9 +72,14 @@ async function post<T>(path: string, body?: unknown, signal?: AbortSignal): Prom
 
 export const api = {
   me: (signal?: AbortSignal) => request<CurrentUser>('/auth/me', { signal }),
-  logout: (signal?: AbortSignal) => post<void>('/auth/logout', undefined, signal),
+  logout: async (signal?: AbortSignal) => {
+    await post<void>('/auth/logout', undefined, signal)
+    sessionEvent({ kind: 'changed' })
+  },
+  extendSession: (signal?: AbortSignal) => post<CurrentUser>('/auth/extend-session', undefined, signal),
   login: async (username: string, password: string, signal?: AbortSignal) => {
     const user = await post<CurrentUser>('/auth/login', { username, password }, signal)
+    sessionEvent({ kind: 'changed' })
     try { await csrf(signal) }
     catch (failure) {
       if (signal?.aborted) throw failure

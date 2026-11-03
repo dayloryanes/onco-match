@@ -3,11 +3,19 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace OncoMatch.IntegrationTests;
 
 public class TestApp : WebApplicationFactory<Program>
 {
+    private readonly TimeSpan sessionLifetime;
+
+    public TestApp(TimeSpan? sessionLifetime = null)
+    {
+        this.sessionLifetime = sessionLifetime ?? TimeSpan.FromMinutes(30);
+    }
+
     public TestClock Clock { get; } = new();
     public RegistryHandler Registry { get; } = new();
     public ResponseBarrier? ImportResponse { get; set; }
@@ -17,6 +25,10 @@ public class TestApp : WebApplicationFactory<Program>
         builder.ConfigureServices(services =>
         {
             services.AddSingleton<TimeProvider>(Clock);
+            // Keep approved fixtures deterministic while manual test settings
+            // change locally; individual lifetime tests also exercise two minutes.
+            services.PostConfigure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme,
+                options => options.ExpireTimeSpan = sessionLifetime);
             services.AddHttpClient("Registry").ConfigurePrimaryHttpMessageHandler(() => Registry);
             services.AddSingleton<IStartupFilter>(new ImportResponseFilter(() => ImportResponse));
         });

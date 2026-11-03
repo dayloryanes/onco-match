@@ -34,6 +34,25 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.HttpOnly = true;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Strict;
+        options.CookieManager = new SessionCookieManager(options);
+        options.Events.OnCheckSlidingExpiration = context =>
+        {
+            var path = context.Request.Path.Value?.TrimEnd('/');
+            if (string.Equals(path, "/api/auth/csrf", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(path, "/api/auth/extend-session", StringComparison.OrdinalIgnoreCase))
+            {
+                // Token acquisition and a rejected extension must not prolong
+                // the login. A successful extension explicitly issues its ticket.
+                context.ShouldRenew = false;
+            }
+            return Task.CompletedTask;
+        };
+        options.Events.OnValidatePrincipal = context =>
+        {
+            SessionMetadata.Capture(context.HttpContext, new Microsoft.AspNetCore.Authentication.AuthenticationTicket(
+                context.Principal!, context.Properties, context.Scheme.Name));
+            return Task.CompletedTask;
+        };
         options.Events.OnRedirectToLogin = context =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -107,6 +126,17 @@ app.Use(async (context, next) =>
     await next(context);
 });
 
+// Register before authentication: OnStarting callbacks run in reverse order,
+// so the cookie handler finishes any actual renewal before metadata is emitted.
+app.Use(async (context, next) =>
+{
+    context.Response.OnStarting(() =>
+    {
+        SessionMetadata.WriteHeaders(context);
+        return Task.CompletedTask;
+    });
+    await next(context);
+});
 app.UseAuthentication();
 app.UseAuthorization();
 
