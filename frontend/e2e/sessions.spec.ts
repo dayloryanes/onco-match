@@ -10,6 +10,16 @@ async function login(page: Page) {
   await expect(page.locator('.session-controls time')).toBeVisible()
 }
 
+async function waitForLaterTicketTime(page: Page) {
+  const before = await (await page.request.get('/api/auth/me')).json()
+  // Ticket timestamps have whole-second precision. Observe the real server
+  // clock; the browser's accelerated countdown does not advance backend time.
+  await expect.poll(async () => {
+    const response = await page.request.get('/api/auth/me')
+    return Date.parse((await response.json()).serverTime)
+  }).toBeGreaterThan(Date.parse(before.serverTime) + 1000)
+}
+
 test('expiry warning offers explicit extension and retry without keepalive or leaving the page', async ({ page }) => {
   await page.clock.install()
   let sessionChecks = 0
@@ -21,11 +31,16 @@ test('expiry warning offers explicit extension and retry without keepalive or le
   expect(sessionChecks).toBe(checksBefore)
   await page.route('**/api/auth/extend-session', route => route.abort())
   await page.getByRole('button', { name: 'Stay signed in' }).click()
-  await expect(page.getByText('Unable to extend your session.', { exact: false })).toBeVisible()
+  await expect(page.getByText('Unable to extend your session with this request.', { exact: false })).toBeVisible()
   await page.screenshot({ path: 'test-results/session-warning.png', fullPage: true })
   const expiryBefore = await page.locator('.session-controls time').getAttribute('datetime')
   await page.unroute('**/api/auth/extend-session')
+  await waitForLaterTicketTime(page)
+  const extensionResponse = page.waitForResponse(response => response.url().endsWith('/api/auth/extend-session')
+    && response.request().method() === 'POST' && response.ok())
   await page.getByRole('button', { name: 'Retry session extension' }).click()
+  await extensionResponse
+  await expect(page.locator('.session-extension-error')).toHaveCount(0)
   await expect(page.locator('.session-warning')).toHaveCount(0)
   await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
   expect(await page.locator('.session-controls time').getAttribute('datetime')).not.toBe(expiryBefore)
@@ -43,12 +58,7 @@ test('shared tabs observe renewal and logout while an independent login stays si
     await login(third)
     const independentExpiry = await third.locator('.session-controls time').getAttribute('datetime')
     const previous = await second.locator('.session-controls time').getAttribute('datetime')
-    // Ticket times are stored with whole-second precision. Wait on observable
-    // server time rather than assuming an immediate extension changes that value.
-    await expect.poll(async () => {
-      const response = await page.request.get('/api/auth/me')
-      return Date.parse((await response.json()).serverTime)
-    }).toBeGreaterThan(Date.parse(previous!) - 30 * 60_000 + 1000)
+    await waitForLaterTicketTime(page)
     await page.clock.install()
     await page.clock.fastForward(25 * 60_000 + 1000)
     await page.getByRole('button', { name: 'Stay signed in' }).click()

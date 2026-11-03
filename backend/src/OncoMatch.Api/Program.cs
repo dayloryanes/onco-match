@@ -35,6 +35,18 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.Cookie.SameSite = SameSiteMode.Strict;
         options.CookieManager = new SessionCookieManager(options);
+        options.Events.OnCheckSlidingExpiration = context =>
+        {
+            var path = context.Request.Path.Value?.TrimEnd('/');
+            if (string.Equals(path, "/api/auth/csrf", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(path, "/api/auth/extend-session", StringComparison.OrdinalIgnoreCase))
+            {
+                // Token acquisition and a rejected extension must not prolong
+                // the login. A successful extension explicitly issues its ticket.
+                context.ShouldRenew = false;
+            }
+            return Task.CompletedTask;
+        };
         options.Events.OnValidatePrincipal = context =>
         {
             SessionMetadata.Capture(context.HttpContext, new Microsoft.AspNetCore.Authentication.AuthenticationTicket(

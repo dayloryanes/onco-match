@@ -26,6 +26,8 @@ nav { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: .9rem; }
 .session-controls { margin-bottom: 1.5rem; font-size: .85rem; color: #48636b; }
 .session-warning { padding: 1rem; border: 1px solid #b98b38; border-radius: 8px; background: #fff8e8; color: #503b16; }
 .session-warning p:first-child { margin-top: 0; }
+.session-extension-error { padding: 1rem; border: 1px solid #91a6b3; border-radius: 8px; background: white; }
+.session-extension-error p:first-child { margin-top: 0; }
 .table-scroll { overflow-x: auto; margin-top: 1rem; border: 1px solid #d7e2e7; border-radius: 8px; background: white; }
 table { width: 100%; border-collapse: collapse; text-align: left; font-size: .95rem; }
 th, td { padding: 1rem 1.2rem; border-bottom: 1px solid #e1e9ed; }

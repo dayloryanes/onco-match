@@ -42,6 +42,12 @@ export default function SessionControls({ user, onExpired }: { user: CurrentUser
   }, [])
 
   const remaining = confirmed.end - now
+  const remainingSeconds = Math.max(0, Math.ceil(remaining / 1000))
+  const remainingMinutes = Math.ceil(remainingSeconds / 60)
+  const remainingText = remainingSeconds <= 60
+    ? `${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
+    : `${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`
+  const expiringSoon = remaining <= 5 * 60_000
 
   async function extend() {
     if (extension.current) return
@@ -67,9 +73,9 @@ export default function SessionControls({ user, onExpired }: { user: CurrentUser
   if (!Number.isFinite(confirmed.end)) return null
   return <section className="session-controls" aria-label="Session">
     <p>Session expires at <time dateTime={confirmed.timing.expiresAt}>{new Date(confirmed.timing.expiresAt).toLocaleTimeString()}</time>.</p>
-    {(remaining <= 5 * 60_000 || failed) && <div className="session-warning" role="status">
-      <p>Your session expires in {Math.max(0, Math.ceil(remaining / 60_000))} minutes. Stay signed in to continue.</p>
-      {failed && <p role="alert">Unable to extend your session. The last confirmed expiry still applies.</p>}
+    {(expiringSoon || failed) && <div className={expiringSoon ? 'session-warning' : 'session-extension-error'} role="status">
+      {expiringSoon && <p>Your session expires in {remainingText}. Stay signed in to continue.</p>}
+      {failed && <p role="alert">Unable to extend your session with this request. Your confirmed expiry is shown above.</p>}
       <button disabled={pending} onClick={extend}>{pending ? 'Extending session…' : failed ? 'Retry session extension' : 'Stay signed in'}</button>
     </div>}
   </section>

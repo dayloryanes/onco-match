@@ -90,6 +90,8 @@ apply. Last viewed marks navigation history, not a clinical review.
   only after more than half the ticket lifetime has passed. The page displays
   the confirmed expiry and warns five minutes beforehand. Choose Stay signed in
   for a fresh 30 minutes without leaving the page; failed extensions offer Retry.
+  A blocked or rejected extension does not renew the session on its own. Ordinary
+  browsing and focus checks can still renew it independently.
   There is no periodic keepalive or mouse/keyboard inactivity timer.
 - Shared tabs receive confirmed renewals and login/logout changes; focus still
   checks the session with the API. Independently signed-in browsers remain

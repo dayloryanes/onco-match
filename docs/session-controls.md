@@ -4,7 +4,8 @@ Implementation scope: [Extend and observe demonstration sessions](https://github
 the first slice of the [approved match specification](specs/match-operations-assessment-results.md).
 Implementation has passed automated checks and source review. The maintainer
 authorized the local implementation commit; publication and merge approval remain
-separate. Maintainer manual testing is deferred until tomorrow, not claimed passed.
+separate. Maintainer manual validation has begun and exposed the follow-up
+renewal interaction recorded below; no complete manual pass is claimed.
 
 ## Behavior
 
@@ -18,8 +19,10 @@ for whether requests are accepted; the local countdown does not authenticate or
 revoke a session.
 
 Ordinary authenticated requests retain ASP.NET Core sliding expiration: the
-cookie renews after more than half of its lifetime has passed. A successful
-request before that threshold does not extend the deadline. The UI uses server
+cookie renews after more than half of its lifetime has passed. Token acquisition
+and the explicit extension endpoint are excluded from automatic renewal; only a
+successful explicit extension issues its replacement ticket. A successful
+ordinary request before the threshold does not extend the deadline. The UI uses server
 time and a monotonic countdown to accommodate a different browser wall clock.
 The local countdown makes no network requests. There is no authentication
 keepalive or mouse/keyboard inactivity timer.
@@ -96,3 +99,100 @@ the implementation commit and proceeding to the next slice; push/publication and
 merge still need their separate approvals. The next slice builds on this local
 session-controls implementation; this approval does not claim that #25 is merged
 or that its pending manual validation has happened.
+
+## Manual-test diagnosis after the implementation commit
+
+The maintainer requested temporary two-minute cookies with a 30-second warning,
+then reported that blocking the explicit extension still advanced the deadline.
+These temporary settings and the later UI correction are uncommitted. This
+diagnosis does not authorize a new authentication policy or implementation slice.
+
+Four controlled-clock API reproductions passed with the real cookie handler:
+
+1. Fetching `/api/auth/csrf` after the sliding threshold issues a renewed cookie,
+   even when the browser never sends the subsequent extension request.
+2. A following `/api/auth/me` read reports that confirmed expiry without issuing
+   another cookie before its next sliding threshold.
+3. A focus-triggered `/api/auth/me` can itself renew after the sliding threshold.
+4. An extension rejected for invalid CSRF can also issue a sliding renewal;
+   authentication runs before the controller's CSRF rejection.
+
+Command: `dotnet test backend/tests/OncoMatch.IntegrationTests --configuration Release --filter "Fetching_a_csrf_token|Refresh_after_token|A_focus_session_check|A_rejected_extension" --no-restore`.
+These tests describe the current behavior; their passing does not mean a proposed
+policy change has been implemented.
+
+Separate Chromium checks used the real frontend with controlled API responses
+and browser time, rather than treating fake responses as real-cookie evidence.
+They reproduced the blocked-extension error after a renewed deadline, confirmed
+that Refresh clears local error state without another extension, and confirmed
+that focus renewal alone can hide the warning. In this controlled test the
+warning appeared at 30 seconds remaining; a warning first appearing at zero was
+not reproduced. An expired extension returned to Login.
+
+Another isolated Chromium check stopped its own temporary Vite server. The
+already-loaded application remained interactive, a focus check plus two Retry
+clicks failed, and a full reload received connection refused. This is expected:
+the browser retains loaded JavaScript, but API calls use the stopped frontend
+proxy. Browser Back can restore a saved page; the exact back-forward-cache path
+was not separately reproduced. This does not establish that a stopped server is
+still serving pages. The diagnostic servers were stopped afterward.
+
+The UI regression plus the existing App/Studies tests passed (37 tests). The
+earlier UI correction removes imminent-expiry wording after a confirmed renewal
+while retaining a separate extension-request error and Retry. It changes no
+cookie renewal rules. Full default-duration suites were not rerun against the
+temporary manual-test durations. No new independent source review is claimed
+for these follow-up changes.
+
+The maintainer subsequently approved the correction below. It is now implemented
+locally, superseding the diagnostic behavior described above and refining the
+ordinary-renewal rule in the parent specification:
+
+- Automatic sliding renewal is suppressed on the CSRF-token and explicit
+  extension endpoints, including case/trailing-slash route equivalents.
+- Successful explicit extension still issues a fresh ticket. Token acquisition,
+  browser-blocked extension requests, and rejected extension actions cannot
+  independently renew the cookie.
+- Ordinary browsing and focus/current-user checks retain normal sliding renewal.
+  They can still renew independently while an extension request is blocked.
+- The UI only shows imminent-expiry wording while the deadline is near. A failed
+  extension after a separate confirmed browsing renewal gets its own error and
+  Retry rather than a misleading expiry warning.
+
+The replacement API regression tests first failed on the unwanted issuance,
+then passed after the fix. Both two-minute and thirty-minute cookies are covered,
+including rejected CSRF, expiry without renewal, explicit success, and retained
+ordinary/focus renewal. All **69 API integration tests and 7 unit tests passed**.
+The test host defaults to the approved thirty-minute lifetime for deterministic
+historical fixtures; individual tests explicitly select two minutes too.
+
+All **44 React tests passed** with the approved five-minute warning threshold.
+That one constant was temporarily set to five minutes for the full suite and
+restored to 30 seconds immediately afterward. The blocked/retry and concurrent
+renewal tests also passed with the temporary manual-test threshold (38 tests
+including existing App/Studies cases). Frontend build and ESLint passed.
+Separate automated Standards and Spec source reviews cleared the code; both
+requested that the earlier proposed/unapplied documentation status be corrected,
+as done here. Neither reviewer ran tests. All four final isolated Chromium checks
+passed with controlled API responses: blocked extension leaves expiry unchanged,
+successful retry renews and dismisses the warning, Refresh/focus can independently
+renew without submitting another extension, and the 30-second warning/expired-login
+path behaves as specified. Actual-cookie evidence remains the API tests above.
+The full **19-workflow Chromium suite also passed** with the temporary two-minute
+cookie and 30-second warning. Its retry assertion initially read the expiry
+before the retry completed and assumed distinct whole-second ticket timestamps;
+the test now waits for server-confirmed success/error removal and a later real
+server timestamp. No further application behavior change was needed for that
+test correction. Both follow-up reviewers cleared the final documentation and
+test updates. Frontend ESLint and whitespace checks passed afterward.
+No live inference, new maintainer validation of
+this correction, follow-up commit, publication, or merge was claimed at that
+automated-validation checkpoint.
+
+The maintainer subsequently reported that the corrected blocked-extension
+scenario now works as expected. This records a manual pass for that scenario,
+not a complete manual regression pass or source audit. The temporary two-minute
+cookie and 30-second warning have now been restored to the approved 30-minute
+cookie and five-minute warning. The maintainer approved the local follow-up
+commit after that manual check. Publication and merge remain separately gated;
+the next implementation slice has not started.
