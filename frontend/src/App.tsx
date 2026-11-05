@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactElement } from 'react'
 import { BrowserRouter, Link, matchRoutes, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { api, ApiError } from './api'
@@ -90,10 +90,9 @@ function SessionApp() {
   const [logoutError, setLogoutError] = useState(false)
   const [loginReturn, setLoginReturn] = useState<{ key: string; destination: string } | null>(null)
   const sessionEpoch = useRef(0)
-  const focusPosition = useRef<{ key: string; x: number; y: number } | null>(null)
   const location = useLocation()
   const navigate = useNavigate()
-  const expire = useCallback(() => { sessionEpoch.current++; focusPosition.current = null; clearNavigation(); setUser(null); setChecking(false); setSessionError(false) }, [clearNavigation])
+  const expire = useCallback(() => { sessionEpoch.current++; clearNavigation(); setUser(null); setChecking(false); setSessionError(false) }, [clearNavigation])
 
   useEffect(() => {
     if (!window.BroadcastChannel) return
@@ -120,7 +119,6 @@ function SessionApp() {
       if (!controller.signal.aborted && epoch === sessionEpoch.current) { setUser(value); setSessionError(false); setChecking(false) }
     }).catch(failure => {
       if (controller.signal.aborted || epoch !== sessionEpoch.current) return
-      focusPosition.current = null
       if (failure instanceof ApiError && failure.status === 401) { clearNavigation(); setUser(null); setSessionError(false) }
       else setSessionError(true)
       setChecking(false)
@@ -128,31 +126,20 @@ function SessionApp() {
     return () => controller.abort()
   }, [checkId, clearNavigation])
 
-  useLayoutEffect(() => {
-    if (checking) return
-    const position = focusPosition.current
-    focusPosition.current = null
-    // Session checks temporarily hide protected content, which collapses the
-    // page. Resume only the same history entry after a successful check.
-    if (position && user && !sessionError && !logoutPending && position.key === location.key) {
-      window.scrollTo({ left: position.x, top: position.y, behavior: 'instant' })
-    }
-  }, [checking, location.key, logoutPending, sessionError, user])
-
   useEffect(() => {
     function onFocus() {
       if (user && !logoutPending) {
-        if (!focusPosition.current) focusPosition.current = { key: location.key, x: window.scrollX, y: window.scrollY }
-        setChecking(true); setCheckId(value => value + 1)
+        // Revalidate in the background: hiding controls here loses the click
+        // that returned focus and collapses the page while the request runs.
+        setCheckId(value => value + 1)
       }
     }
     window.addEventListener('focus', onFocus)
     return () => window.removeEventListener('focus', onFocus)
-  }, [user, logoutPending, location.key])
+  }, [user, logoutPending])
 
   function finishLogin(value: CurrentUser) {
     sessionEpoch.current++
-    focusPosition.current = null
     clearNavigation()
     const requested = location.state?.returnTo ?? new URLSearchParams(location.search).get('returnTo')
     setLoginReturn({ key: location.key, destination: returnDestination(requested) })
@@ -161,7 +148,6 @@ function SessionApp() {
 
   function finishLogout() {
     sessionEpoch.current++
-    focusPosition.current = null
     clearNavigation()
     setUser(null)
     setChecking(false)
@@ -174,7 +160,6 @@ function SessionApp() {
   async function logout() {
     if (logoutPending) return
     sessionEpoch.current++
-    focusPosition.current = null
     setLogoutPending(true)
     setLogoutError(false)
     try {

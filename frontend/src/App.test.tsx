@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 import App from './App'
 import { server } from './test/server'
 
@@ -161,7 +161,30 @@ test('failed logout stays signed in and offers an explicit retry', async () => {
   expect(await screen.findByLabelText('Username')).toBeVisible()
 })
 
-test('focusing a tab hides protected content until its session is checked', async () => {
+test('returning to the app preserves the first click while its session is checked', async () => {
+  signedIn()
+  const user = userEvent.setup()
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Dashboard' })
+  let release!: () => void
+  let reached!: () => void
+  const waiting = new Promise<void>(resolve => { release = resolve })
+  const requested = new Promise<void>(resolve => { reached = resolve })
+  server.use(
+    http.get('*/api/auth/me', async () => { reached(); await waiting; return HttpResponse.json({ username: 'viewer-rechecked', role: 'Viewer' }) }),
+    http.get('*/api/patients', () => HttpResponse.json([patient])),
+  )
+  fireEvent.focus(window)
+  await requested
+  try {
+    await user.click(screen.getByRole('link', { name: 'Patients' }))
+    expect(await screen.findByRole('heading', { name: 'Patients' })).toBeVisible()
+  } finally { await act(async () => release()) }
+  expect(await screen.findByText('viewer-rechecked · Viewer')).toBeVisible()
+  expect(screen.getByRole('heading', { name: 'Patients' })).toBeVisible()
+})
+
+test('a focus check clears protected content when it confirms expiry', async () => {
   signedIn()
   render(<App />)
   await screen.findByRole('heading', { name: 'Dashboard' })
@@ -170,30 +193,58 @@ test('focusing a tab hides protected content until its session is checked', asyn
   const wait = new Promise<void>(resolve => { release = resolve })
   server.use(http.get('*/api/auth/me', async () => { await wait; return HttpResponse.json({}, { status: 401 }) }))
   fireEvent.focus(window)
-  expect(await screen.findByText('Checking your session…')).toBeVisible()
-  expect(document.title).toBe('Checking session — OncoMatch')
-  expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument()
+  expect(screen.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
   await act(async () => release())
   expect(await screen.findByLabelText('Username')).toBeVisible()
   expect(document.title).toBe('Log in — OncoMatch')
+})
+
+test('a failed background session check withholds protected content until explicit retry succeeds', async () => {
+  signedIn()
+  const user = userEvent.setup()
+  render(<App />)
+  await screen.findByRole('heading', { name: 'Dashboard' })
+  server.use(http.get('*/api/auth/me', () => HttpResponse.error()))
+  fireEvent.focus(window)
+  expect(await screen.findByRole('heading', { name: 'Unable to check your session' })).toBeVisible()
+  expect(screen.queryByRole('navigation', { name: 'Main navigation' })).not.toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Dashboard' })).not.toBeInTheDocument()
+  signedIn()
+  await user.click(screen.getByRole('button', { name: 'Retry' }))
+  expect(await screen.findByRole('heading', { name: 'Dashboard' })).toBeVisible()
 })
 
 test('late patient responses cannot restore content after logout', async () => {
   signedIn()
   window.history.replaceState(null, '', '/patients')
   let release!: () => void
+  let reached!: () => void
+  let handlerFinished!: () => void
+  let requestFinished!: () => void
   const wait = new Promise<void>(resolve => { release = resolve })
+  const requested = new Promise<void>(resolve => { reached = resolve })
+  const handlerDone = new Promise<void>(resolve => { handlerFinished = resolve })
+  const requestDone = new Promise<void>(resolve => { requestFinished = resolve })
+  const originalFetch = globalThis.fetch
+  const fetchObserver = vi.spyOn(globalThis, 'fetch').mockImplementation((...args) => {
+    const result = originalFetch(...args)
+    return String(args[0]).endsWith('/api/patients') ? result.finally(requestFinished) : result
+  })
   server.use(
-    http.get('*/api/patients', async () => { await wait; return HttpResponse.json([patient]) }),
+    http.get('*/api/patients', async () => { reached(); await wait; handlerFinished(); return HttpResponse.json([patient]) }),
     http.post('*/api/auth/logout', () => new HttpResponse(null, { status: 204 })),
   )
-  const user = userEvent.setup()
-  render(<App />)
-  expect(await screen.findByText('Loading patients…')).toBeVisible()
-  await user.click(screen.getByRole('button', { name: 'Log out' }))
-  expect(await screen.findByLabelText('Username')).toBeVisible()
-  await act(async () => release())
-  expect(screen.queryByRole('link', { name: 'P001' })).not.toBeInTheDocument()
+  try {
+    const user = userEvent.setup()
+    render(<App />)
+    expect(await screen.findByText('Loading patients…')).toBeVisible()
+    await requested
+    await user.click(screen.getByRole('button', { name: 'Log out' }))
+    expect(await screen.findByLabelText('Username')).toBeVisible()
+    await requestDone
+    await act(async () => { release(); await handlerDone })
+    expect(screen.queryByRole('link', { name: 'P001' })).not.toBeInTheDocument()
+  } finally { release(); fetchObserver.mockRestore() }
 })
 
 test('login cannot be submitted again while its request is pending', async () => {

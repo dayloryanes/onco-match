@@ -20,6 +20,13 @@ token does not renew the login. The explicit extension endpoint renews only when
 its action succeeds. Blocking or rejecting that extension cannot independently
 add time; another successful browsing/focus request can still renew it.
 
+Returning focus rechecks the session in the background while keeping the current
+page and controls in place, so the first click works and scrolling stays stable.
+A confirmed expiry clears protected content; a failed check withholds it and
+offers Retry. Initial session discovery and cross-tab login/logout checks still
+wait for confirmation. API authentication, role checks and CSRF protection remain
+the authority for each request, including actions during a pending focus check.
+
 Confirmed renewal metadata is shared across tabs. Login/logout changes cause
 other tabs to check their shared cookie. Independently signed-in browser contexts
 remain separate. A delayed response cannot replace a newer confirmed deadline.
@@ -102,7 +109,8 @@ and log out/in again. Normal timings are 30 minutes and five minutes.
   and settings. No live inference, clinical acceptance or complete manual pass is
   implied by an automated check.
 
-Match execution and its Auth-owned operation-lifetime coordinator belong to the
-next application slice. This session tooling adds no Match UI or server-side
-revocation store. The existing per-login `session_id` claim remains available for
-that work. Assessment baseline and acceptance assets are unchanged.
+The [batch assessment workflow](batch-assessments.md) uses an Auth-owned lifetime
+coordinator to observe actual cookie renewals and cancel active work at expiry
+or logout. The existing per-login `session_id` identifies that work without
+replacing cookie authentication or introducing a revocation store. Assessment
+baseline and acceptance assets remain separate from application validation.

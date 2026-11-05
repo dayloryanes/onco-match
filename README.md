@@ -11,8 +11,13 @@ imported studies. Operators can explicitly import registry pages and retry faile
 attempts. Both roles can browse the same studies, details, and import history.
 API permissions are enforced independently of the UI.
 
-The application's match workflow and inference integration are not implemented.
-Ollama is not required to run the application. Licensing is undecided.
+Operators can start a fixed match batch on Dashboard, inspect streamed progress
+and saved assessments, and cancel active work. Both roles can inspect shared
+results with manual Refresh. Recovery actions and assessment sections on Patient
+and Study details are not implemented yet. See [batch assessments](docs/batch-assessments.md)
+for both local Ollama routes, configuration, and limits. Ollama is needed only
+for pairs requiring inference; login, browsing, and importing remain usable
+without it. Licensing is undecided.
 
 The separate [evaluation runner](tools/condition-label-evaluation/README.md)
 supports native and OpenAI-compatible local Ollama requests for development
@@ -96,8 +101,9 @@ apply. Last viewed marks navigation history, not a clinical review.
 - Shared tabs receive confirmed renewals and login/logout changes; focus still
   checks the session with the API. Independently signed-in browsers remain
   separate. Expired sessions require login again.
-- Both roles share the same in-memory data. Logout preserves completed imports;
-  restarting the backend clears imported studies and history and reloads the ten
+- Both roles share the same in-memory data. Logout preserves completed imports
+  and assessments; restarting the backend clears imported studies, assessments,
+  and history and reloads the ten
   fictional patient fixtures. There is no database or patient editor.
 
 See [session controls](docs/session-controls.md) for renewal behavior and testing

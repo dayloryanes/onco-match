@@ -108,6 +108,11 @@ public class StudyStore
     {
         lock (sync) return studies.FirstOrDefault(s => s.Details.NctId == nctId)?.Details;
     }
+
+    public JsonElement Source(string nctId)
+    {
+        lock (sync) return studies.Single(s => s.Details.NctId == nctId).Source.Clone();
+    }
 }
 
 public record ActiveImport(string Id, string Session, string? Cursor, HashSet<string> Known,

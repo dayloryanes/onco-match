@@ -4,7 +4,7 @@ body { margin: 0; min-width: 320px; }
 button, input { font: inherit; }
 a { color: #086b71; text-underline-offset: 3px; }
 a:hover { color: #03474d; }
-button { border: 0; border-radius: 6px; padding: .7rem 1.15rem; color: white; background: #086b71; font-weight: 600; cursor: pointer; }
+button { border: 1px solid transparent; border-radius: 6px; padding: .7rem 1.15rem; color: white; background: #086b71; font-size: 1rem; font-weight: 600; line-height: 1.4; cursor: pointer; }
 button:hover { background: #04545a; }
 button:disabled { opacity: .65; cursor: wait; }
 :focus-visible { outline: 3px solid #cf8d00; outline-offset: 4px; }
