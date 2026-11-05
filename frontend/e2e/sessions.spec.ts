@@ -10,7 +10,7 @@ async function login(page: Page) {
   await expect(page.locator('.session-controls time')).toBeVisible()
   // Settle Dashboard's initial responses before advancing only browser time;
   // later real-server timing headers would correctly reset that simulated clock.
-  await expect(page.getByRole('heading', { name: 'Match batches', exact: true })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Import history and matching', exact: true })).toBeVisible()
   await expect(page.getByText('Loading match batches…', { exact: true })).toHaveCount(0)
 }
 

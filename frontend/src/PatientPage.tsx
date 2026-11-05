@@ -4,21 +4,10 @@ import { api, ApiError } from './api'
 import type { PatientDetails, PatientSummary } from './api'
 import { useListScroll } from './listNavigation'
 import type { ListNavigation } from './listNavigation'
+import { patientSex, patientStage, classificationSystem, diseaseState } from './patientDisplay'
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'notFound' } |
   { status: 'ready'; data: PatientSummary[] | PatientDetails }
-
-function label(value: string | null) {
-  const labels: Record<string, string> = {
-    female: 'Female', male: 'Male', unknown: 'Unknown',
-    newlyDiagnosed: 'Newly diagnosed', recurrent: 'Recurrent', refractory: 'Refractory',
-  }
-  return value === null ? 'Unknown' : labels[value] ?? value
-}
-
-function fact(status: string, value: string | null) {
-  return status === 'notApplicable' ? 'Not applicable' : status === 'unknown' ? 'Unknown' : label(value)
-}
 
 export default function PatientPage({ onExpired, navigation, isVisible }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean }) {
   const { id } = useParams()
@@ -46,7 +35,7 @@ export default function PatientPage({ onExpired, navigation, isVisible }: { onEx
   else if (state.status === 'notFound') content = <h1>Patient not found</h1>
   else if (Array.isArray(state.data)) content = <>
     <p className="eyebrow">Patient directory</p><h1>Patients</h1>
-    <p className="record-count">{state.data.length} fictional {state.data.length === 1 ? 'patient' : 'patients'}</p>
+    <p>{state.data.length} fictional {state.data.length === 1 ? 'patient' : 'patients'}</p>
     {notice}
     <div className="table-scroll"><table>
       <thead><tr><th scope="col">Patient</th><th scope="col">Age</th><th scope="col">Sex</th><th scope="col">Cancer type</th></tr></thead>
@@ -54,7 +43,7 @@ export default function PatientPage({ onExpired, navigation, isVisible }: { onEx
         <th scope="row"><Link to={`/patients/${encodeURIComponent(patient.id)}`} onClick={event => navigation.remember(patient.id, event)}>{patient.id}</Link>
           {navigation.lastViewedId === patient.id && <span className="last-viewed-label">Last viewed</span>}</th>
         <td>{patient.ageYears === null ? 'Unknown' : `${patient.ageYears} years`}</td>
-        <td>{label(patient.sex)}</td><td>{label(patient.cancerType)}</td>
+        <td>{patientSex(patient.sex)}</td><td>{patient.cancerType ?? 'Unknown'}</td>
       </tr>)}</tbody>
     </table></div>
   </>
@@ -64,11 +53,11 @@ export default function PatientPage({ onExpired, navigation, isVisible }: { onEx
       {notice}
       <dl className="patient-facts">
         <div><dt>Age</dt><dd>{patient.ageYears === null ? 'Unknown' : `${patient.ageYears} years`}</dd></div>
-        <div><dt>Sex</dt><dd>{label(patient.sex)}</dd></div>
-        <div><dt>Cancer type</dt><dd>{label(patient.cancerType)}</dd></div>
-        <div><dt>Stage at diagnosis</dt><dd>{fact(patient.stage.status, patient.stage.value)}</dd></div>
-        <div><dt>Classification system</dt><dd>{patient.stage.status === 'notApplicable' ? 'Not applicable' : patient.stage.classificationSystem ?? (patient.stage.status === 'known' ? 'System unknown' : 'Unknown')}</dd></div>
-        <div><dt>Disease state</dt><dd>{fact(patient.diseaseState.status, patient.diseaseState.value)}</dd></div>
+        <div><dt>Sex</dt><dd>{patientSex(patient.sex)}</dd></div>
+        <div><dt>Cancer type</dt><dd>{patient.cancerType ?? 'Unknown'}</dd></div>
+        <div><dt>Stage at diagnosis</dt><dd>{patientStage(patient.stage)}</dd></div>
+        <div><dt>Classification system</dt><dd>{classificationSystem(patient.stage)}</dd></div>
+        <div><dt>Disease state</dt><dd>{diseaseState(patient.diseaseState)}</dd></div>
       </dl>
     </>
   }

@@ -18,6 +18,7 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
   let releaseList = () => {}
   let delayList = false
   let delaySession = false
+  let sessionReads = 0
   let releaseSessions: (() => void)[] = []
   await page.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname
@@ -27,8 +28,10 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
     else if (path === '/api/auth/login') { signedIn = true; body = { username: 'viewer', role: 'Viewer' } }
     else if (!signedIn) { await route.fulfill({ status: 401, json: { code: 'authentication_required' } }); return }
     else if (path === '/api/auth/me') {
+      sessionReads++
+      const username = `viewer-check-${sessionReads}`
       if (delaySession) await new Promise<void>(resolve => { releaseSessions.push(resolve) })
-      body = { username: 'viewer', role: 'Viewer' }
+      body = { username, role: 'Viewer' }
     }
     else if (path === '/api/study-imports') body = { version: 'v1', isImporting: false, isExhausted: false, nextAction: 'initial', totalImportedStudyCount: 0, attempts: [] }
     else if (path === '/api/match/batches') body = { configurationError: null, activeOperation: null, batches: [] }
@@ -45,11 +48,31 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
   })
   return {
     delay: () => { delayList = true }, release: () => { delayList = false; releaseList() }, reads: () => listReads,
+    sessionReads: () => sessionReads,
+    confirmedUser: () => `viewer-check-${sessionReads} · Viewer`,
     delaySession: () => { delaySession = true }, releaseSession: () => {
       delaySession = false; releaseSessions.forEach(release => release()); releaseSessions = []
     }, expire: () => { signedIn = false },
   }
 }
+
+test('the first navigation click works while a focus session check is pending', async ({ page }) => {
+  const fixture = await directory(page, 'patients')
+  await page.goto('/')
+  const target = page.getByRole('link', { name: 'Patients', exact: true })
+  await expect(target).toBeVisible()
+  const bounds = (await target.boundingBox())!
+  const checksBefore = fixture.sessionReads()
+  fixture.delaySession()
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect.poll(fixture.sessionReads).toBeGreaterThan(checksBefore)
+  try {
+    await page.mouse.click(bounds.x + bounds.width / 2, bounds.y + bounds.height / 2)
+    await expect(page.getByRole('heading', { name: 'Patients', exact: true })).toBeVisible()
+  } finally { fixture.releaseSession() }
+  await expect(page.getByText(fixture.confirmedUser(), { exact: true })).toBeVisible()
+  await expect(page).toHaveTitle('Patients — OncoMatch')
+})
 
 test('browser titles follow navigation, detail reloads, and session expiry', async ({ page }) => {
   await directory(page, 'patients')
@@ -86,10 +109,13 @@ for (const kind of ['patients', 'studies'] as const) {
       await page.evaluate(() => window.scrollTo(0, 400))
       const previousY = await page.evaluate(() => window.scrollY)
       expect(previousY).toBeGreaterThan(100)
+      const checksBefore = fixture.sessionReads()
       fixture.delaySession()
       await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-      await expect(page.getByText('Checking your session…', { exact: true })).toBeVisible()
+      await expect.poll(fixture.sessionReads).toBeGreaterThan(checksBefore)
+      await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
       fixture.releaseSession()
+      await expect(page.getByText(fixture.confirmedUser(), { exact: true })).toBeVisible()
       await expect(page.getByRole('heading', { name: heading, exact: true })).toBeVisible()
       await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(previousY, 0)
     })
@@ -109,12 +135,16 @@ test('repeated focus checks preserve the latest scroll rather than the last-open
   await page.evaluate(y => window.scrollTo(0, y + 800), recordY)
   const currentY = await page.evaluate(() => window.scrollY)
   expect(currentY).toBeGreaterThan(recordY + 100)
+  const checksBefore = fixture.sessionReads()
   fixture.delaySession()
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByText('Checking your session…', { exact: true })).toBeVisible()
-  // A second focus event during the same check must not save the collapsed page.
+  await expect.poll(fixture.sessionReads).toBeGreaterThan(checksBefore)
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
+  // Repeated focus checks must preserve the current page and scroll position.
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
+  await expect.poll(fixture.sessionReads).toBeGreaterThan(checksBefore + 1)
   fixture.releaseSession()
+  await expect(page.getByText(fixture.confirmedUser(), { exact: true })).toBeVisible()
   await expect(page.getByText('Last viewed', { exact: true })).toBeVisible()
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(currentY, 0)
 })
@@ -136,7 +166,7 @@ test('an expired focus check clears protected content and does not restore its o
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
 })
 
-test('returning to a loaded list during a session check restores position once the list is revealed', async ({ page }) => {
+test('returning to a loaded list during a background session check restores its position', async ({ page }) => {
   await page.setViewportSize({ width: 900, height: 500 })
   const fixture = await directory(page, 'studies')
   await page.goto('/studies')
@@ -146,13 +176,16 @@ test('returning to a loaded list during a session check restores position once t
   const initialReads = fixture.reads()
   await link.click()
   await expect(page.getByRole('heading', { name: 'Study NCT00000070', exact: true })).toBeVisible()
+  const checksBefore = fixture.sessionReads()
   fixture.delaySession()
   await page.evaluate(() => window.dispatchEvent(new Event('focus')))
-  await expect(page.getByText('Checking your session…', { exact: true })).toBeVisible()
+  await expect.poll(fixture.sessionReads).toBeGreaterThan(checksBefore)
+  await expect(page.getByRole('navigation', { name: 'Main navigation' })).toBeVisible()
   await page.goBack()
   await expect.poll(fixture.reads).toBeGreaterThan(initialReads)
   await expect(page.locator('tbody tr')).toHaveCount(80)
   fixture.releaseSession()
+  await expect(page.getByText(fixture.confirmedUser(), { exact: true })).toBeVisible()
   await expect(page.getByText('Last viewed', { exact: true })).toBeVisible()
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(previousY, 0)
 })

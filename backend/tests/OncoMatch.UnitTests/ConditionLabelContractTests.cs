@@ -19,6 +19,20 @@ public class ConditionLabelContractTests
     }
 
     [Theory]
+    [InlineData("cancerType", "satisfied")]
+    [InlineData("cancerType", "notSpecified")]
+    [InlineData("stage", "excluded")]
+    [InlineData("diseaseState", "Alignment supported")]
+    public void Unsupported_direct_result_values_produce_the_reported_failure(string aspect, string result)
+    {
+        var answer = JsonNode.Parse(Answer)!;
+        answer["conditionLabels"]![0]![aspect]!["result"] = result;
+        var error = Assert.Throws<InferenceFailure>(() => ConditionLabelContract.Validate(answer.ToJsonString(), Sources));
+        Assert.Equal("invalidResponse", error.Code);
+        Assert.Equal("Invalid direct finding", error.Message);
+    }
+
+    [Theory]
     [InlineData("quote", "Invented", "invalidEvidence")]
     [InlineData("source", "study.conditions.0", "invalidEvidence")]
     [InlineData("value", "Other cancer", "invalidEvidence")]

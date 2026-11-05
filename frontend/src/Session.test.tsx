@@ -21,6 +21,7 @@ test('manual test mode warns at thirty seconds and clears after a two-minute ext
   )
   render(<App />)
   await screen.findByRole('heading', { name: 'Dashboard' })
+  await screen.findByText('No import attempts yet.')
   expect(screen.queryByRole('button', { name: 'Stay signed in' })).not.toBeInTheDocument()
   await act(async () => { vi.advanceTimersByTime(10_000) })
   expect(screen.getByText('Your session expires in 30 seconds. Stay signed in to continue.')).toBeVisible()

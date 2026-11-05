@@ -20,6 +20,13 @@ token does not renew the login. The explicit extension endpoint renews only when
 its action succeeds. Blocking or rejecting that extension cannot independently
 add time; another successful browsing/focus request can still renew it.
 
+Returning focus rechecks the session in the background while keeping the current
+page and controls in place, so the first click works and scrolling stays stable.
+A confirmed expiry clears protected content; a failed check withholds it and
+offers Retry. Initial session discovery and cross-tab login/logout checks still
+wait for confirmation. API authentication, role checks and CSRF protection remain
+the authority for each request, including actions during a pending focus check.
+
 Confirmed renewal metadata is shared across tabs. Login/logout changes cause
 other tabs to check their shared cookie. Independently signed-in browser contexts
 remain separate. A delayed response cannot replace a newer confirmed deadline.

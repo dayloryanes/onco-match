@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, test } from 'vitest'
@@ -41,13 +41,42 @@ test('Operator explicitly imports a page, inspects counts and rejections, and br
   expect(posts).toBe(1)
   await user.click(screen.getByRole('link', { name: 'Studies' }))
   const studyLink = await screen.findByRole('link', { name: 'NCT00000001' })
+  expect(screen.getByText('Recruiting')).toBeVisible()
+  expect(screen.getByText('Interventional')).toBeVisible()
   expect(document.title).toBe('Studies — OncoMatch')
   await user.click(studyLink)
   expect(await screen.findByRole('heading', { name: 'Study NCT00000001' })).toBeVisible()
   expect(screen.getByText('<script>source text</script>')).toBeVisible()
+  expect(screen.getByText('All')).toBeVisible()
+  expect(screen.getByText('Recruiting')).toBeVisible()
+  expect(screen.getByText('Interventional')).toBeVisible()
   expect(screen.getAllByText('Not available').length).toBeGreaterThan(0)
   expect(screen.getByRole('link', { name: 'View on ClinicalTrials.gov' })).toHaveAttribute('href', 'https://clinicaltrials.gov/study/NCT00000001')
   expect(document.title).toBe('Study NCT00000001 — OncoMatch')
+})
+
+test.each([
+  ['NOT_YET_RECRUITING', 'OBSERVATIONAL', 'Not yet recruiting', 'Observational', 'MALE', 'Male'],
+  ['FUTURE_STATUS', 'FUTURE_TYPE', 'FUTURE_STATUS', 'FUTURE_TYPE', 'FEMALE', 'Female'],
+])('Study codes %s and %s have consistent list and detail labels', async (status, type, statusLabel, typeLabel, sex, sexLabel) => {
+  signedIn('Viewer')
+  server.use(
+    http.get('*/api/studies', () => HttpResponse.json([{ ...study, recruitmentStatus: status, studyType: type, conditions: [] }])),
+    http.get('*/api/studies/NCT00000001', () => HttpResponse.json({ ...study, recruitmentStatus: status, studyType: type, conditions: null, briefSummary: 'Source TEXT', minimumAge: null, maximumAge: null, sex, registryUrl: 'https://clinicaltrials.gov/study/NCT00000001' })),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('link', { name: 'Studies' }))
+  const link = await screen.findByRole('link', { name: study.nctId })
+  expect(screen.getByText(statusLabel)).toBeVisible()
+  expect(screen.getByText(typeLabel)).toBeVisible()
+  expect(screen.getByText('Not available')).toBeVisible()
+  await user.click(link)
+  await screen.findByRole('heading', { name: `Study ${study.nctId}` })
+  expect(screen.getByText(statusLabel)).toBeVisible()
+  expect(screen.getByText(typeLabel)).toBeVisible()
+  expect(screen.getByText('Source TEXT')).toBeVisible()
+  expect(screen.getByText(sexLabel)).toBeVisible()
 })
 
 test('Viewer reads history and Refresh without import controls or registry mutations', async () => {
@@ -61,6 +90,31 @@ test('Viewer reads history and Refresh without import controls or registry mutat
   await user.click(screen.getByRole('button', { name: 'Refresh' }))
   expect(await screen.findByRole('listitem', { name: 'Completed import' })).toHaveTextContent('Fetched: 3 · Imported: 1 · Duplicates: 1 · Rejected: 1')
   expect(reads).toBe(2)
+})
+
+test('A failed history Refresh preserves the cards but blocks importing until history is confirmed again', async () => {
+  signedIn()
+  let reads = 0
+  let posts = 0
+  server.use(
+    http.get('*/api/study-imports', () => ++reads === 2 ? new HttpResponse(null, { status: 503 }) : HttpResponse.json({ ...completed, isExhausted: false, nextAction: 'next' })),
+    http.post('*/api/study-imports', () => { posts++; return HttpResponse.json(completed) }),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  expect(await screen.findByRole('button', { name: 'Load Next 10' })).toBeEnabled()
+  const card = screen.getByRole('listitem', { name: 'Completed import' })
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  expect(await screen.findByText('Unable to load import history.')).toBeVisible()
+  expect(screen.getByRole('listitem', { name: 'Completed import' })).toBe(card)
+  expect(screen.getByRole('button', { name: 'Load Next 10' })).toBeDisabled()
+  await user.click(screen.getByRole('button', { name: 'Load Next 10' }))
+  expect(posts).toBe(0)
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Load Next 10' })).toBeEnabled())
+  await user.click(screen.getByRole('button', { name: 'Load Next 10' }))
+  expect(await screen.findByText('No more registry pages.')).toBeVisible()
+  expect(posts).toBe(1)
 })
 
 test.each(['import_state_changed', 'import_in_progress', 'registry_unavailable', 'lost-response'])('import failure %s reconciles history without automatic resubmission', async code => {

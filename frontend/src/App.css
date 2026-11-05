@@ -41,27 +41,62 @@ tr.last-viewed th { box-shadow: inset 4px 0 #16858a; }
 .patient-facts div { display: grid; grid-template-columns: minmax(160px, 1fr) 2fr; gap: 1.5rem; padding: 1.2rem 0; border-bottom: 1px solid #e1e9ed; }
 .patient-facts div:last-child { border: 0; }
 .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin: 1.5rem 0; }
-.record-count { margin: .75rem 0; }
 #study-imports-heading { margin-bottom: 1rem; }
 .import-actions { margin: 1rem 0 0; gap: .75rem; }
-.import-actions button:not(.quiet-button) { border: 1px solid transparent; }
 .quiet-button { background: transparent; border: 1px solid #91a6b3; color: #086b71; }
 .quiet-button:hover { background: #eaf4f5; }
-.import-history { list-style: none; padding: 0; }
-.history-section { margin-top: 2rem; }
-.import-attempt { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: 1.3rem; margin: 1rem 0; overflow-wrap: anywhere; }
+.import-history { list-style: none; padding: 0; margin-bottom: 0; }
+.history-section { margin-top: 1rem; }
+.import-entry { margin: 1rem 0; }
+.import-entry:last-child { margin-bottom: 0; }
+.import-attempt { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: 1.3rem; margin: 0; overflow-wrap: anywhere; }
+.import-attempt:last-child { margin-bottom: 0; }
 .import-attempt h3 { margin-top: 0; }
+.import-details > h3, .batch-summary > h3 { margin-bottom: 1rem; }
+.import-batch-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.import-batch-columns .import-details { padding-right: 1rem; }
+.batch-summary { border-left: 1px solid #d7e2e7; padding-left: 1rem; min-width: 0; }
+.batch-summary > p > strong { font-weight: 600; }
+.batch-summary .actions { gap: .75rem; margin-top: 1rem; }
+.batch-results { border-top: 1px solid #d7e2e7; margin-top: 1.25rem; padding-top: 1.25rem; }
+@media (max-width: 700px) {
+  .import-batch-columns { grid-template-columns: minmax(0, 1fr); }
+  .import-batch-columns .import-details { padding-right: 0; }
+  .batch-summary { border-left: 0; border-top: 1px solid #d7e2e7; padding: 1.25rem 0 0; margin-top: .5rem; }
+}
 .attempt-id { color: #526b7a; }
 .study-facts dd { white-space: pre-wrap; }
-.study-facts ul, td ul { padding-left: 1.2rem; margin: 0; }
+.study-facts ul, td ul { padding-left: 1.2rem; margin: 0; list-style-type: disc; }
 td { overflow-wrap: anywhere; }
 .study-title { min-width: 16rem; }
+.study-conditions { overflow-wrap: normal; word-break: normal; }
+.condition-text { display: block; }
+.condition-word { display: inline-block; max-width: 100%; vertical-align: top; overflow-wrap: normal; word-break: normal; hyphens: manual; hyphenate-character: '-'; }
 .study-status, .study-type { white-space: nowrap; overflow-wrap: normal; }
 .patient-facts dt, .fact-label { color: #192f40; font-weight: 600; }
 .patient-facts dd { margin: 0; font-weight: 400; overflow-wrap: anywhere; }
 .assessment-detail { background: white; border: 1px solid #93b6bf; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; overflow-wrap: anywhere; }
 .assessment-detail h4, .assessment-detail h5 { margin: 1rem 0 .5rem; }
-.condition-assessment { border-top: 1px solid #d7e2e7; margin-top: 1.5rem; padding-top: .5rem; }
-.assessment-evidence { font-size: .85rem; white-space: pre-wrap; }
+.assessment-content { font-size: .95rem; font-weight: 400; line-height: 1.6; }
+.assessment-content h4, .assessment-content h5, .assessment-content p { margin: 0; }
+.assessment-content h4 { font-size: 1rem; font-weight: 700; line-height: 1.4; }
+.assessment-content h5 { font-size: .95rem; font-weight: 600; line-height: 1.4; }
+.assessment-content .finding-result { font-weight: 400; }
+.assessment-stack { display: grid; gap: .5rem; }
+.assessment-groups { display: grid; gap: 1rem; }
+.assessment-major { border-top: 1px solid #d7e2e7; margin-top: .75rem; padding-top: .75rem; }
+.assessment-evidence { font-size: inherit; white-space: pre-wrap; list-style-type: disc; }
+.assessment-row td { padding: 0; background: #f4f9fa; }
+.assessment-row .assessment-detail { margin: 1rem; }
+.assessment-detail > .assessment-heading { margin-top: 0; }
+.assessment-actions { margin: 1rem; }
+.inspection-message { padding: 1rem 1.5rem; }
+.match-message { font-size: .85rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 6px; margin: 0 0 1rem; overflow-wrap: anywhere; }
+.match-message[role='status'] { color: #503b16; background: #fff8e8; border-left: 3px solid #b98b38; }
+.match-message.inspection-message { margin: 1rem; }
+.snapshot-section { margin-top: 1.25rem; }
+.snapshot-section .patient-facts { margin-top: .5rem; }
+.snapshot-section dd > ul { margin: 0; padding: 0; list-style-position: inside; }
+.batch-results-actions { margin-top: 1rem; margin-bottom: 0; }
 @media (max-width: 800px) { .site-header .main-navigation { order: 3; flex-basis: 100%; justify-content: flex-start; } .account { margin-left: auto; } }
 @media (max-width: 600px) { .site-header { align-items: flex-start; } .account { flex-direction: column; align-items: flex-end; gap: .6rem; } .login-panel { padding: 1.5rem; } .patient-facts div { grid-template-columns: 1fr; gap: .5rem; } th, td { padding: .9rem; } }
