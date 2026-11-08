@@ -4,7 +4,7 @@ type Anchor = { element: Element; top: number }
 type Position = { anchors: Anchor[]; overflowAnchor: string }
 export type PreserveReadingPosition = (update: () => void) => void
 
-export function useReadingPosition(): PreserveReadingPosition {
+export function useReadingPosition(navigationKey?: string): PreserveReadingPosition {
   const position = useRef<Position | null>(null)
   const [revision, setRevision] = useState(0)
 
@@ -37,7 +37,7 @@ export function useReadingPosition(): PreserveReadingPosition {
       events.forEach(event => window.removeEventListener(event, cancel))
       release()
     }
-  }, [release])
+  }, [release, navigationKey])
 
   return useCallback(update => {
     if (!position.current) {

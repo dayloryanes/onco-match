@@ -50,7 +50,7 @@ public sealed class MatchStore(StudyStore studies, PatientCatalog patients, Matc
     }
     private MatchBatch Find(string id) => batches.GetValueOrDefault(id) ?? throw new MatchConflict(404, "batch_not_found");
 
-    public ActiveMatch Admit(string id, string version, string session, OperationLifetime lifetime, HttpContext context)
+    public ActiveMatch Admit(string id, string action, string version, string session, OperationLifetime lifetime, HttpContext context)
     {
         lock (sync)
         {
@@ -59,11 +59,12 @@ public sealed class MatchStore(StudyStore studies, PatientCatalog patients, Matc
             if (options.ValidationError is { } error) throw new MatchConflict(503, "inference_configuration_invalid", error);
             if (active is not null) throw new MatchConflict(409, "operation_in_progress");
             if (batch.Version != version) throw new MatchConflict(409, "batch_state_changed");
-            if (batch.Status != "notStarted" || batch.Pairs.Length == 0) throw new MatchConflict(409, "no_work_for_action");
+            var selected = SelectPairs(batch, action);
+            if (selected.Length == 0) throw new MatchConflict(409, "no_work_for_action");
             OperationLease lease;
             try { lease = lifetime.Register(context, session); }
             catch (OperationCanceledException) { throw new MatchConflict(401, "session_stopped", "Sign in again before starting match work."); }
-            var operation = new ActiveMatch(Guid.NewGuid().ToString("N"), batch, session, clock.GetUtcNow(), lease);
+            var operation = new ActiveMatch(Guid.NewGuid().ToString("N"), batch, action, selected, session, clock.GetUtcNow(), lease);
             operations.Add(operation.Id, operation);
             active = operation;
             batch.Status = "running";
@@ -154,11 +155,19 @@ public sealed class MatchStore(StudyStore studies, PatientCatalog patients, Matc
         totalPairCount = batch.Pairs.Length, completedPairCount = batch.Pairs.Count(p => p.State == "completed"),
         failedPairCount = batch.Pairs.Count(p => p.State == "failed"), unfinishedPairCount = batch.Pairs.Count(p => p.State == "unfinished"),
         activePairCount = batch.Pairs.Count(p => p.State == "running"), activeOperation = ActiveView(active?.Batch == batch ? active : null, session),
-        availableActions = isOperator && active is null && options.ValidationError is null && batch.Status == "notStarted" ? new[] { "start" } : [],
+        availableActions = isOperator && active is null && options.ValidationError is null
+            ? new[] { "start", "continue", "retryFailed" }.Where(action => SelectPairs(batch, action).Length > 0).ToArray() : [],
         pairs = includePairs ? batch.Pairs.Select(p => PairView(p, false)).ToArray() : null
     };
     private static object? ActiveView(ActiveMatch? operation, string? session) => operation is null ? null : new
-    { operationId = operation.Id, action = "start", startedAt = operation.StartedAt, selectedPairCount = operation.Batch.Pairs.Length, canCancel = session == operation.Session };
+    { operationId = operation.Id, action = operation.Action, startedAt = operation.StartedAt, selectedPairCount = operation.SelectedPairs.Length, canCancel = session == operation.Session };
+    private static MatchPair[] SelectPairs(MatchBatch batch, string action) => action switch
+    {
+        "start" when batch.Status == "notStarted" => batch.Pairs.ToArray(),
+        "continue" when batch.Status is not ("notStarted" or "noWork") => batch.Pairs.Where(pair => pair.State == "unfinished").ToArray(),
+        "retryFailed" when batch.Status is not ("notStarted" or "noWork") => batch.Pairs.Where(pair => pair.State == "failed").ToArray(),
+        _ => []
+    };
     private static object PairView(MatchPair pair, bool detailed) => new
     {
         batchId = pair.BatchId, patientId = pair.Patient.Id, nctId = pair.Study.NctId, state = pair.State,
@@ -199,10 +208,12 @@ public sealed class MatchPair(string batchId, PatientDetails patient, StudyDetai
 }
 public record MatchAttempt(string Id, string OperationId, DateTimeOffset StartedAt, DateTimeOffset? FinishedAt,
     string Status, string? FailureCode, string? FailureExplanation, string Route, string Model, int RequestTimeoutSeconds, double? ElapsedMilliseconds);
-public sealed class ActiveMatch(string id, MatchBatch batch, string session, DateTimeOffset startedAt, OperationLease lease)
+public sealed class ActiveMatch(string id, MatchBatch batch, string action, MatchPair[] selectedPairs, string session, DateTimeOffset startedAt, OperationLease lease)
 {
     public string Id { get; } = id;
     public MatchBatch Batch { get; } = batch;
+    public string Action { get; } = action;
+    public MatchPair[] SelectedPairs { get; } = selectedPairs;
     public string Session { get; } = session;
     public DateTimeOffset StartedAt { get; } = startedAt;
     public OperationLease Lease { get; } = lease;

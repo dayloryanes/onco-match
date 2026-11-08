@@ -7,6 +7,166 @@ namespace OncoMatch.IntegrationTests;
 
 public class MatchTests
 {
+    [Theory]
+    [InlineData("continue")]
+    [InlineData("retryFailed")]
+    public async Task Recovery_rejects_unstarted_batches_and_expired_sessions_without_changing_work(string action)
+    {
+        await using var app = new TestApp();
+        using var client = app.Browser();
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
+        StudyTests.Page(app, StudyTests.Record("NCT00000001"));
+        (await StudyTests.Import(client, StudyTests.Version(await StudyTests.State(client)))).EnsureSuccessStatusCode();
+        var batch = (await client.GetFromJsonAsync<JsonElement>("/api/match/batches")).GetProperty("batches")[0];
+        var id = batch.GetProperty("batchId").GetString();
+        var url = $"/api/match/batches/{id}/operations";
+        using var unstarted = await AuthTests.PostWithToken(client, url, new { action, expectedVersion = batch.GetProperty("version").GetString() });
+        Assert.Equal(HttpStatusCode.Conflict, unstarted.StatusCode);
+        Assert.Equal("no_work_for_action", (await unstarted.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("code").GetString());
+        var token = await client.GetFromJsonAsync<JsonElement>("/api/auth/csrf");
+        app.Clock.Advance(TimeSpan.FromMinutes(31));
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Headers.Add("X-CSRF-TOKEN", token.GetProperty("requestToken").GetString());
+        request.Content = JsonContent.Create(new { action, expectedVersion = batch.GetProperty("version").GetString() });
+        using var expired = await client.SendAsync(request);
+        Assert.Equal(HttpStatusCode.Unauthorized, expired.StatusCode);
+        Assert.False(expired.Headers.TryGetValues("Set-Cookie", out _));
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
+        var saved = await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        Assert.Equal(batch.GetProperty("version").GetString(), saved.GetProperty("version").GetString());
+        Assert.All(saved.GetProperty("pairs").EnumerateArray(), pair => Assert.Equal(JsonValueKind.Null, pair.GetProperty("latestAttempt").ValueKind));
+        Assert.Empty(app.Ollama.Requests);
+    }
+
+    [Theory]
+    [InlineData("native")]
+    [InlineData("openai-compatible")]
+    public async Task Interrupted_retry_becomes_unfinished_and_another_operator_can_continue_without_repeating_completed_pairs(string route)
+    {
+        await using var app = new TestApp();
+        app.Inference.Route = route;
+        var held = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var generated = 0;
+        app.Ollama.Respond = async (request, token) =>
+        {
+            if (request.RequestUri!.AbsolutePath == "/api/show") return Show();
+            var answer = ValidAnswer(JsonNode.Parse(await request.Content!.ReadAsStringAsync(token))!);
+            var number = ++generated;
+            if (number == 11) { held.TrySetResult(); await release.Task; }
+            return new(HttpStatusCode.OK) { Content = JsonContent.Create(route == "native"
+                ? (object)new { done = true, done_reason = number == 2 ? "length" : "stop", message = new { role = "assistant", content = answer } }
+                : new { choices = new[] { new { finish_reason = number == 2 ? "length" : "stop", message = new { role = "assistant", content = answer } } } }) };
+        };
+        using var client = app.Browser();
+        using var other = app.Browser();
+        using var viewer = app.Browser();
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
+        await AuthTests.Login(other, "operator", "OperatorDemo1!");
+        await AuthTests.Login(viewer);
+        StudyTests.Page(app, StudyTests.Record("NCT00000001"));
+        (await StudyTests.Import(client, StudyTests.Version(await StudyTests.State(client)))).EnsureSuccessStatusCode();
+        var initial = (await client.GetFromJsonAsync<JsonElement>("/api/match/batches")).GetProperty("batches")[0];
+        var id = initial.GetProperty("batchId").GetString();
+        var url = $"/api/match/batches/{id}/operations";
+        using var start = await AuthTests.PostWithToken(client, url, new { action = "start", expectedVersion = initial.GetProperty("version").GetString() });
+        Assert.Contains("operationFinished", await start.Content.ReadAsStringAsync());
+        var failed = await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        var version = failed.GetProperty("version").GetString();
+        Assert.Equal(HttpStatusCode.Forbidden, (await AuthTests.PostWithToken(viewer, url, new { action = "retryFailed", expectedVersion = version })).StatusCode);
+        // Exercise the complete CSRF + rejected mutation sequence past sliding-renewal age.
+        app.Clock.Advance(TimeSpan.FromMinutes(16));
+        using var stale = await AuthTests.PostWithToken(client, url, new { action = "retryFailed", expectedVersion = "stale" });
+        Assert.Equal(HttpStatusCode.Conflict, stale.StatusCode);
+        Assert.False(stale.Headers.TryGetValues("Set-Cookie", out _));
+        var pending = AuthTests.PostWithToken(client, url, new { action = "retryFailed", expectedVersion = version });
+        await held.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var active = await other.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        Assert.Equal("retryFailed", active.GetProperty("activeOperation").GetProperty("action").GetString());
+        Assert.Equal(1, active.GetProperty("activeOperation").GetProperty("selectedPairCount").GetInt32());
+        Assert.Empty(active.GetProperty("availableActions").EnumerateArray());
+        var operationId = active.GetProperty("activeOperation").GetProperty("operationId").GetString();
+        try
+        {
+            Assert.Equal(HttpStatusCode.Forbidden, (await AuthTests.PostWithToken(other, $"/api/match/operations/{operationId}/cancel")).StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, (await AuthTests.PostWithToken(other, url, new { action = "retryFailed", expectedVersion = active.GetProperty("version").GetString() })).StatusCode);
+            Assert.Equal(HttpStatusCode.Accepted, (await AuthTests.PostWithToken(client, $"/api/match/operations/{operationId}/cancel")).StatusCode);
+            Assert.Equal(HttpStatusCode.Conflict, (await AuthTests.PostWithToken(other, url, new { action = "continue", expectedVersion = active.GetProperty("version").GetString() })).StatusCode);
+        }
+        finally { release.TrySetResult(); }
+        using var interrupted = await pending.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.Contains("operationStopped", await interrupted.Content.ReadAsStringAsync());
+        var saved = await other.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        Assert.Equal(9, saved.GetProperty("completedPairCount").GetInt32());
+        Assert.Equal(0, saved.GetProperty("failedPairCount").GetInt32());
+        Assert.Equal(1, saved.GetProperty("unfinishedPairCount").GetInt32());
+        Assert.Equal(HttpStatusCode.Conflict, (await AuthTests.PostWithToken(other, url, new { action = "retryFailed", expectedVersion = saved.GetProperty("version").GetString() })).StatusCode);
+        using var continued = await AuthTests.PostWithToken(other, url, new { action = "continue", expectedVersion = saved.GetProperty("version").GetString() });
+        Assert.Contains("operationFinished", await continued.Content.ReadAsStringAsync());
+        var pair = saved.GetProperty("pairs")[1];
+        var detail = await viewer.GetFromJsonAsync<JsonElement>($"/api/match/pairs/{pair.GetProperty("patientId").GetString()}/NCT00000001");
+        Assert.Equal("completed", detail.GetProperty("state").GetString());
+        Assert.Equal(new[] { "failed", "interrupted", "completed" }, detail.GetProperty("attemptHistory").EnumerateArray().Select(a => a.GetProperty("status").GetString()));
+        Assert.Equal(12, generated);
+    }
+
+    [Theory]
+    [InlineData("native")]
+    [InlineData("openai-compatible")]
+    public async Task Retry_selects_only_failed_pairs_and_preserves_completed_assessments_and_attempt_history(string route)
+    {
+        await using var app = new TestApp();
+        app.Inference.Route = route;
+        var generated = 0;
+        app.Ollama.Respond = async (request, token) =>
+        {
+            if (request.RequestUri!.AbsolutePath == "/api/show") return Show();
+            var answer = ValidAnswer(JsonNode.Parse(await request.Content!.ReadAsStringAsync(token))!);
+            // The second pair fails initially and on its first retry.
+            var fail = ++generated is 2 or 11;
+            return new(HttpStatusCode.OK) { Content = JsonContent.Create(route == "native"
+                ? (object)new { done = true, done_reason = fail ? "length" : "stop", message = new { role = "assistant", content = answer } }
+                : new { choices = new[] { new { finish_reason = fail ? "length" : "stop", message = new { role = "assistant", content = answer } } } }) };
+        };
+        using var client = app.Browser();
+        await AuthTests.Login(client, "operator", "OperatorDemo1!");
+        StudyTests.Page(app, StudyTests.Record("NCT00000001"));
+        (await StudyTests.Import(client, StudyTests.Version(await StudyTests.State(client)))).EnsureSuccessStatusCode();
+        var batch = (await client.GetFromJsonAsync<JsonElement>("/api/match/batches")).GetProperty("batches")[0];
+        var id = batch.GetProperty("batchId").GetString();
+        async Task<JsonElement> Read() => await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        async Task Run(string action, JsonElement snapshot)
+        {
+            using var response = await AuthTests.PostWithToken(client, $"/api/match/batches/{id}/operations",
+                new { action, expectedVersion = snapshot.GetProperty("version").GetString() });
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Contains("operationFinished", await response.Content.ReadAsStringAsync());
+        }
+        await Run("start", batch);
+        var failed = await Read();
+        Assert.Equal(9, failed.GetProperty("completedPairCount").GetInt32());
+        Assert.Equal(new[] { "retryFailed" }, failed.GetProperty("availableActions").EnumerateArray().Select(a => a.GetString()));
+        var first = failed.GetProperty("pairs")[0];
+        var firstUrl = $"/api/match/pairs/{first.GetProperty("patientId").GetString()}/NCT00000001";
+        var original = await client.GetStringAsync(firstUrl);
+        await Run("retryFailed", failed);
+        var repeated = await Read();
+        Assert.Equal("finishedWithFailures", repeated.GetProperty("status").GetString());
+        Assert.Equal(11, generated);
+        await Run("retryFailed", repeated);
+        var completed = await Read();
+        Assert.Equal(10, completed.GetProperty("completedPairCount").GetInt32());
+        Assert.Empty(completed.GetProperty("availableActions").EnumerateArray());
+        Assert.Equal(12, generated);
+        Assert.Equal(original, await client.GetStringAsync(firstUrl));
+        var recovered = completed.GetProperty("pairs")[1];
+        var details = await client.GetFromJsonAsync<JsonElement>($"/api/match/pairs/{recovered.GetProperty("patientId").GetString()}/NCT00000001");
+        var history = details.GetProperty("attemptHistory").EnumerateArray().ToArray();
+        Assert.Equal(new[] { "failed", "failed", "completed" }, history.Select(a => a.GetProperty("status").GetString()));
+        Assert.Equal(3, history.Select(a => a.GetProperty("operationId").GetString()).Distinct().Count());
+        Assert.All(history, attempt => Assert.Equal(route, attempt.GetProperty("route").GetString()));
+    }
+
     [Fact]
     public async Task Logout_before_stream_headers_suppresses_the_already_queued_renewal_cookie()
     {
@@ -28,10 +188,13 @@ public class MatchTests
         Assert.Empty(app.Ollama.Requests);
     }
 
-    [Fact]
-    public async Task Cancellation_preserves_committed_assessments_and_holds_admission_until_inference_unwinds()
+    [Theory]
+    [InlineData("native")]
+    [InlineData("openai-compatible")]
+    public async Task Cancellation_preserves_committed_assessments_and_continue_selects_only_unfinished_pairs(string route)
     {
         await using var app = new TestApp();
+        app.Inference.Route = route;
         var held = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         var count = 0;
@@ -40,7 +203,9 @@ public class MatchTests
             if (request.RequestUri!.AbsolutePath == "/api/show") return Show();
             var answer = ValidAnswer(JsonNode.Parse(await request.Content!.ReadAsStringAsync(token))!);
             if (++count == 2) { held.TrySetResult(); await release.Task; }
-            return new(HttpStatusCode.OK) { Content = JsonContent.Create(new { done = true, done_reason = "stop", message = new { role = "assistant", content = answer } }) };
+            return new(HttpStatusCode.OK) { Content = JsonContent.Create(route == "native"
+                ? (object)new { done = true, done_reason = "stop", message = new { role = "assistant", content = answer } }
+                : new { choices = new[] { new { finish_reason = "stop", message = new { role = "assistant", content = answer } } } }) };
         };
         using var client = app.Browser();
         await AuthTests.Login(client, "operator", "OperatorDemo1!");
@@ -66,6 +231,23 @@ public class MatchTests
         Assert.Equal(1, saved.GetProperty("completedPairCount").GetInt32());
         Assert.Equal(9, saved.GetProperty("unfinishedPairCount").GetInt32());
         Assert.Equal(0, saved.GetProperty("failedPairCount").GetInt32());
+        Assert.Equal(new[] { "continue" }, saved.GetProperty("availableActions").EnumerateArray().Select(a => a.GetString()));
+        var first = saved.GetProperty("pairs")[0];
+        var firstUrl = $"/api/match/pairs/{first.GetProperty("patientId").GetString()}/NCT00000001";
+        var original = await client.GetStringAsync(firstUrl);
+        app.Clock.Advance(TimeSpan.FromMinutes(10));
+        using var continued = await AuthTests.PostWithToken(client, $"/api/match/batches/{id}/operations",
+            new { action = "continue", expectedVersion = saved.GetProperty("version").GetString() });
+        Assert.Equal(HttpStatusCode.OK, continued.StatusCode);
+        Assert.Equal(app.Clock.GetUtcNow().AddMinutes(30), DateTimeOffset.Parse(Assert.Single(continued.Headers.GetValues("X-Session-Expires-At"))));
+        Assert.Contains("operationFinished", await continued.Content.ReadAsStringAsync());
+        var complete = await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        Assert.Equal(10, complete.GetProperty("completedPairCount").GetInt32());
+        Assert.Equal(11, count);
+        Assert.Equal(original, await client.GetStringAsync(firstUrl));
+        var second = complete.GetProperty("pairs")[1];
+        var detail = await client.GetFromJsonAsync<JsonElement>($"/api/match/pairs/{second.GetProperty("patientId").GetString()}/NCT00000001");
+        Assert.Equal(new[] { "interrupted", "completed" }, detail.GetProperty("attemptHistory").EnumerateArray().Select(a => a.GetProperty("status").GetString()));
     }
 
     [Fact]
@@ -289,18 +471,24 @@ public class MatchTests
     }
 
     [Theory]
-    [InlineData("expiry")]
-    [InlineData("renewal")]
-    [InlineData("logout")]
-    [InlineData("cancel")]
-    [InlineData("disconnect")]
-    public async Task Active_work_obeys_session_lifetime_and_exclusive_admission(string stop)
+    [MemberData(nameof(LifetimeCases))]
+    public async Task Active_work_obeys_session_lifetime_and_exclusive_admission(string stop, string action, string route)
     {
         await using var app = new TestApp();
+        app.Inference.Route = route;
         app.Inference.RequestTimeoutSeconds = 3600;
+        var preparing = action != "start";
         var reached = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         app.Ollama.Respond = async (request, token) =>
         {
+            if (preparing)
+            {
+                if (action == "continue") return new(HttpStatusCode.ServiceUnavailable);
+                return request.RequestUri!.AbsolutePath == "/api/show" ? Show()
+                    : new(HttpStatusCode.OK) { Content = JsonContent.Create(route == "native"
+                        ? (object)new { done = true, done_reason = "stop", message = new { role = "assistant", content = "{}" } }
+                        : new { choices = new[] { new { finish_reason = "stop", message = new { role = "assistant", content = "{}" } } } }) };
+            }
             if (request.RequestUri!.AbsolutePath == "/api/show") return Show();
             reached.TrySetResult();
             await Task.Delay(Timeout.InfiniteTimeSpan, token);
@@ -314,10 +502,19 @@ public class MatchTests
         (await StudyTests.Import(client, StudyTests.Version(await StudyTests.State(client)))).EnsureSuccessStatusCode();
         var batch = (await client.GetFromJsonAsync<JsonElement>("/api/match/batches")).GetProperty("batches")[0];
         var id = batch.GetProperty("batchId").GetString();
+        if (preparing)
+        {
+            using var initial = await AuthTests.PostWithToken(client, $"/api/match/batches/{id}/operations",
+                new { action = "start", expectedVersion = batch.GetProperty("version").GetString() });
+            Assert.Equal(HttpStatusCode.OK, initial.StatusCode);
+            await initial.Content.ReadAsStringAsync();
+            batch = await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+            preparing = false;
+        }
         var csrf = await client.GetFromJsonAsync<JsonElement>("/api/auth/csrf");
         using var request = new HttpRequestMessage(HttpMethod.Post, $"/api/match/batches/{id}/operations");
         request.Headers.Add("X-CSRF-TOKEN", csrf.GetProperty("requestToken").GetString());
-        request.Content = JsonContent.Create(new { action = "start", expectedVersion = batch.GetProperty("version").GetString() });
+        request.Content = JsonContent.Create(new { action, expectedVersion = batch.GetProperty("version").GetString() });
         using var disconnect = new CancellationTokenSource();
         using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, disconnect.Token);
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -361,9 +558,16 @@ public class MatchTests
         }
         Assert.Equal(JsonValueKind.Null, saved.GetProperty("activeOperation").ValueKind);
         Assert.Equal("unfinished", saved.GetProperty("status").GetString());
-        Assert.Equal(10, saved.GetProperty("unfinishedPairCount").GetInt32());
+        Assert.Equal(action == "retryFailed" ? 1 : 10, saved.GetProperty("unfinishedPairCount").GetInt32());
+        Assert.Equal(action == "retryFailed" ? 9 : 0, saved.GetProperty("failedPairCount").GetInt32());
         Assert.Equal("interrupted", saved.GetProperty("pairs")[0].GetProperty("latestAttempt").GetProperty("status").GetString());
     }
+
+    public static IEnumerable<object[]> LifetimeCases() =>
+        from stop in new[] { "expiry", "renewal", "logout", "cancel", "disconnect" }
+        from action in new[] { "start", "continue", "retryFailed" }
+        from route in new[] { "native", "openai-compatible" }
+        select new object[] { stop, action, route };
 
     [Theory]
     [InlineData("native", "/api/chat")]

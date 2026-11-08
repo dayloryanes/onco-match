@@ -60,9 +60,32 @@ Timeouts and invalid answers/evidence fail individual attempts while remaining
 pairs continue. Unavailable inference at first need and unexpected internal errors
 stop the operation. No failure becomes a fabricated clinical finding. A broken
 stream is reconciled against saved state without automatic resubmission.
-Continue/retry controls and Patient/Study assessment sections belong to later
-slices. Interrupted/failed work remains visible but cannot be restarted in this
-slice; a backend restart clears it together with all imported/assessed state.
+After an operation stops, any Operator can choose Continue unfinished for pairs
+never completed or interrupted, or Retry failed for currently failed pairs. Each
+action captures its eligible pairs once, starts a new operation, and grants a
+fresh 30-minute session. It follows the same cancellation, timeout, streaming,
+and single-operation rules as Start. A stale or concurrent action is rejected;
+review the refreshed batch before choosing another action. A connection failure
+does not itself establish that a pair failed: saved backend state is authoritative,
+and recovery stays unavailable while the prior operation is still stopping. If
+reconciliation cannot be confirmed, use Refresh before taking another action.
+
+Retry failed makes one new attempt per selected pair and ends. Repeated failures
+remain visible as Finished with failures when no unfinished work remains; another
+manual retry is available without a fixed retry cap. There is no automatic retry,
+resubmission, or recovery job. Cancelling a retry returns its interrupted pair to
+unfinished while keeping its earlier failure in history. Continue starts a new
+attempt for that pair. Completed assessments, including exclusions, undetermined
+and mixed findings, are immutable and never selected by recovery. There is no
+rematching or correction of completed results.
+
+Inspect is available for pairs with an attempt, including failed or interrupted
+work. Attempt history lists each attempt's identity, operation, start/finish,
+status, safe failure explanation, and available route, model, timeout and duration
+metadata. Earlier failures remain after success; only a completed pair has a pair
+summary. Viewers may inspect shared history but cannot run recovery. Patient/Study
+assessment sections remain a later slice. A backend restart clears all imported,
+assessed and attempt-history state.
 
 ## Local Ollama setup
 

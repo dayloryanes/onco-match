@@ -11,7 +11,7 @@ import { studySex } from './studyDisplay'
 
 const names: Record<string, string> = {
   noWork: 'No work', notStarted: 'Not started', running: 'Running', stopping: 'Stopping', unfinished: 'Unfinished',
-  finishedWithFailures: 'Finished with failures', completed: 'Completed', failed: 'Failed',
+  finishedWithFailures: 'Finished with failures', completed: 'Completed', failed: 'Failed', interrupted: 'Interrupted',
   excludedByAgeSex: 'Excluded by age/sex', conditionLabelAlignmentSupported: 'Condition-label alignment supported',
   mixedConditionLabelFindings: 'Mixed condition-label findings', conditionLabelConflictsIdentified: 'Condition-label conflicts identified',
   conditionLabelAlignmentUndetermined: 'Condition-label alignment undetermined', alignmentSupported: 'Alignment supported',
@@ -57,7 +57,7 @@ function Assessment({ detail }: { detail: PairDetails }) {
     <div className="assessment-content">
     <header className="assessment-stack">
     <h4 className="assessment-heading">Assessment: {detail.patientId} · {detail.nctId}</h4>
-    <p>{label(detail.pairSummary)}</p>
+    <p>{label(detail.pairSummary ?? detail.state)}</p>
     {detail.skipReason && <p>{detail.skipReason}</p>}
     </header>
     {detail.structuredChecks && <section className="assessment-major assessment-groups" aria-label="Age and sex checks">
@@ -90,6 +90,23 @@ function Assessment({ detail }: { detail: PairDetails }) {
       <div><dt>Age bounds</dt><dd>{display(snapshot.study.minimumAge)} — {display(snapshot.study.maximumAge)}</dd></div>
       <div><dt>Sex</dt><dd>{display(studySex(snapshot.study.sex))}</dd></div><div><dt>Conditions</dt><dd>{snapshot.study.conditions?.length ? <ul>{snapshot.study.conditions.map((condition, i) => <li key={i}>{condition.trim() ? condition : 'Not available'}</li>)}</ul> : 'Not available'}</dd></div>
     </dl></section></details>}
+    {!!detail.attemptHistory?.length && <details className="assessment-major"><summary>Attempt history</summary>
+      <ol className="attempt-history">{detail.attemptHistory.map((attempt, index) => <li key={attempt.id} className="snapshot-section">
+        <h5>Attempt {index + 1}: {label(attempt.status)}</h5>
+        <dl className="patient-facts">
+          <div><dt>Started</dt><dd>{new Date(attempt.startedAt).toLocaleString()}</dd></div>
+          <div><dt>Finished</dt><dd>{attempt.finishedAt ? new Date(attempt.finishedAt).toLocaleString() : 'In progress'}</dd></div>
+          {attempt.elapsedMilliseconds != null && <div><dt>Duration</dt><dd>{(attempt.elapsedMilliseconds / 1000).toFixed(2)} seconds</dd></div>}
+          {attempt.route && <div><dt>Route</dt><dd>{attempt.route}</dd></div>}
+          {attempt.model && <div><dt>Model</dt><dd>{attempt.model}</dd></div>}
+          {attempt.requestTimeoutSeconds != null && <div><dt>Request timeout</dt><dd>{attempt.requestTimeoutSeconds} seconds</dd></div>}
+          {attempt.failureExplanation && <div><dt>{attempt.status === 'interrupted' ? 'Stop reason' : 'Failure reason'}</dt><dd>{label(attempt.failureExplanation)}</dd></div>}
+          {attempt.failureCode && <div><dt>Failure code</dt><dd>{attempt.failureCode}</dd></div>}
+          <div><dt>Attempt ID</dt><dd className="attempt-id">{attempt.id}</dd></div>
+          <div><dt>Operation ID</dt><dd className="attempt-id">{attempt.operationId}</dd></div>
+        </dl>
+      </li>)}</ol>
+    </details>}
   </section>
 }
 
@@ -176,17 +193,24 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
     setExpandedId(null); setDetail(null); setExpandedPair(null)
     document.getElementById(`batch-toggle-${id}`)?.focus()
   }
-  async function openPair(pair: MatchPair) {
-    if (expandedPair === pairKey(pair)) { closePair(pair); return }
-    detailRequest.current?.abort()
+  const inspectedPair = selected?.pairs?.find(pair => pairKey(pair) === expandedPair)
+  useEffect(() => {
+    if (!inspectedPair) return
     const controller = new AbortController(); detailRequest.current = controller
-    setExpandedPair(pairKey(pair)); setDetail(null); setInspectionError('')
-    try { const value = await matchApi.pair(pair.patientId, pair.nctId, controller.signal); if (!controller.signal.aborted) setDetail(value) }
-    catch (value) {
+    matchApi.pair(inspectedPair.patientId, inspectedPair.nctId, controller.signal).then(value => {
+      if (!controller.signal.aborted) preserveReadingPosition(() => { setDetail(value); setInspectionError('') })
+    }).catch(value => {
       if (controller.signal.aborted) return
       if (value instanceof ApiError && value.status === 401) onExpired()
-      else setInspectionError('Unable to load this assessment. Close and inspect again to retry.')
-    }
+      else preserveReadingPosition(() => { setDetail(null); setInspectionError('Unable to load this assessment. Close and inspect again to retry.') })
+    })
+    return () => controller.abort()
+  }, [inspectedPair, onExpired, preserveReadingPosition])
+
+  function openPair(pair: MatchPair) {
+    if (expandedPair === pairKey(pair)) { closePair(pair); return }
+    detailRequest.current?.abort()
+    setExpandedPair(pairKey(pair)); setDetail(null); setInspectionError('')
   }
   function closePair(pair: MatchPair) {
     detailRequest.current?.abort()
@@ -199,7 +223,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
       if (!signal.aborted) { setState(current); setSelected(batch) }
     } catch (value) { if (!signal.aborted) { setState(null); setSelected(null); failure(value, 'Unable to refresh saved results. Use Refresh before taking another action.', id) } }
   }
-  async function start(batch: MatchBatch) {
+  async function operate(batch: MatchBatch, action: string) {
     if (stream.current) return
     refreshRequest.current?.abort()
     selection.current?.abort()
@@ -212,10 +236,11 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
       const full = await matchApi.batch(batch.batchId, controller.signal)
       if (controller.signal.aborted) return
       setSelected(full)
-      await matchApi.start(batch, controller.signal, (event: MatchEvent) => {
+      await matchApi.operate(batch, action, controller.signal, (event: MatchEvent) => {
         if (controller.signal.aborted) return
         const activeOperation = event.type === 'operationFinished' || event.type === 'operationStopped' ? null : {
-          operationId: event.operationId, action: 'start', startedAt: event.serverTime, selectedPairCount: event.totalPairCount, canCancel: true,
+          operationId: event.operationId, action, startedAt: event.serverTime,
+          selectedPairCount: action === 'continue' ? batch.unfinishedPairCount : action === 'retryFailed' ? batch.failedPairCount : batch.totalPairCount, canCancel: true,
         }
         const update = (current: MatchBatch): MatchBatch => ({ ...current, ...event, activeOperation, availableActions: [],
           pairs: current.pairs?.map(pair => pair.patientId !== event.patientId || pair.nctId !== event.nctId ? pair : {
@@ -230,7 +255,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
     } catch (value) {
       if (controller.signal.aborted) return
       const fallback = value instanceof ApiError
-        ? value.message === value.code ? 'Unable to start match. Use Refresh to check the batch status.' : `${value.message.replace(/[.!?]+$/, '')}.`
+        ? value.message === value.code ? 'Unable to run match work. Use Refresh to check the batch status.' : `${value.message.replace(/[.!?]+$/, '')}.`
         : 'Unable to confirm live progress. Use Refresh to check saved results. No action was resubmitted.'
       failure(value, value instanceof ApiError ? matchRequestMessage(value.code, fallback) : fallback, batch.batchId)
     } finally {
@@ -271,7 +296,8 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
             <h3 id={`batch-heading-${id}`}>Batch {number} · {label(batch.status)}</h3>
             <p><strong>{batch.completedPairCount}/{batch.totalPairCount} completed</strong> · {batch.failedPairCount} failed · {batch.unfinishedPairCount} unfinished · {batch.activePairCount} active</p>
             <div className="actions">
-              {user.role === 'Operator' && batch.availableActions.includes('start') && <button disabled={pending} onClick={() => start(batch)}>Start match</button>}
+              {user.role === 'Operator' && [['start', 'Start match'], ['continue', 'Continue unfinished'], ['retryFailed', 'Retry failed']].map(([action, text]) =>
+                batch.availableActions.includes(action) && <button key={action} disabled={pending} onClick={() => operate(batch, action)}>{text}</button>)}
               {batch.activeOperation?.canCancel && user.role === 'Operator' && <button disabled={cancelPending} onClick={() => cancel(batch)}>{cancelPending ? 'Requesting cancellation…' : 'Cancel match'}</button>}
               <button id={`batch-toggle-${id}`} className="quiet-button" aria-expanded={expanded} aria-controls={`batch-results-${id}`} disabled={pending && selected?.batchId !== batch.batchId} onClick={() => inspect(batch)}>{expanded ? 'Close batch' : 'View batch'} {number}</button>
             </div>
@@ -283,7 +309,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
       {selected?.batchId === batch.batchId && selected.pairs && <div className="table-scroll"><table><thead><tr><th>Patient</th><th>Study</th><th>Assessment</th><th>Details</th></tr></thead>
         <tbody>{selected.pairs.map(pair => <Fragment key={pairKey(pair)}><tr><th scope="row">{pair.patientId}</th><td>{pair.nctId}</td>
           <td>{label(pair.pairSummary ?? pair.state)}{pair.latestAttempt?.failureExplanation && <> · {label(pair.latestAttempt.failureExplanation)}</>}</td>
-          <td>{pair.state === 'completed' && <button id={`inspection-toggle-${pairKey(pair)}`} className="quiet-button" aria-expanded={expandedPair === pairKey(pair)} aria-controls={`inspection-${pairKey(pair)}`} onClick={() => openPair(pair)}>{expandedPair === pairKey(pair) ? 'Close details' : 'Inspect'} {pair.patientId} {pair.nctId}</button>}</td></tr>
+          <td>{(pair.state === 'completed' || pair.latestAttempt) && <button id={`inspection-toggle-${pairKey(pair)}`} className="quiet-button" aria-expanded={expandedPair === pairKey(pair)} aria-controls={`inspection-${pairKey(pair)}`} onClick={() => openPair(pair)}>{expandedPair === pairKey(pair) ? 'Close details' : 'Inspect'} {pair.patientId} {pair.nctId}</button>}</td></tr>
           {expandedPair === pairKey(pair) && <tr className="assessment-row"><td colSpan={4}><div id={`inspection-${pairKey(pair)}`}>
             {detail && pairKey(detail) === pairKey(pair) ? <Assessment detail={detail} />
               : inspectionError ? <p role="alert" className="match-message inspection-message">{inspectionError}</p> : <p role="status" className="inspection-message">Loading assessment…</p>}

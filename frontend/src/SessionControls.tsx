@@ -3,6 +3,7 @@ import { api, ApiError } from './api'
 import type { CurrentUser } from './api'
 import { sessionEventName } from './sessionEvents'
 import type { SessionEvent, SessionTiming } from './sessionEvents'
+import type { PreserveReadingPosition } from './useReadingPosition'
 
 function deadline(timing: SessionTiming, transit = 0) {
   const remaining = Date.parse(timing.expiresAt) - Date.parse(timing.serverTime) - transit
@@ -17,7 +18,7 @@ function newerDeadline(current: ReturnType<typeof deadline>, timing: SessionTimi
   return deadline(timing, transit)
 }
 
-export default function SessionControls({ user, onExpired }: { user: CurrentUser; onExpired: () => void }) {
+export default function SessionControls({ user, onExpired, preserveReadingPosition }: { user: CurrentUser; onExpired: () => void; preserveReadingPosition: PreserveReadingPosition }) {
   const [confirmed, setConfirmed] = useState(() => deadline(user))
   const [now, setNow] = useState(() => performance.now())
   const [pending, setPending] = useState(false)
@@ -28,9 +29,11 @@ export default function SessionControls({ user, onExpired }: { user: CurrentUser
     function receive(event: Event) {
       const update = (event as CustomEvent<{ event: SessionEvent }>).detail.event
       if (update.kind !== 'timing') return
-      setConfirmed(current => newerDeadline(current, update.timing, Math.max(0, Date.now() - update.sentAt)))
-      setNow(performance.now())
-      if (update.renewed) setFailed(false)
+      preserveReadingPosition(() => {
+        setConfirmed(current => newerDeadline(current, update.timing, Math.max(0, Date.now() - update.sentAt)))
+        setNow(performance.now())
+        if (update.renewed) setFailed(false)
+      })
     }
     window.addEventListener(sessionEventName, receive)
     const timer = window.setInterval(() => setNow(performance.now()), 1000)
@@ -39,7 +42,7 @@ export default function SessionControls({ user, onExpired }: { user: CurrentUser
       window.clearInterval(timer)
       extension.current?.abort()
     }
-  }, [])
+  }, [preserveReadingPosition])
 
   const remaining = confirmed.end - now
   const remainingSeconds = Math.max(0, Math.ceil(remaining / 1000))

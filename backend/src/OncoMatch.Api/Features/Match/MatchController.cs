@@ -40,9 +40,9 @@ public class MatchController(MatchStore store, OperationLifetime lifetime, Match
     {
         var session = Session;
         if (session is null) return Error(new(401, "authentication_required"));
-        if (request.Action != "start") return Error(new(400, "invalid_request", "This slice supports start only."));
+        if (request.Action is not ("start" or "continue" or "retryFailed")) return Error(new(400, "invalid_request", "Choose start, continue, or retryFailed."));
         ActiveMatch operation;
-        try { operation = store.Admit(batchId, request.ExpectedVersion, session, lifetime, HttpContext); }
+        try { operation = store.Admit(batchId, request.Action, request.ExpectedVersion, session, lifetime, HttpContext); }
         catch (MatchConflict error) { return Error(error); }
         using var disconnect = HttpContext.RequestAborted.Register(() => operation.Lease.Stop("disconnected"));
         try

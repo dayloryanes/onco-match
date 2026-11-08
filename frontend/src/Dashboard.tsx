@@ -3,9 +3,9 @@ import { api, ApiError } from './api'
 import type { CurrentUser, ImportState } from './api'
 import MatchDashboard from './MatchDashboard'
 import { importErrors as errors } from './importErrors'
-import { useReadingPosition } from './useReadingPosition'
+import type { PreserveReadingPosition } from './useReadingPosition'
 
-export default function Dashboard({ user, onExpired }: { user: CurrentUser; onExpired: () => void }) {
+export default function Dashboard({ user, onExpired, preserveReadingPosition }: { user: CurrentUser; onExpired: () => void; preserveReadingPosition: PreserveReadingPosition }) {
   const [state, setState] = useState<ImportState | null>(null)
   const [loading, setLoading] = useState(true)
   const [historyConfirmed, setHistoryConfirmed] = useState(false)
@@ -13,7 +13,6 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
   const [error, setError] = useState('')
   const [refresh, setRefresh] = useState(0)
   const operation = useRef<AbortController | null>(null)
-  const preserveReadingPosition = useReadingPosition()
 
   useEffect(() => {
     const controller = new AbortController()

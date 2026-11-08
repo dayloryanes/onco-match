@@ -85,6 +85,7 @@ td { overflow-wrap: anywhere; }
 .assessment-stack { display: grid; gap: .5rem; }
 .assessment-groups { display: grid; gap: 1rem; }
 .assessment-major { border-top: 1px solid #d7e2e7; margin-top: .75rem; padding-top: .75rem; }
+details.assessment-major { margin-top: 1rem; padding-top: 1rem; font-size: .95rem; line-height: 1.6; }
 .assessment-evidence { font-size: inherit; white-space: pre-wrap; list-style-type: disc; }
 .assessment-row td { padding: 0; background: #f4f9fa; }
 .assessment-row .assessment-detail { margin: 1rem; }
@@ -94,8 +95,10 @@ td { overflow-wrap: anywhere; }
 .match-message { font-size: .85rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 6px; margin: 0 0 1rem; overflow-wrap: anywhere; }
 .match-message[role='status'] { color: #503b16; background: #fff8e8; border-left: 3px solid #b98b38; }
 .match-message.inspection-message { margin: 1rem; }
-.snapshot-section { margin-top: 1.25rem; }
-.snapshot-section .patient-facts { margin-top: .5rem; }
+.snapshot-section { display: grid; gap: .5rem; margin-top: 1rem; }
+.snapshot-section h5 { margin: 0; font-size: .95rem; font-weight: 600; line-height: 1.4; }
+.attempt-history { list-style: none; margin: 0; padding: 0; }
+.snapshot-section .patient-facts { margin: 0; }
 .snapshot-section dd > ul { margin: 0; padding: 0; list-style-position: inside; }
 .batch-results-actions { margin-top: 1rem; margin-bottom: 0; }
 @media (max-width: 800px) { .site-header .main-navigation { order: 3; flex-basis: 100%; justify-content: flex-start; } .account { margin-left: auto; } }

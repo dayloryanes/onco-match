@@ -217,3 +217,21 @@ test('Refresh preserves visible content when session renewal removes the warning
   await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toHaveCount(0)
   await expect.poll(async () => Math.abs((await fixture.heading.boundingBox())!.y - before)).toBeLessThan(1)
 })
+
+test('A late renewing import response preserves inspection position after matching rows refresh', async ({ page }) => {
+  const fixture = await dashboard(page, { renewSession: true })
+  await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toBeVisible()
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  const before = (await fixture.heading.boundingBox())!.y
+  fixture.update(); fixture.hold()
+  try {
+    await page.getByRole('button', { name: 'Refresh', exact: true }).evaluate((button: HTMLButtonElement) => button.click())
+    await fixture.requested()
+    fixture.release('batches'); fixture.release('detail')
+    await expect(page.getByRole('button', { name: 'Close batch 3', exact: true })).toBeVisible()
+    fixture.release('imports')
+    await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toHaveCount(0)
+    await expect(page.getByText('30 studies', { exact: true })).toBeVisible()
+    await expect.poll(async () => Math.abs((await fixture.heading.boundingBox())!.y - before)).toBeLessThan(1)
+  } finally { fixture.releaseAll() }
+})
