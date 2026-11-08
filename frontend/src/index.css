@@ -1,4 +1,5 @@
-:root { font-family: 'Segoe UI', system-ui, sans-serif; color: #192f40; background: #f3f6f8; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+:root { --data-row-padding-block: 1rem; --data-row-line-height: 1.5; --assessment-section-gap: 1rem; font-family: 'Segoe UI', system-ui, sans-serif; color: #192f40; background: #f3f6f8; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+@media (max-width: 600px) { :root { --data-row-padding-block: .9rem; } }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 button, input { font: inherit; }

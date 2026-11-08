@@ -43,27 +43,28 @@ export default function Dashboard({ user, onExpired, preserveReadingPosition }: 
     if (!state || !historyConfirmed || loading || pending || operation.current?.signal.aborted || state.nextAction === 'none') return
     const controller = new AbortController()
     operation.current = controller
-    setPending(true); setError('')
+    preserveReadingPosition(() => { setPending(true); setError('') })
     try {
       const value = await api.importStudies(state.version, controller.signal)
-      if (!controller.signal.aborted) setState(value)
+      if (!controller.signal.aborted) preserveReadingPosition(() => setState(value))
     } catch (failure) {
       if (controller.signal.aborted) return
       if (failure instanceof ApiError && failure.status === 401) { onExpired(); return }
       // A lost response may conceal a committed import. Reconcile before offering
       // another explicit POST; never resubmit automatically.
-      setState(null)
-      setHistoryConfirmed(false)
-      setError(failure instanceof ApiError ? errors[failure.code] ?? 'Import failed. Review the current history before retrying.' : 'Unable to confirm the import. Review the current history before retrying.')
+      preserveReadingPosition(() => {
+        setHistoryConfirmed(false)
+        setError(failure instanceof ApiError ? errors[failure.code] ?? 'Import failed. Review the current history before retrying.' : 'Unable to confirm the import. Review the current history before retrying.')
+      })
       try {
         const value = await api.importState(controller.signal)
-        if (!controller.signal.aborted) { setState(value); setHistoryConfirmed(true) }
+        if (!controller.signal.aborted) preserveReadingPosition(() => { setState(value); setHistoryConfirmed(true) })
       } catch (reloadFailure) {
         if (controller.signal.aborted) return
         if (reloadFailure instanceof ApiError && reloadFailure.status === 401) onExpired()
-        else setError('Unable to reload import history. Refresh before importing again.')
+        else preserveReadingPosition(() => setError('Unable to reload import history. Refresh before importing again.'))
       }
-    } finally { if (!controller.signal.aborted) setPending(false) }
+    } finally { if (!controller.signal.aborted) preserveReadingPosition(() => setPending(false)) }
   }
 
   return <section>

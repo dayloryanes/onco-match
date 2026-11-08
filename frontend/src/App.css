@@ -19,8 +19,6 @@ input { border: 1px solid #91a6b3; border-radius: 6px; padding: .65rem .8rem; wi
 form button { margin-top: .65rem; }
 .demo-accounts { border-top: 1px solid #d7e2e7; padding-top: 1.2rem; font-size: .85rem; }
 .demo-accounts p { margin: .5rem 0; }
-.card { display: block; max-width: 440px; margin-top: 2rem; padding: 2rem; border: 1px solid #cbdde1; border-left: 4px solid #16858a; border-radius: 8px; background: white; font-size: 1.1rem; font-weight: 600; text-decoration: none; }
-.card:hover { background: #eaf4f5; }
 nav { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: .9rem; }
 .notice { color: #48636b; font-size: .85rem; border-left: 3px solid #93b6bf; padding: .6rem 1rem; background: #e9f0f3; margin-bottom: 2rem; }
 .session-controls { margin-bottom: 1.5rem; font-size: .85rem; color: #48636b; }
@@ -31,6 +29,7 @@ nav { display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: .9rem; }
 .table-scroll { overflow-x: auto; margin-top: 1rem; border: 1px solid #d7e2e7; border-radius: 8px; background: white; }
 table { width: 100%; border-collapse: collapse; text-align: left; font-size: .95rem; }
 th, td { padding: 1rem 1.2rem; border-bottom: 1px solid #e1e9ed; }
+tbody th, tbody td { padding-block: var(--data-row-padding-block); line-height: var(--data-row-line-height); }
 thead { background: #eaf0f3; color: #3f5e6f; font-size: .8rem; }
 tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
 tbody tr:hover { background: #f4f9fa; }
@@ -38,10 +37,9 @@ tbody tr.last-viewed, tbody tr.last-viewed:hover { background: #e5f3f1; }
 tr.last-viewed th { box-shadow: inset 4px 0 #16858a; }
 .last-viewed-label { display: block; width: max-content; margin-top: .35rem; color: #215e59; font-size: .75rem; font-weight: 600; }
 .patient-facts { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: .5rem 1.5rem; margin-top: 1.8rem; }
-.patient-facts div { display: grid; grid-template-columns: minmax(160px, 1fr) 2fr; gap: 1.5rem; padding: 1.2rem 0; border-bottom: 1px solid #e1e9ed; }
+.patient-facts div { display: grid; grid-template-columns: minmax(160px, 1fr) 2fr; gap: 1.5rem; padding: var(--data-row-padding-block) 0; border-bottom: 1px solid #e1e9ed; line-height: var(--data-row-line-height); }
 .patient-facts div:last-child { border: 0; }
 .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 1.5rem; margin: 1.5rem 0; }
-#study-imports-heading { margin-bottom: 1rem; }
 .import-actions { margin: 1rem 0 0; gap: .75rem; }
 .quiet-button { background: transparent; border: 1px solid #91a6b3; color: #086b71; }
 .quiet-button:hover { background: #eaf4f5; }
@@ -50,7 +48,6 @@ tr.last-viewed th { box-shadow: inset 4px 0 #16858a; }
 .import-entry { margin: 1rem 0; }
 .import-entry:last-child { margin-bottom: 0; }
 .import-attempt { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: 1.3rem; margin: 0; overflow-wrap: anywhere; }
-.import-attempt:last-child { margin-bottom: 0; }
 .import-attempt h3 { margin-top: 0; }
 .import-details > h3, .batch-summary > h3 { margin-bottom: 1rem; }
 .import-batch-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -83,19 +80,18 @@ td { overflow-wrap: anywhere; }
 .assessment-content h5 { font-size: .95rem; font-weight: 600; line-height: 1.4; }
 .assessment-content .finding-result { font-weight: 400; }
 .assessment-stack { display: grid; gap: .5rem; }
-.assessment-groups { display: grid; gap: 1rem; }
+.assessment-groups { display: grid; gap: var(--assessment-section-gap); }
 .assessment-major { border-top: 1px solid #d7e2e7; margin-top: .75rem; padding-top: .75rem; }
-details.assessment-major { margin-top: 1rem; padding-top: 1rem; font-size: .95rem; line-height: 1.6; }
+details.assessment-major { margin-top: var(--assessment-section-gap); padding-top: var(--assessment-section-gap); font-size: .95rem; line-height: 1.6; }
 .assessment-evidence { font-size: inherit; white-space: pre-wrap; list-style-type: disc; }
 .assessment-row td { padding: 0; background: #f4f9fa; }
 .assessment-row .assessment-detail { margin: 1rem; }
-.assessment-detail > .assessment-heading { margin-top: 0; }
 .assessment-actions { margin: 1rem; }
 .inspection-message { padding: 1rem 1.5rem; }
 .match-message { font-size: .85rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 6px; margin: 0 0 1rem; overflow-wrap: anywhere; }
 .match-message[role='status'] { color: #503b16; background: #fff8e8; border-left: 3px solid #b98b38; }
 .match-message.inspection-message { margin: 1rem; }
-.snapshot-section { display: grid; gap: .5rem; margin-top: 1rem; }
+.snapshot-section { display: grid; gap: .5rem; margin-top: var(--assessment-section-gap); }
 .snapshot-section h5 { margin: 0; font-size: .95rem; font-weight: 600; line-height: 1.4; }
 .attempt-history { list-style: none; margin: 0; padding: 0; }
 .snapshot-section .patient-facts { margin: 0; }

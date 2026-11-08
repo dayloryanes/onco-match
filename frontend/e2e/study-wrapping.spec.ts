@@ -65,7 +65,6 @@ for (const width of [1280, 390]) {
     // A narrow content area exercises the exact whole-word/overlong-word
     // distinction, independently of the viewport's automatic column allocation.
     await page.addStyleTag({ content: '.study-conditions > ul { inline-size: 12ch; max-inline-size: 100%; }' })
-    const baselineWidth = await page.getByRole('table').evaluate(table => table.scrollWidth)
     const first = page.getByRole('row').filter({ hasText: 'NCT00000001' }).locator('.study-conditions')
     const normal = await first.locator('.condition-word').evaluateAll(words => words.map(word => {
       const range = document.createRange(); range.selectNodeContents(word)
@@ -93,6 +92,8 @@ for (const width of [1280, 390]) {
       return clipboard.getData('text/plain')
     })
     expect(copied).toBe('Continuationword Follow')
+    // Compare the same layout: the continuation check above widens its list.
+    const baselineWidth = await page.getByRole('table').evaluate(table => table.scrollWidth)
     long = true
     await page.getByRole('button', { name: 'Refresh', exact: true }).click()
     const last = page.getByRole('row').filter({ hasText: 'NCT00000002' }).locator('.study-conditions')

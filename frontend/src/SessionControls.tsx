@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import { api, ApiError } from './api'
 import type { CurrentUser } from './api'
 import { sessionEventName } from './sessionEvents'
@@ -25,6 +25,21 @@ export default function SessionControls({ user, onExpired, preserveReadingPositi
   const [failed, setFailed] = useState(false)
   const extension = useRef<AbortController | null>(null)
 
+  const remaining = confirmed.end - now
+  const remainingSeconds = Math.max(0, Math.ceil(remaining / 1000))
+  const remainingMinutes = Math.ceil(remainingSeconds / 60)
+  const remainingText = remainingSeconds <= 60
+    ? `${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
+    : `${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`
+  const shortSessionTesting = import.meta.env.DEV && import.meta.env.VITE_SESSION_TEST_MODE === 'true'
+  const warningThreshold = shortSessionTesting ? 30_000 : 5 * 60_000
+  const expiringSoon = remaining <= warningThreshold
+  const updateCountdown = useEffectEvent(() => {
+    const next = performance.now()
+    if (expiringSoon || confirmed.end - next <= warningThreshold) preserveReadingPosition(() => setNow(next))
+    else setNow(next)
+  })
+
   useEffect(() => {
     function receive(event: Event) {
       const update = (event as CustomEvent<{ event: SessionEvent }>).detail.event
@@ -36,22 +51,13 @@ export default function SessionControls({ user, onExpired, preserveReadingPositi
       })
     }
     window.addEventListener(sessionEventName, receive)
-    const timer = window.setInterval(() => setNow(performance.now()), 1000)
+    const timer = window.setInterval(() => updateCountdown(), 1000)
     return () => {
       window.removeEventListener(sessionEventName, receive)
       window.clearInterval(timer)
       extension.current?.abort()
     }
   }, [preserveReadingPosition])
-
-  const remaining = confirmed.end - now
-  const remainingSeconds = Math.max(0, Math.ceil(remaining / 1000))
-  const remainingMinutes = Math.ceil(remainingSeconds / 60)
-  const remainingText = remainingSeconds <= 60
-    ? `${remainingSeconds} second${remainingSeconds === 1 ? '' : 's'}`
-    : `${remainingMinutes} minute${remainingMinutes === 1 ? '' : 's'}`
-  const shortSessionTesting = import.meta.env.DEV && import.meta.env.VITE_SESSION_TEST_MODE === 'true'
-  const expiringSoon = remaining <= (shortSessionTesting ? 30_000 : 5 * 60_000)
 
   async function extend() {
     if (extension.current) return
@@ -61,15 +67,17 @@ export default function SessionControls({ user, onExpired, preserveReadingPositi
     try {
       const renewed = await api.extendSession(controller.signal)
       if (controller.signal.aborted) return
-      setConfirmed(current => newerDeadline(current, renewed))
-      setNow(performance.now())
-      setFailed(false)
+      preserveReadingPosition(() => {
+        setConfirmed(current => newerDeadline(current, renewed))
+        setNow(performance.now())
+        setFailed(false)
+      })
     } catch (failure) {
       if (controller.signal.aborted) return
       if (failure instanceof ApiError && failure.status === 401) onExpired()
-      else setFailed(true)
+      else preserveReadingPosition(() => setFailed(true))
     } finally {
-      if (!controller.signal.aborted) setPending(false)
+      if (!controller.signal.aborted) preserveReadingPosition(() => setPending(false))
       extension.current = null
     }
   }

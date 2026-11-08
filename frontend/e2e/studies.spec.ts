@@ -200,7 +200,7 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
   await cancelledItem.getByRole('button', { name: 'Inspect P005 NCT00000002', exact: true }).click()
   const failedAssessment = cancelledItem.getByRole('region', { name: 'Assessment P005 NCT00000002', exact: true })
   await failedAssessment.getByText('Attempt history', { exact: true }).click()
-  await expect(failedAssessment.getByRole('heading', { name: 'Attempt 1: Interrupted', exact: true })).toBeVisible()
+  await expect(failedAssessment.getByRole('heading', { name: 'Attempt 1: Interrupted · Cancelled', exact: true })).toBeVisible()
   await expect(failedAssessment.getByRole('heading', { name: 'Attempt 2: Failed', exact: true })).toBeVisible()
   await cancelledItem.getByRole('button', { name: 'Retry failed', exact: true }).click()
   await expect(cancelledItem.getByRole('button', { name: 'Retry failed', exact: true })).toBeEnabled()

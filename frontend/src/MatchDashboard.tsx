@@ -92,7 +92,7 @@ function Assessment({ detail }: { detail: PairDetails }) {
     </dl></section></details>}
     {!!detail.attemptHistory?.length && <details className="assessment-major"><summary>Attempt history</summary>
       <ol className="attempt-history">{detail.attemptHistory.map((attempt, index) => <li key={attempt.id} className="snapshot-section">
-        <h5>Attempt {index + 1}: {label(attempt.status)}</h5>
+        <h5>Attempt {index + 1}: {label(attempt.status)}{attempt.status === 'interrupted' && attempt.failureExplanation && <> · {label(attempt.failureExplanation)}</>}</h5>
         <dl className="patient-facts">
           <div><dt>Started</dt><dd>{new Date(attempt.startedAt).toLocaleString()}</dd></div>
           <div><dt>Finished</dt><dd>{attempt.finishedAt ? new Date(attempt.finishedAt).toLocaleString() : 'In progress'}</dd></div>
@@ -100,7 +100,7 @@ function Assessment({ detail }: { detail: PairDetails }) {
           {attempt.route && <div><dt>Route</dt><dd>{attempt.route}</dd></div>}
           {attempt.model && <div><dt>Model</dt><dd>{attempt.model}</dd></div>}
           {attempt.requestTimeoutSeconds != null && <div><dt>Request timeout</dt><dd>{attempt.requestTimeoutSeconds} seconds</dd></div>}
-          {attempt.failureExplanation && <div><dt>{attempt.status === 'interrupted' ? 'Stop reason' : 'Failure reason'}</dt><dd>{label(attempt.failureExplanation)}</dd></div>}
+          {attempt.status !== 'interrupted' && attempt.failureExplanation && <div><dt>Failure reason</dt><dd>{label(attempt.failureExplanation)}</dd></div>}
           {attempt.failureCode && <div><dt>Failure code</dt><dd>{attempt.failureCode}</dd></div>}
           <div><dt>Attempt ID</dt><dd className="attempt-id">{attempt.id}</dd></div>
           <div><dt>Operation ID</dt><dd className="attempt-id">{attempt.operationId}</dd></div>
@@ -121,6 +121,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
   const [batchNotices, setBatchNotices] = useState<Record<string, MatchNotice>>({})
   const [pending, setPending] = useState(false)
   const [cancelPending, setCancelPending] = useState(false)
+  const [needsRefresh, setNeedsRefresh] = useState(false)
   const refreshRequest = useRef<AbortController | null>(null)
   const stream = useRef<AbortController | null>(null)
   const selection = useRef<AbortController | null>(null)
@@ -135,9 +136,11 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
 
   const failure = useCallback((value: unknown, message: string, batchId?: string) => {
     if (value instanceof ApiError && value.status === 401) onExpired()
-    else if (batchId) setBatchNotices(current => ({ ...current, [batchId]: { text: message, tone: 'alert' } }))
-    else setError(message)
-  }, [onExpired])
+    else preserveReadingPosition(() => {
+      if (batchId) setBatchNotices(current => ({ ...current, [batchId]: { text: message, tone: 'alert' } }))
+      else setError(message)
+    })
+  }, [onExpired, preserveReadingPosition])
 
   useEffect(() => {
     if (!importReady) return
@@ -157,16 +160,15 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
           batches: value.batches.map(item => current.batches.find(saved => saved.batchId === item.batchId) ?? { ...item, availableActions: [] }),
         } : { ...value, batches: value.batches.map(item => item.batchId === full?.batchId ? full : full?.activeOperation ? { ...item, availableActions: [] } : item) })
         if (full && !stream.current) setSelected(full)
+        if (!stream.current) setNeedsRefresh(false)
         setError('')
         setBatchNotices({})
       }
-      if (refreshId > 0) preserveReadingPosition(apply)
-      else apply()
+      preserveReadingPosition(apply)
     }).catch(value => {
       if (controller.signal.aborted) return
       const apply = () => failure(value, 'Unable to refresh assessments. Use Refresh to try again.')
-      if (refreshId > 0) preserveReadingPosition(apply)
-      else apply()
+      preserveReadingPosition(apply)
     })
     return () => controller.abort()
   }, [importVersion, importReady, refreshId, failure, preserveReadingPosition])
@@ -180,11 +182,11 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
     setDetail(null); setExpandedPair(null); setError('')
     try {
       const value = await matchApi.batch(batch.batchId, controller.signal)
-      if (!controller.signal.aborted) {
+      if (!controller.signal.aborted) preserveReadingPosition(() => {
         setSelected(value)
         setState(current => current && ({ ...current, batches: current.batches.map(item => item.batchId === value.batchId
           ? value : value.activeOperation ? { ...item, availableActions: [] } : item) }))
-      }
+      })
     }
     catch (value) { if (!controller.signal.aborted) failure(value, 'Unable to load this batch. Use Refresh to try again.', batch.batchId) }
   }
@@ -202,7 +204,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
     }).catch(value => {
       if (controller.signal.aborted) return
       if (value instanceof ApiError && value.status === 401) onExpired()
-      else preserveReadingPosition(() => { setDetail(null); setInspectionError('Unable to load this assessment. Close and inspect again to retry.') })
+      else preserveReadingPosition(() => setInspectionError('Unable to load this assessment. Close and inspect again to retry.'))
     })
     return () => controller.abort()
   }, [inspectedPair, onExpired, preserveReadingPosition])
@@ -220,11 +222,18 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
   async function reconcile(id: string, signal: AbortSignal) {
     try {
       const [current, batch] = await Promise.all([matchApi.batches(signal), matchApi.batch(id, signal)])
-      if (!signal.aborted) { setState(current); setSelected(batch) }
-    } catch (value) { if (!signal.aborted) { setState(null); setSelected(null); failure(value, 'Unable to refresh saved results. Use Refresh before taking another action.', id) } }
+      if (!signal.aborted) preserveReadingPosition(() => { setState(current); setSelected(batch); setNeedsRefresh(false) })
+    } catch (value) {
+      if (!signal.aborted) preserveReadingPosition(() => {
+        // A failed read cannot invalidate already committed results. Retain the
+        // inspection, but require a confirmed Refresh before another mutation.
+        setNeedsRefresh(true)
+        failure(value, 'Unable to refresh saved results. Use Refresh before taking another action.', id)
+      })
+    }
   }
   async function operate(batch: MatchBatch, action: string) {
-    if (stream.current) return
+    if (stream.current || needsRefresh) return
     refreshRequest.current?.abort()
     selection.current?.abort()
     detailRequest.current?.abort()
@@ -248,9 +257,11 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
             pairSummary: event.pairSummary, structuredChecks: event.structuredChecks,
             latestAttempt: { status: event.type, failureCode: event.failureCode, failureExplanation: event.failureExplanation },
           }) ?? null })
-        setState(current => current && ({ ...current, activeOperation, batches: current.batches.map(item => item.batchId === batch.batchId ? update(item) : { ...item, availableActions: [] }) }))
-        setSelected(current => current?.batchId === batch.batchId ? update(current) : current)
-        if (event.type === 'operationStopped') setBatchNotices(current => ({ ...current, [batch.batchId]: stoppedMatchNotice(event.stopReason) }))
+        preserveReadingPosition(() => {
+          setState(current => current && ({ ...current, activeOperation, batches: current.batches.map(item => item.batchId === batch.batchId ? update(item) : { ...item, availableActions: [] }) }))
+          setSelected(current => current?.batchId === batch.batchId ? update(current) : current)
+          if (event.type === 'operationStopped') setBatchNotices(current => ({ ...current, [batch.batchId]: stoppedMatchNotice(event.stopReason) }))
+        })
       })
     } catch (value) {
       if (controller.signal.aborted) return
@@ -266,9 +277,9 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
     }
   }
   async function cancel(batch: MatchBatch) {
-    if (cancelPending) return
+    if (cancelPending || needsRefresh) return
     setCancelPending(true)
-    try { await matchApi.cancel(batch.activeOperation!.operationId); if (alive.current) setBatchNotices(current => ({ ...current, [batch.batchId]: { text: 'Cancellation requested. Waiting for active work to stop.', tone: 'status' } })) }
+    try { await matchApi.cancel(batch.activeOperation!.operationId); if (alive.current) preserveReadingPosition(() => setBatchNotices(current => ({ ...current, [batch.batchId]: { text: 'Cancellation requested. Waiting for active work to stop.', tone: 'status' } }))) }
     catch (value) { if (alive.current) failure(value, value instanceof ApiError ? matchRequestMessage(value.code, 'Unable to confirm cancellation. Use Refresh to check the match status.') : 'Unable to confirm cancellation. Use Refresh to check the match status.', batch.batchId) }
     finally { if (alive.current) setCancelPending(false) }
   }
@@ -296,9 +307,9 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
             <h3 id={`batch-heading-${id}`}>Batch {number} · {label(batch.status)}</h3>
             <p><strong>{batch.completedPairCount}/{batch.totalPairCount} completed</strong> · {batch.failedPairCount} failed · {batch.unfinishedPairCount} unfinished · {batch.activePairCount} active</p>
             <div className="actions">
-              {user.role === 'Operator' && [['start', 'Start match'], ['continue', 'Continue unfinished'], ['retryFailed', 'Retry failed']].map(([action, text]) =>
+              {user.role === 'Operator' && !needsRefresh && [['start', 'Start match'], ['continue', 'Continue unfinished'], ['retryFailed', 'Retry failed']].map(([action, text]) =>
                 batch.availableActions.includes(action) && <button key={action} disabled={pending} onClick={() => operate(batch, action)}>{text}</button>)}
-              {batch.activeOperation?.canCancel && user.role === 'Operator' && <button disabled={cancelPending} onClick={() => cancel(batch)}>{cancelPending ? 'Requesting cancellation…' : 'Cancel match'}</button>}
+              {batch.activeOperation?.canCancel && user.role === 'Operator' && !needsRefresh && <button disabled={cancelPending} onClick={() => cancel(batch)}>{cancelPending ? 'Requesting cancellation…' : 'Cancel match'}</button>}
               <button id={`batch-toggle-${id}`} className="quiet-button" aria-expanded={expanded} aria-controls={`batch-results-${id}`} disabled={pending && selected?.batchId !== batch.batchId} onClick={() => inspect(batch)}>{expanded ? 'Close batch' : 'View batch'} {number}</button>
             </div>
           </div> : attempt?.status === 'completed' && <div className="batch-summary"><p>Loading the matching batch. If it remains unavailable, use Refresh.</p></div>}
@@ -311,8 +322,9 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
           <td>{label(pair.pairSummary ?? pair.state)}{pair.latestAttempt?.failureExplanation && <> · {label(pair.latestAttempt.failureExplanation)}</>}</td>
           <td>{(pair.state === 'completed' || pair.latestAttempt) && <button id={`inspection-toggle-${pairKey(pair)}`} className="quiet-button" aria-expanded={expandedPair === pairKey(pair)} aria-controls={`inspection-${pairKey(pair)}`} onClick={() => openPair(pair)}>{expandedPair === pairKey(pair) ? 'Close details' : 'Inspect'} {pair.patientId} {pair.nctId}</button>}</td></tr>
           {expandedPair === pairKey(pair) && <tr className="assessment-row"><td colSpan={4}><div id={`inspection-${pairKey(pair)}`}>
+            {inspectionError && <p role="alert" className="match-message inspection-message">{detail && 'Showing previously loaded details. '}{inspectionError}</p>}
             {detail && pairKey(detail) === pairKey(pair) ? <Assessment detail={detail} />
-              : inspectionError ? <p role="alert" className="match-message inspection-message">{inspectionError}</p> : <p role="status" className="inspection-message">Loading assessment…</p>}
+              : !inspectionError && <p role="status" className="inspection-message">Loading assessment…</p>}
             <div className="actions assessment-actions"><button className="quiet-button" onClick={() => closePair(pair)}>Close assessment</button></div>
           </div></td></tr>}
         </Fragment>)}</tbody></table></div>}
