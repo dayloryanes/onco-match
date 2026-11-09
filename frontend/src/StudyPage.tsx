@@ -7,6 +7,7 @@ import { useListScroll } from './listNavigation'
 import type { ListNavigation } from './listNavigation'
 import { studySex } from './studyDisplay'
 import type { PreserveReadingPosition } from './useReadingPosition'
+import AssessmentResults from './AssessmentResults'
 
 type LoadState = { status: 'loading' | 'error' | 'notFound' } | { status: 'ready'; data: StudySummary[] | StudyDetails }
 function display(value: string | null) { return value?.trim() ? value : 'Not available' }
@@ -136,7 +137,8 @@ export default function StudyPage({ onExpired, navigation, isVisible, preserveRe
       <div><dt>Minimum age</dt><dd>{display(study.minimumAge)}</dd></div>
       <div><dt>Maximum age</dt><dd>{display(study.maximumAge)}</dd></div>
       <div><dt>Sex</dt><dd>{display(studySex(study.sex))}</dd></div>
-    </dl><a href={study.registryUrl} target="_blank" rel="noreferrer">View on ClinicalTrials.gov</a></>
+    </dl><a href={study.registryUrl} target="_blank" rel="noreferrer">View on ClinicalTrials.gov</a>
+    <AssessmentResults key={study.nctId} filter="nctId" id={study.nctId} onExpired={onExpired} preserveReadingPosition={preserveReadingPosition} /></>
   }
   return <section>
     {nctId && <nav aria-label="Study navigation"><Link to="/studies">All studies</Link></nav>}

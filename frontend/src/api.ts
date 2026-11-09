@@ -1,6 +1,6 @@
 import { sessionEvent } from './sessionEvents'
 import type { SessionTiming } from './sessionEvents'
-import type { MatchBatch, MatchEvent, MatchState, PairDetails } from './matchTypes'
+import type { MatchBatch, MatchEvent, MatchPair, MatchState, PairDetails } from './matchTypes'
 import { readMatchStream } from './matchStream'
 
 export interface CurrentUser extends SessionTiming { username: string; role: 'Viewer' | 'Operator' }
@@ -100,6 +100,7 @@ export const api = {
 }
 
 export const matchApi = {
+  pairs: (filter: 'patientId' | 'nctId', id: string, signal?: AbortSignal) => request<MatchPair[]>(`/match/pairs?${filter}=${encodeURIComponent(id)}`, { signal }),
   batches: (signal?: AbortSignal) => request<MatchState>('/match/batches', { signal }),
   batch: (id: string, signal?: AbortSignal) => request<MatchBatch>(`/match/batches/${encodeURIComponent(id)}`, { signal }),
   pair: (patientId: string, nctId: string, signal?: AbortSignal) => request<PairDetails>(`/match/pairs/${encodeURIComponent(patientId)}/${encodeURIComponent(nctId)}`, { signal }),

@@ -180,8 +180,8 @@ function SessionApp() {
   const pageRoutes: PageRoute[] = [
     { path: '/', title: 'Dashboard', element: <Dashboard user={user!} onExpired={expire} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '/login', title: 'Log in', element: <Navigate to={loginReturn?.key === location.key ? loginReturn.destination : '/'} replace /> },
-    { path: '/patients', title: 'Patients', element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
-    { path: '/patients/:id', title: params => `Patient ${params.id}`, element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
+    { path: '/patients', title: 'Patients', element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
+    { path: '/patients/:id', title: params => `Patient ${params.id}`, element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '/studies', title: 'Studies', element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '/studies/:nctId', title: params => `Study ${params.nctId}`, element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '*', title: 'Page not found', element: <h1>Page not found</h1> },

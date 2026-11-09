@@ -91,8 +91,8 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
       const condition = content.querySelector('.condition-assessment')!
       const groups = [...condition.children]
       const finding = groups[3]
-      const heading = condition.querySelector('h4')!
-      const label = finding.querySelector('h5')!
+      const heading = condition.querySelector('.assessment-title')!
+      const label = finding.querySelector('.assessment-subheading')!
       const explanation = finding.querySelector('p')!
       const evidence = finding.querySelector('ul')!
       const divider = getComputedStyle(condition)
@@ -160,6 +160,36 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
   await viewer.getByRole('button', { name: 'Inspect P005 NCT00000001', exact: true }).click()
   await expect(viewer.getByRole('region', { name: 'Assessment P005 NCT00000001', exact: true })).toBeVisible()
 
+  // Both detail perspectives read the same retained answer as Dashboard.
+  for (const target of ['/patients/P005', '/studies/NCT00000001']) {
+    await viewer.goto(target)
+    const results = viewer.getByRole('region', { name: 'Stored assessments', exact: true })
+    await expect(results.getByRole('heading', { name: 'Assessments', exact: true })).toBeVisible()
+    await expect(results.locator('p.notice')).toHaveCount(1)
+    await results.getByRole('button', { name: 'Inspect P005 NCT00000001', exact: true }).click()
+    const retained = results.getByRole('region', { name: 'Assessment P005 NCT00000001', exact: true })
+    await expect(retained.getByRole('heading', { name: 'Condition 1 · Cancer', exact: true })).toBeVisible()
+    await expect(retained.getByText('Controlled browser transport answer.', { exact: true })).not.toHaveCount(0)
+    await retained.getByText('Exact input snapshot', { exact: true }).click()
+    await expect(retained.getByRole('region', { name: 'Patient snapshot', exact: true })).toContainText('42')
+    await expect(retained.getByRole('region', { name: 'Study snapshot', exact: true })).toContainText('18 Years')
+    await results.getByRole('button', { name: 'Refresh assessments', exact: true }).click()
+    await expect(retained.getByRole('region', { name: 'Patient snapshot', exact: true })).toBeVisible()
+    await expect(viewer.getByRole('button', { name: /Start match|Continue unfinished|Retry failed|Cancel match/ })).toHaveCount(0)
+    await viewer.screenshot({ path: `../.local/assessment-views/${target.includes('patients') ? 'patient' : 'study'}-assessments.png`, fullPage: true })
+    await viewer.setViewportSize({ width: 390, height: 844 })
+    await expect(retained).toBeVisible()
+    const toggleBox = (await results.getByRole('button', { name: 'Close details P005 NCT00000001', exact: true }).boundingBox())!
+    expect(toggleBox.height).toBeLessThan(80)
+    expect(await viewer.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+    await viewer.screenshot({ path: `../.local/assessment-views/${target.includes('patients') ? 'patient' : 'study'}-assessments-mobile.png`, fullPage: true })
+    await viewer.setViewportSize({ width: 1280, height: 720 })
+  }
+
+  await viewer.getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await viewer.getByRole('button', { name: 'View batch 1', exact: true }).click()
+  await viewer.getByRole('button', { name: 'Inspect P005 NCT00000001', exact: true }).click()
+
   await page.getByRole('link', { name: 'Dashboard', exact: true }).click()
   await page.getByRole('button', { name: 'Load Next 10', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('registry is unavailable')
@@ -171,6 +201,15 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
   await page.request.get('http://127.0.0.1:7133/test/inference?mode=hold')
   await page.getByRole('button', { name: 'Start match', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Cancel match', exact: true })).toBeVisible()
+  // Browsing from a separate login must leave the initiating operation alive.
+  for (const target of ['/patients/P005', '/studies/NCT00000002']) {
+    await viewer.goto(target)
+    await expect(viewer.getByRole('region', { name: 'Stored assessments', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Cancel match', exact: true })).toBeVisible()
+  }
+  await viewer.getByRole('link', { name: 'Dashboard', exact: true }).click()
+  await viewer.getByRole('button', { name: 'View batch 1', exact: true }).click()
+  await viewer.getByRole('button', { name: 'Inspect P005 NCT00000001', exact: true }).click()
   await page.getByRole('button', { name: 'Cancel match', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Batch assessments · Unfinished', exact: true })).toBeVisible()
   const cancelledItem = page.getByRole('heading', { name: /^Batch 2 ·/ }).locator('xpath=ancestor::li[1]')

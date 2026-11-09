@@ -14,8 +14,9 @@ API permissions are enforced independently of the UI.
 Operators can start a fixed match batch on Dashboard, inspect streamed progress
 and saved assessments, cancel active work, continue unfinished pairs, and retry
 failed evaluations. Both roles can inspect shared results and attempt history
-with manual Refresh. Assessment sections on Patient and Study details are not
-implemented yet. See [batch assessments](docs/batch-assessments.md)
+with manual Refresh. Patient and Study details show the same stored assessments,
+findings, evidence, input snapshots, and attempt history from either perspective.
+These views never start match operations. See [batch assessments](docs/batch-assessments.md)
 for both local Ollama routes, configuration, and limits. Ollama is needed only
 for pairs requiring inference; login, browsing, and importing remain usable
 without it. Licensing is undecided.
@@ -89,6 +90,22 @@ link returns to that record after login. Use the header to browse Patients and
 Studies. Patient details show supplied age, sex, diagnosis, stage, and disease
 state. Unknown means a missing fact; Not applicable means the concept does not
 apply. Last viewed marks navigation history, not a clinical review.
+
+## Local inference
+
+Assessment execution uses a separately running local Ollama service. The default
+`native` route uses its native API; `openai-compatible` uses its OpenAI-compatible
+API format on the same local service. It does not use OpenAI cloud or require an
+OpenAI API key.
+
+Follow [Local Ollama setup](docs/batch-assessments.md#local-ollama-setup) to install
+the service, prepare the model and compatible preset, and select either route
+when starting the backend. You can edit `Match:Inference:Route` in
+[`backend/src/OncoMatch.Api/appsettings.json`](backend/src/OncoMatch.Api/appsettings.json)
+or use the documented environment-variable alternative. Restart the backend
+after changing it. That guide also covers configuration, failures,
+assessment limits, and restarting the backend to change routes. The separate
+evaluation runner is not needed to run the application.
 
 ## Session and data lifetime
 
