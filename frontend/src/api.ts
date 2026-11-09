@@ -104,12 +104,12 @@ export const matchApi = {
   batch: (id: string, signal?: AbortSignal) => request<MatchBatch>(`/match/batches/${encodeURIComponent(id)}`, { signal }),
   pair: (patientId: string, nctId: string, signal?: AbortSignal) => request<PairDetails>(`/match/pairs/${encodeURIComponent(patientId)}/${encodeURIComponent(nctId)}`, { signal }),
   cancel: (operationId: string, signal?: AbortSignal) => post<void>(`/match/operations/${encodeURIComponent(operationId)}/cancel`, undefined, signal),
-  start: async (batch: MatchBatch, signal: AbortSignal, receive: (event: MatchEvent) => void) => {
+  operate: async (batch: MatchBatch, action: string, signal: AbortSignal, receive: (event: MatchEvent) => void) => {
     const token = await csrf(signal)
     const response = await fetch(new URL(`/api/match/batches/${encodeURIComponent(batch.batchId)}/operations`, window.location.origin), {
       method: 'POST', credentials: 'same-origin', signal,
       headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token.requestToken },
-      body: JSON.stringify({ action: 'start', expectedVersion: batch.version }),
+      body: JSON.stringify({ action, expectedVersion: batch.version }),
     })
     const expiresAt = response.headers.get('X-Session-Expires-At'), serverTime = response.headers.get('X-Server-Time')
     if (!signal.aborted && expiresAt && serverTime) sessionEvent({ kind: 'timing', timing: { expiresAt, serverTime }, renewed: response.headers.get('X-Session-Renewed') === 'true', sentAt: Date.now() })

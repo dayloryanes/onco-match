@@ -35,7 +35,8 @@ createServer((request, response) => {
           unassessedQualifiers: [], explanation: 'Controlled browser transport answer.' }
       })
       const delay = inferenceMode === 'hold' ? 60000 : inferenceRequests++ === 0 ? 16000 : 75
-      const timer = setTimeout(() => response.end(JSON.stringify({ done: true, done_reason: 'stop', message: { role: 'assistant', content: JSON.stringify({ conditionLabels }) } })), delay)
+      const mode = inferenceMode
+      const timer = setTimeout(() => response.end(JSON.stringify({ done: true, done_reason: mode === 'invalid' ? 'length' : 'stop', message: { role: 'assistant', content: JSON.stringify({ conditionLabels }) } })), delay)
       response.on('close', () => clearTimeout(timer))
     })
     return

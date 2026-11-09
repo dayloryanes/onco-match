@@ -134,7 +134,7 @@ test.each(['import_state_changed', 'import_in_progress', 'registry_unavailable',
   expect(reads).toBe(2)
 })
 
-test('failed reconciliation removes import controls until an explicit history retrieval succeeds', async () => {
+test('failed reconciliation retains history but blocks importing until an explicit history retrieval succeeds', async () => {
   signedIn()
   let reads = 0
   let posts = 0
@@ -146,11 +146,32 @@ test('failed reconciliation removes import controls until an explicit history re
   render(<App />)
   await user.click(await screen.findByRole('button', { name: 'Import first 10' }))
   expect(await screen.findByRole('alert')).toHaveTextContent('Unable to reload import history.')
-  expect(screen.queryByRole('button', { name: 'Import first 10' })).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Import first 10' })).toBeDisabled()
+  await user.click(screen.getByRole('button', { name: 'Import first 10' }))
+  expect(posts).toBe(1)
   server.use(http.get('*/api/study-imports', () => HttpResponse.json(initial)))
-  await user.click(screen.getByRole('button', { name: 'Retry' }))
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
   expect(await screen.findByRole('button', { name: 'Import first 10' })).toBeEnabled()
   expect(posts).toBe(1)
+})
+
+test('A failed Studies Refresh retains the loaded rows and a later Refresh can recover', async () => {
+  signedIn('Viewer')
+  let fail = false
+  let updated = false
+  server.use(http.get('*/api/studies', () => fail ? HttpResponse.error() : HttpResponse.json(updated ? [study, { ...study, nctId: 'NCT00000002' }] : [study])))
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('link', { name: 'Studies' }))
+  await screen.findByRole('link', { name: 'NCT00000001' })
+  fail = true
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  expect(await screen.findByRole('alert')).toHaveTextContent('Unable to refresh studies. Existing studies are still shown.')
+  expect(screen.getByRole('link', { name: 'NCT00000001' })).toBeVisible()
+  fail = false; updated = true
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  expect(await screen.findByRole('link', { name: 'NCT00000002' })).toBeVisible()
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 })
 
 test.each(['next', 'retry'])('zero-import pages and failures expose the explicit %s action', async nextAction => {

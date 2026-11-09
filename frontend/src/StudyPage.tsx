@@ -6,6 +6,7 @@ import type { StudyDetails, StudySummary } from './api'
 import { useListScroll } from './listNavigation'
 import type { ListNavigation } from './listNavigation'
 import { studySex } from './studyDisplay'
+import type { PreserveReadingPosition } from './useReadingPosition'
 
 type LoadState = { status: 'loading' | 'error' | 'notFound' } | { status: 'ready'; data: StudySummary[] | StudyDetails }
 function display(value: string | null) { return value?.trim() ? value : 'Not available' }
@@ -65,10 +66,13 @@ function Conditions({ values, wrapWords = false }: { values: string[] | null; wr
   return values?.length ? <ul>{values.map((value, index) => <li key={index}>{wrapWords ? <ConditionWords value={display(value)} /> : display(value)}</li>)}</ul> : <>Not available</>
 }
 
-export default function StudyPage({ onExpired, navigation, isVisible }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean }) {
+export default function StudyPage({ onExpired, navigation, isVisible, preserveReadingPosition }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean; preserveReadingPosition: PreserveReadingPosition }) {
   const { nctId } = useParams()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
+  const [refreshPending, setRefreshPending] = useState(false)
+  const [refreshError, setRefreshError] = useState(false)
+  const refreshController = useRef<AbortController | null>(null)
   useListScroll(navigation, !nctId, state.status === 'ready' && isVisible)
   useEffect(() => {
     const controller = new AbortController()
@@ -78,10 +82,27 @@ export default function StudyPage({ onExpired, navigation, isVisible }: { onExpi
       if (failure instanceof ApiError && failure.status === 401) onExpired()
       else setState({ status: failure instanceof ApiError && failure.status === 404 ? 'notFound' : 'error' })
     })
-    return () => controller.abort()
+    return () => { controller.abort(); refreshController.current?.abort() }
   }, [nctId, attempt, onExpired])
 
-  function reload() { setState({ status: 'loading' }); setAttempt(value => value + 1) }
+  async function reload() {
+    if (state.status !== 'ready') { setState({ status: 'loading' }); setAttempt(value => value + 1); return }
+    if (nctId || refreshController.current) return
+    const controller = new AbortController(); refreshController.current = controller
+    setRefreshPending(true)
+    preserveReadingPosition(() => setRefreshError(false))
+    try {
+      const data = await api.studies(controller.signal)
+      if (!controller.signal.aborted) preserveReadingPosition(() => setState({ status: 'ready', data }))
+    } catch (failure) {
+      if (controller.signal.aborted) return
+      if (failure instanceof ApiError && failure.status === 401) onExpired()
+      else preserveReadingPosition(() => setRefreshError(true))
+    } finally {
+      if (!controller.signal.aborted) setRefreshPending(false)
+      if (refreshController.current === controller) refreshController.current = null
+    }
+  }
   const notice = <p className="notice">Registry source information. Missing fields do not establish eligibility. No patient screening is performed during import.</p>
   let content
   if (state.status === 'loading') content = <p role="status">Loading studies…</p>
@@ -91,7 +112,8 @@ export default function StudyPage({ onExpired, navigation, isVisible }: { onExpi
     <p className="eyebrow">Study directory</p><h1>Studies</h1>
     <p>{state.data.length} imported {state.data.length === 1 ? 'study' : 'studies'} · Listed in import order</p>
     {notice}
-    <button className="quiet-button" onClick={reload}>Refresh</button>
+    {refreshError && <p role="alert">Unable to refresh studies. Existing studies are still shown. Use Refresh to retry.</p>}
+    <button className="quiet-button" onClick={reload} disabled={refreshPending}>Refresh</button>
     {state.data.length === 0 ? <p>No studies imported yet.</p> : <div className="table-scroll" onCopy={copyStudyText}><table>
       <thead><tr><th scope="col">Study</th><th scope="col">Title</th><th scope="col">Recruitment status</th><th scope="col">Study type</th><th scope="col">Conditions</th></tr></thead>
       <tbody>{state.data.map(study => <tr key={study.nctId} className={navigation.lastViewedId === study.nctId ? 'last-viewed' : undefined}>

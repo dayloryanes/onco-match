@@ -3,7 +3,7 @@ import type { Page } from '@playwright/test'
 
 // These frontend navigation checks control application HTTP responses so that
 // list size/loading are deterministic. Import integration remains in studies.spec.
-async function directory(page: Page, kind: 'patients' | 'studies') {
+async function directory(page: Page, kind: 'patients' | 'studies', sessionMinutes?: number) {
   const records = Array.from({ length: kind === 'patients' ? 10 : 80 }, (_, index) => kind === 'patients' ? {
     id: `P${String(index + 1).padStart(3, '0')}`, ageYears: 42, sex: 'female', cancerType: 'Controlled cancer type',
     stage: { status: 'unknown', value: null, classificationSystem: null }, diseaseState: { status: 'unknown', value: null },
@@ -31,7 +31,8 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
       sessionReads++
       const username = `viewer-check-${sessionReads}`
       if (delaySession) await new Promise<void>(resolve => { releaseSessions.push(resolve) })
-      body = { username, role: 'Viewer' }
+      const now = new Date()
+      body = { username, role: 'Viewer', ...(sessionMinutes ? { serverTime: now.toISOString(), expiresAt: new Date(+now + sessionMinutes * 60_000).toISOString() } : {}) }
     }
     else if (path === '/api/study-imports') body = { version: 'v1', isImporting: false, isExhausted: false, nextAction: 'initial', totalImportedStudyCount: 0, attempts: [] }
     else if (path === '/api/match/batches') body = { configurationError: null, activeOperation: null, batches: [] }
@@ -55,6 +56,50 @@ async function directory(page: Page, kind: 'patients' | 'studies') {
     }, expire: () => { signedIn = false },
   }
 }
+
+for (const path of ['/patients', '/patients/P001', '/studies', '/studies/NCT00000001']) for (const width of [1280, 390]) {
+test(`A countdown warning preserves reading position on ${path} at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 450 })
+  await page.clock.install()
+  await directory(page, path.startsWith('/patients') ? 'patients' : 'studies', 6)
+  await page.goto(path)
+  await page.locator('tbody tr, .patient-facts > div').first().waitFor()
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  await page.evaluate(() => window.scrollTo(0, 800))
+  const before = await page.evaluate(() => {
+    const row = [...document.querySelectorAll('tbody tr, .patient-facts > div')].find(element => {
+      const rect = element.getBoundingClientRect()
+      return rect.top >= 0 && rect.bottom <= innerHeight
+    })!
+    row.setAttribute('data-reading-anchor', 'true')
+    return row.getBoundingClientRect().top
+  })
+  await page.clock.fastForward(61_000)
+  await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toBeAttached()
+  // Browser scroll offsets round to physical pixels; tolerate subpixel layout.
+  await expect.poll(async () => Math.abs(await page.locator('[data-reading-anchor]').evaluate(element => element.getBoundingClientRect().top) - before)).toBeLessThan(1)
+})
+}
+
+test('Studies Refresh preserves the current reading position while loading and after completion', async ({ page }) => {
+  const fixture = await directory(page, 'studies')
+  await page.goto('/studies')
+  await expect(page.getByRole('link', { name: 'NCT00000080', exact: true })).toBeAttached()
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  await page.evaluate(() => window.scrollTo(0, 800))
+  const before = await page.evaluate(() => window.scrollY)
+  const readsBefore = fixture.reads()
+  fixture.delay()
+  try {
+    await page.getByRole('button', { name: 'Refresh', exact: true }).evaluate((button: HTMLButtonElement) => button.click())
+    await expect.poll(fixture.reads).toBeGreaterThan(readsBefore)
+    await expect(page.getByRole('link', { name: 'NCT00000080', exact: true })).toBeAttached()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(before, 0)
+    fixture.release()
+    await expect(page.getByRole('button', { name: 'Refresh', exact: true })).toBeEnabled()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeCloseTo(before, 0)
+  } finally { fixture.release() }
+})
 
 test('the first navigation click works while a focus session check is pending', async ({ page }) => {
   const fixture = await directory(page, 'patients')

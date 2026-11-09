@@ -3,9 +3,9 @@ import { api, ApiError } from './api'
 import type { CurrentUser, ImportState } from './api'
 import MatchDashboard from './MatchDashboard'
 import { importErrors as errors } from './importErrors'
-import { useReadingPosition } from './useReadingPosition'
+import type { PreserveReadingPosition } from './useReadingPosition'
 
-export default function Dashboard({ user, onExpired }: { user: CurrentUser; onExpired: () => void }) {
+export default function Dashboard({ user, onExpired, preserveReadingPosition }: { user: CurrentUser; onExpired: () => void; preserveReadingPosition: PreserveReadingPosition }) {
   const [state, setState] = useState<ImportState | null>(null)
   const [loading, setLoading] = useState(true)
   const [historyConfirmed, setHistoryConfirmed] = useState(false)
@@ -13,7 +13,6 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
   const [error, setError] = useState('')
   const [refresh, setRefresh] = useState(0)
   const operation = useRef<AbortController | null>(null)
-  const preserveReadingPosition = useReadingPosition()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -44,27 +43,28 @@ export default function Dashboard({ user, onExpired }: { user: CurrentUser; onEx
     if (!state || !historyConfirmed || loading || pending || operation.current?.signal.aborted || state.nextAction === 'none') return
     const controller = new AbortController()
     operation.current = controller
-    setPending(true); setError('')
+    preserveReadingPosition(() => { setPending(true); setError('') })
     try {
       const value = await api.importStudies(state.version, controller.signal)
-      if (!controller.signal.aborted) setState(value)
+      if (!controller.signal.aborted) preserveReadingPosition(() => setState(value))
     } catch (failure) {
       if (controller.signal.aborted) return
       if (failure instanceof ApiError && failure.status === 401) { onExpired(); return }
       // A lost response may conceal a committed import. Reconcile before offering
       // another explicit POST; never resubmit automatically.
-      setState(null)
-      setHistoryConfirmed(false)
-      setError(failure instanceof ApiError ? errors[failure.code] ?? 'Import failed. Review the current history before retrying.' : 'Unable to confirm the import. Review the current history before retrying.')
+      preserveReadingPosition(() => {
+        setHistoryConfirmed(false)
+        setError(failure instanceof ApiError ? errors[failure.code] ?? 'Import failed. Review the current history before retrying.' : 'Unable to confirm the import. Review the current history before retrying.')
+      })
       try {
         const value = await api.importState(controller.signal)
-        if (!controller.signal.aborted) { setState(value); setHistoryConfirmed(true) }
+        if (!controller.signal.aborted) preserveReadingPosition(() => { setState(value); setHistoryConfirmed(true) })
       } catch (reloadFailure) {
         if (controller.signal.aborted) return
         if (reloadFailure instanceof ApiError && reloadFailure.status === 401) onExpired()
-        else setError('Unable to reload import history. Refresh before importing again.')
+        else preserveReadingPosition(() => setError('Unable to reload import history. Refresh before importing again.'))
       }
-    } finally { if (!controller.signal.aborted) setPending(false) }
+    } finally { if (!controller.signal.aborted) preserveReadingPosition(() => setPending(false)) }
   }
 
   return <section>

@@ -11,6 +11,7 @@ import { useListNavigation } from './listNavigation'
 import SessionControls from './SessionControls'
 import { sessionEvent, sessionEventName } from './sessionEvents'
 import type { SessionEvent } from './sessionEvents'
+import { useReadingPosition } from './useReadingPosition'
 
 type PageRoute = {
   path: string
@@ -91,6 +92,7 @@ function SessionApp() {
   const [loginReturn, setLoginReturn] = useState<{ key: string; destination: string } | null>(null)
   const sessionEpoch = useRef(0)
   const location = useLocation()
+  const preserveReadingPosition = useReadingPosition(location.key)
   const navigate = useNavigate()
   const expire = useCallback(() => { sessionEpoch.current++; clearNavigation(); setUser(null); setChecking(false); setSessionError(false) }, [clearNavigation])
 
@@ -176,12 +178,12 @@ function SessionApp() {
 
   // Every application route declares its title here, alongside its rendered page.
   const pageRoutes: PageRoute[] = [
-    { path: '/', title: 'Dashboard', element: <Dashboard user={user!} onExpired={expire} /> },
+    { path: '/', title: 'Dashboard', element: <Dashboard user={user!} onExpired={expire} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '/login', title: 'Log in', element: <Navigate to={loginReturn?.key === location.key ? loginReturn.destination : '/'} replace /> },
     { path: '/patients', title: 'Patients', element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
     { path: '/patients/:id', title: params => `Patient ${params.id}`, element: <PatientPage key={location.pathname} onExpired={expire} navigation={patientsNavigation} isVisible={!checking} /> },
-    { path: '/studies', title: 'Studies', element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} /> },
-    { path: '/studies/:nctId', title: params => `Study ${params.nctId}`, element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} /> },
+    { path: '/studies', title: 'Studies', element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
+    { path: '/studies/:nctId', title: params => `Study ${params.nctId}`, element: <StudyPage key={location.pathname} onExpired={expire} navigation={studiesNavigation} isVisible={!checking} preserveReadingPosition={preserveReadingPosition} /> },
     { path: '*', title: 'Page not found', element: <h1>Page not found</h1> },
   ]
   const matchedPage = matchRoutes(pageRoutes, location)?.at(-1)
@@ -200,7 +202,7 @@ function SessionApp() {
       {user && !checking && !sessionError && <div className="account"><span>{user.username} · {user.role}</span><button className="secondary" disabled={logoutPending} onClick={logout}>{logoutPending ? 'Logging out…' : logoutError ? 'Retry logout' : 'Log out'}</button></div>}
     </header>
     <main>
-      {user && !logoutPending && !sessionError && <SessionControls user={user} onExpired={expire} />}
+      {user && !logoutPending && !sessionError && <SessionControls user={user} onExpired={expire} preserveReadingPosition={preserveReadingPosition} />}
       {logoutError && <p role="alert">Unable to confirm logout. Please retry.</p>}
       {logoutPending ? <p role="status">Logging out…</p>
         : checking ? <p role="status">Checking your session…</p>

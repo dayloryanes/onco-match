@@ -20,8 +20,14 @@ export interface ConditionLabel {
   unassessedQualifiers: { qualifier: string; reason: string; studyEvidence: Evidence[] }[]
 }
 export interface PairDetails extends MatchPair {
+  attemptHistory?: MatchAttempt[]
   conditionLabels: ConditionLabel[] | null; skipReason: string | null; assessmentLimits: string
   inputSnapshot: { patient: { ageYears: number | null; sex: string; cancerType: string | null; stage: { status: string; value: string | null; classificationSystem: string | null }; diseaseState: { status: string; value: string | null } }; study: { conditions: string[] | null; minimumAge: string | null; maximumAge: string | null; sex: string | null } }
+}
+export interface MatchAttempt {
+  id: string; operationId: string; startedAt: string; finishedAt: string | null
+  status: string; failureCode: string | null; failureExplanation: string | null
+  route: string | null; model: string | null; requestTimeoutSeconds: number | null; elapsedMilliseconds: number | null
 }
 export interface MatchEvent extends MatchCounts {
   type: string; operationId: string; batchId: string; sequence: number; serverTime: string; version: string; status: string

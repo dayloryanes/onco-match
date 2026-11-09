@@ -1,4 +1,4 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, test, vi } from 'vitest'
@@ -7,6 +7,65 @@ import { server } from './test/server'
 
 const batch = { batchId: 'batch1', version: 'v1', status: 'notStarted', totalPairCount: 10, completedPairCount: 0,
   failedPairCount: 0, unfinishedPairCount: 10, activePairCount: 0, activeOperation: null, availableActions: ['start'], pairs: [] }
+
+test.each(['continue', 'retryFailed'])('Operator explicitly requests %s and can inspect failed attempt history', async action => {
+  const pair = { batchId: 'batch1', patientId: 'P01', nctId: 'NCT00000001', state: 'failed', pairSummary: null, structuredChecks: null,
+    latestAttempt: { status: 'failed', failureCode: 'invalidResponse', failureExplanation: 'The model response was invalid.' } }
+  const recovery = { ...batch, status: 'finishedWithFailures', failedPairCount: 1, unfinishedPairCount: 0, completedPairCount: 9,
+    availableActions: [action], pairs: [pair] }
+  const requests: unknown[] = []
+  server.use(
+    http.get('*/api/auth/me', () => HttpResponse.json({ username: 'operator', role: 'Operator' })),
+    http.get('*/api/match/batches', () => HttpResponse.json({ configurationError: null, batches: [recovery] })),
+    http.get('*/api/match/batches/batch1', () => HttpResponse.json(recovery)),
+    http.get('*/api/match/pairs/P01/NCT00000001', () => HttpResponse.json({ ...pair, inputSnapshot: null, conditionLabels: null, skipReason: null, assessmentLimits: '',
+      attemptHistory: [{ id: 'attempt-one', operationId: 'operation-one', startedAt: '2026-11-05T12:00:00Z', finishedAt: '2026-11-05T12:00:01Z', status: 'failed',
+        failureCode: 'invalidResponse', failureExplanation: 'The model response was invalid.', route: 'native', model: 'test-model', requestTimeoutSeconds: 600, elapsedMilliseconds: 1000 }] })),
+    http.post('*/api/match/batches/batch1/operations', async ({ request }) => {
+      requests.push(await request.json())
+      return HttpResponse.json({ code: 'batch_state_changed', title: 'Batch changed' }, { status: 409 })
+    }),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  const control = action === 'continue' ? 'Continue unfinished' : 'Retry failed'
+  await user.click(await screen.findByRole('button', { name: control }))
+  await waitFor(() => expect(requests).toEqual([{ action, expectedVersion: 'v1' }]))
+  await user.click(await screen.findByRole('button', { name: 'Inspect P01 NCT00000001' }))
+  const inspection = await screen.findByRole('region', { name: 'Assessment P01 NCT00000001' })
+  await user.click(within(inspection).getByText('Attempt history'))
+  expect(within(inspection).getByText('attempt-one')).toBeVisible()
+  expect(within(inspection).getByText('test-model')).toBeVisible()
+  expect(within(inspection).getByText('The model response was invalid.')).toBeVisible()
+  expect(within(inspection).queryByText('Condition-label alignment undetermined')).not.toBeInTheDocument()
+})
+
+test('Refresh updates a retained failed inspection after another session recovers it without closing history', async () => {
+  let recovered = false
+  const pair = () => ({ batchId: 'batch1', patientId: 'P01', nctId: 'NCT00000001', state: recovered ? 'completed' : 'failed',
+    pairSummary: recovered ? 'conditionLabelAlignmentSupported' : null, structuredChecks: null,
+    latestAttempt: { status: recovered ? 'completed' : 'failed', failureCode: null, failureExplanation: null } })
+  const attempt = (status: string) => ({ id: status, operationId: status, startedAt: '2026-11-05T12:00:00Z', finishedAt: '2026-11-05T12:00:01Z', status,
+    failureCode: null, failureExplanation: null, route: 'native', model: 'test-model', requestTimeoutSeconds: 600, elapsedMilliseconds: 1000 })
+  server.use(
+    http.get('*/api/auth/me', () => HttpResponse.json({ username: 'viewer', role: 'Viewer' })),
+    http.get('*/api/match/batches', () => HttpResponse.json({ configurationError: null, batches: [batch] })),
+    http.get('*/api/match/batches/batch1', () => HttpResponse.json({ ...batch, pairs: [pair()] })),
+    http.get('*/api/match/pairs/P01/NCT00000001', () => HttpResponse.json({ ...pair(), inputSnapshot: null, conditionLabels: null, skipReason: null, assessmentLimits: '',
+      attemptHistory: recovered ? [attempt('failed'), attempt('completed')] : [attempt('failed')] })),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('button', { name: 'View batch 1' }))
+  await user.click(await screen.findByRole('button', { name: 'Inspect P01 NCT00000001' }))
+  const inspection = await screen.findByRole('region', { name: 'Assessment P01 NCT00000001' })
+  await user.click(within(inspection).getByText('Attempt history'))
+  expect(within(inspection).getByRole('heading', { name: 'Attempt 1: Failed' })).toBeVisible()
+  recovered = true
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  expect(await within(inspection).findByRole('heading', { name: 'Attempt 2: Completed' })).toBeVisible()
+  expect(screen.getByRole('region', { name: 'Assessment P01 NCT00000001' })).toBe(inspection)
+})
 
 test('One Refresh updates imports and open batch rows without replacing an inspection', async () => {
   let refreshed = false
@@ -220,6 +279,52 @@ test('Operator starts a batch and reconciles a broken stream without resubmittin
   expect(await screen.findByRole('heading', { name: 'Batch 1 · Unfinished' })).toBeVisible()
   expect(posts).toBe(1)
   expect(screen.queryByRole('button', { name: 'Start match' })).not.toBeInTheDocument()
+})
+
+test.each(['broken', 'lostResponse'])('Recovery reconciles %s and waits for authoritative stop before offering another action', async scenario => {
+  let posts = 0
+  let stopped = false
+  const saved = () => ({ ...batch, status: posts ? stopped ? 'unfinished' : 'stopping' : 'unfinished',
+    completedPairCount: 9, unfinishedPairCount: 1, availableActions: !posts || stopped ? ['continue'] : [],
+    activeOperation: posts && !stopped ? { operationId: 'recovering', action: 'continue', startedAt: '2026-11-05T12:00:00Z', selectedPairCount: 1, canCancel: true } : null })
+  server.use(
+    http.get('*/api/auth/me', () => HttpResponse.json({ username: 'operator', role: 'Operator' })),
+    http.get('*/api/match/batches', () => HttpResponse.json({ configurationError: null, activeOperation: saved().activeOperation, batches: [saved()] })),
+    http.get('*/api/match/batches/batch1', () => HttpResponse.json(saved())),
+    http.post('*/api/match/batches/batch1/operations', () => {
+      posts++
+      return scenario === 'lostResponse' ? HttpResponse.error()
+        : new HttpResponse('{"type":"bad-event"}\n', { headers: { 'Content-Type': 'application/x-ndjson' } })
+    }),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('button', { name: 'Continue unfinished' }))
+  await screen.findByText(/Unable to confirm live progress/)
+  await screen.findByRole('heading', { name: 'Batch 1 · Stopping' })
+  expect(screen.queryByRole('button', { name: 'Continue unfinished' })).not.toBeInTheDocument()
+  expect(screen.getByText('9/10 completed')).toBeVisible()
+  expect(posts).toBe(1)
+  stopped = true
+  await user.click(screen.getByRole('button', { name: 'Refresh' }))
+  expect(await screen.findByRole('button', { name: 'Continue unfinished' })).toBeEnabled()
+  expect(posts).toBe(1)
+})
+
+test.each([401, 403])('Recovery handles rejected session/role response %s without resubmission', async status => {
+  let posts = 0
+  server.use(
+    http.get('*/api/auth/me', () => HttpResponse.json({ username: 'operator', role: 'Operator' })),
+    http.get('*/api/match/batches', () => HttpResponse.json({ configurationError: null, batches: [{ ...batch, status: 'unfinished', availableActions: ['continue'] }] })),
+    http.get('*/api/match/batches/batch1', () => HttpResponse.json(batch)),
+    http.post('*/api/match/batches/batch1/operations', () => { posts++; return HttpResponse.json({ code: 'access_denied' }, { status }) }),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('button', { name: 'Continue unfinished' }))
+  if (status === 401) expect(await screen.findByLabelText('Username')).toBeVisible()
+  else expect(await screen.findByText('Your account cannot perform this match action.')).toBeVisible()
+  expect(posts).toBe(1)
 })
 
 test.each([

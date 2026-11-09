@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test'
 async function dashboard(page: Page, { extraCards = false, renewSession = false, role = 'Viewer' } = {}) {
   let updated = false
   let failImports = false
+  let failInspection = false
   let gates: Record<string, { wait: Promise<void>; release: () => void }> | null = null
   let reached!: () => void
   let requested = Promise.resolve()
@@ -28,6 +29,7 @@ async function dashboard(page: Page, { extraCards = false, renewSession = false,
     try {
       if (route.request().failure()) return
       if (path === '/api/study-imports' && failImports) { await route.fulfill({ status: 503, json: { code: 'unavailable' } }); return }
+      if (path.startsWith('/api/match/pairs/') && failInspection) { await route.fulfill({ status: 503, json: { code: 'unavailable' } }); return }
       const original = extraCards ? ['original', 'older', 'last'] : ['original']
       const ids = updated ? ['newest', 'another', ...original] : original
       const now = new Date()
@@ -57,6 +59,7 @@ async function dashboard(page: Page, { extraCards = false, renewSession = false,
     inspection, heading,
     update() { updated = true },
     failImports(value: boolean) { failImports = value },
+    failInspection(value: boolean) { failInspection = value },
     hold() {
       seen.clear()
       requested = new Promise<void>(resolve => { reached = resolve })
@@ -126,6 +129,44 @@ for (const width of [1280, 390]) {
     } finally { fixture.releaseAll() }
   })
 }
+
+test('Import progress and completion preserve the visible inspection without native anchoring', async ({ page }) => {
+  const fixture = await dashboard(page, { role: 'Operator' })
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  let release!: () => void
+  let reached!: () => void
+  const held = new Promise<void>(resolve => { release = resolve })
+  const requested = new Promise<void>(resolve => { reached = resolve })
+  await page.route('**/api/study-imports', async route => {
+    if (route.request().method() !== 'POST') { await route.fallback(); return }
+    reached(); await held; fixture.update()
+    await route.fulfill({ json: { version: 'v2', isImporting: false, isExhausted: true, nextAction: 'none', totalImportedStudyCount: 30, attempts: [] } })
+  })
+  const before = (await fixture.heading.boundingBox())!.y
+  try {
+    await page.getByRole('button', { name: 'Load Next 10', exact: true }).evaluate((button: HTMLButtonElement) => button.click())
+    await requested
+    await expect.poll(async () => (await fixture.heading.boundingBox())!.y).toBeCloseTo(before, 0)
+    release()
+    await expect(page.getByText('30 studies', { exact: true })).toBeAttached()
+    await expect(page.getByRole('button', { name: 'Close batch 3', exact: true })).toBeAttached()
+    await expect(fixture.inspection.locator('details')).toHaveAttribute('open', '')
+    await expect.poll(async () => Math.abs((await fixture.heading.boundingBox())!.y - before)).toBeLessThan(1)
+  } finally { release() }
+})
+
+test('A failed inspection refresh retains the open snapshot and its reading position', async ({ page }) => {
+  const fixture = await dashboard(page)
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  await fixture.inspection.evaluate(element => element.setAttribute('data-retained', 'true'))
+  const before = (await fixture.heading.boundingBox())!.y
+  fixture.failInspection(true)
+  await page.getByRole('button', { name: 'Refresh', exact: true }).evaluate((button: HTMLButtonElement) => button.click())
+  await expect(page.getByText(/Unable to load this assessment/)).toBeAttached()
+  await expect(fixture.inspection).toHaveAttribute('data-retained', 'true')
+  await expect(fixture.inspection.locator('details')).toHaveAttribute('open', '')
+  await expect.poll(async () => (await fixture.heading.boundingBox())!.y).toBeCloseTo(before, 0)
+})
 
 test('Refresh preserves reading position with native anchoring enabled', async ({ page }) => {
   const fixture = await dashboard(page)
@@ -216,4 +257,22 @@ test('Refresh preserves visible content when session renewal removes the warning
   await expect(page.getByText('30 studies', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toHaveCount(0)
   await expect.poll(async () => Math.abs((await fixture.heading.boundingBox())!.y - before)).toBeLessThan(1)
+})
+
+test('A late renewing import response preserves inspection position after matching rows refresh', async ({ page }) => {
+  const fixture = await dashboard(page, { renewSession: true })
+  await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toBeVisible()
+  await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
+  const before = (await fixture.heading.boundingBox())!.y
+  fixture.update(); fixture.hold()
+  try {
+    await page.getByRole('button', { name: 'Refresh', exact: true }).evaluate((button: HTMLButtonElement) => button.click())
+    await fixture.requested()
+    fixture.release('batches'); fixture.release('detail')
+    await expect(page.getByRole('button', { name: 'Close batch 3', exact: true })).toBeVisible()
+    fixture.release('imports')
+    await expect(page.getByRole('button', { name: 'Stay signed in', exact: true })).toHaveCount(0)
+    await expect(page.getByText('30 studies', { exact: true })).toBeVisible()
+    await expect.poll(async () => Math.abs((await fixture.heading.boundingBox())!.y - before)).toBeLessThan(1)
+  } finally { fixture.releaseAll() }
 })

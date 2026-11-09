@@ -11,7 +11,7 @@ public sealed class MatchExecution(MatchStore store, OllamaClient ollama, TimePr
         try
         {
             await emit(store.Message(operation, "operationStarted"));
-            foreach (var pair in operation.Batch.Pairs)
+            foreach (var pair in operation.SelectedPairs)
             {
                 store.BeginPair(operation, pair);
                 await emit(store.Message(operation, "pairStarted", pair));
