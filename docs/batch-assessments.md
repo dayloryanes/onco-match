@@ -115,7 +115,35 @@ only. Install and run a local Ollama service separately, with the reviewed
 0.40.13; this application has automated fake-transport validation, not a new live
 model/route compatibility or quality pass. No automatic model download occurs.
 
-The API's `appsettings.json` contains the `Match:Inference` section:
+### Prepare the local service
+
+Install Ollama using its [official setup instructions](https://docs.ollama.com/quickstart)
+and open the local application. If the service is not already running, start it
+in a separate terminal with `ollama serve`; keep it running while using assessments.
+The default local service address is `http://localhost:11434`.
+
+Check installed models:
+
+```powershell
+ollama ls
+```
+
+If `gpt-oss:20b` is missing, download it explicitly before starting assessments:
+
+```powershell
+ollama pull gpt-oss:20b
+```
+
+Both routes use these source weights. A fresh download does not by itself
+reproduce or validate the recorded development baseline. These are manual setup
+instructions; installing models or running inference is separate from the
+automated application checks. See the [Ollama CLI reference](https://docs.ollama.com/cli).
+
+### Application configuration
+
+In Visual Studio or another editor, open
+[`backend/src/OncoMatch.Api/appsettings.json`](../backend/src/OncoMatch.Api/appsettings.json).
+Its `Match` → `Inference` section contains these settings:
 
 ```json
 {
@@ -127,6 +155,13 @@ The API's `appsettings.json` contains the `Match:Inference` section:
 }
 ```
 
+To select a route by editing this file, change `Route` to `native` or
+`openai-compatible`, save, then stop and restart the backend. The application
+selects `NativeModel` or `OpenAiCompatibleModel` accordingly. No frontend change
+is needed. A `Match__Inference__Route` environment variable, if set in the backend
+process, overrides this file; remove or update that variable when using the
+editor-based setting.
+
 Choose `native` (`/api/chat`) or `openai-compatible`
 (`/v1/chat/completions`). Both model names can be configured in advance.
 Environment variables use names such as `Match__Inference__Route`.
@@ -136,6 +171,8 @@ features remain usable. BaseUrl must be a local HTTP(S) origin, without path,
 query, fragment, or credentials. Redirects and route/model fallback are disabled.
 The timeout covers each entire provider HTTP request, including the response body;
 it is not a model-quality latency criterion or a whole-operation time limit.
+
+### Compatible model preset
 
 For native requests, use the original model. For the compatible route, use the
 separately named preset derived from the same existing weights. If it is already
@@ -164,6 +201,31 @@ profile and rejects reported remote models. Compatible setup must explicitly
 provide the four preset controls above. If this check fails, verify the model
 name, local service, and preset rather than switching routes silently.
 Other models/servers are not certified by editable settings.
+
+### Select a route and start the application
+
+From the repository root, choose the route in the terminal that starts the
+backend. For native Ollama:
+
+```powershell
+$env:Match__Inference__Route = 'native'
+dotnet run --project backend/src/OncoMatch.Api --launch-profile https
+```
+
+For the compatible route, first create the preset above, then use:
+
+```powershell
+$env:Match__Inference__Route = 'openai-compatible'
+dotnet run --project backend/src/OncoMatch.Api --launch-profile https
+```
+
+Choose one backend command, not both. The environment setting overrides
+`appsettings.json` for that terminal. To return to the configured default, remove
+it with `Remove-Item Env:Match__Inference__Route` before starting the backend.
+To switch routes, stop the backend and start it with the other value; restarting
+clears imported studies and assessments. Use the same frontend startup commands
+and demo credentials from the [README](../README.md#run-locally) for either route.
+No OpenAI API key is needed: both options target the local Ollama service.
 
 Both routes request nonstreaming model answers. Dashboard uses a separate
 newline-delimited progress stream through Vite. Retained controls are low

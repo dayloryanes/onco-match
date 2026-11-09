@@ -91,6 +91,22 @@ Studies. Patient details show supplied age, sex, diagnosis, stage, and disease
 state. Unknown means a missing fact; Not applicable means the concept does not
 apply. Last viewed marks navigation history, not a clinical review.
 
+## Local inference
+
+Assessment execution uses a separately running local Ollama service. The default
+`native` route uses its native API; `openai-compatible` uses its OpenAI-compatible
+API format on the same local service. It does not use OpenAI cloud or require an
+OpenAI API key.
+
+Follow [Local Ollama setup](docs/batch-assessments.md#local-ollama-setup) to install
+the service, prepare the model and compatible preset, and select either route
+when starting the backend. You can edit `Match:Inference:Route` in
+[`backend/src/OncoMatch.Api/appsettings.json`](backend/src/OncoMatch.Api/appsettings.json)
+or use the documented environment-variable alternative. Restart the backend
+after changing it. That guide also covers configuration, failures,
+assessment limits, and restarting the backend to change routes. The separate
+evaluation runner is not needed to run the application.
+
 ## Session and data lifetime
 
 - Login uses secure cookies with a 30-minute lifetime. Ordinary requests renew
