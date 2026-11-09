@@ -23,6 +23,16 @@ public class MatchController(MatchStore store, OperationLifetime lifetime, Match
     public IActionResult Batch(string batchId) => Read(() => store.Batch(batchId, Session, IsOperator));
     [HttpGet("pairs/{patientId}/{nctId}")]
     public IActionResult Pair(string patientId, string nctId) => Read(() => store.Pair(patientId, nctId));
+    [HttpGet("pairs")]
+    public IActionResult Pairs()
+    {
+        var query = Request.Query;
+        if (query.Count != 1 || query.Single().Key is not ("patientId" or "nctId") ||
+            query.Single().Value.Count != 1 || string.IsNullOrWhiteSpace(query.Single().Value[0]))
+            return Error(new(400, "invalid_filter", "Supply exactly one patientId or nctId filter."));
+        var filter = query.Single();
+        return Read(() => store.Pairs(filter.Key, filter.Value[0]!));
+    }
 
     [HttpPost("operations/{operationId}/cancel")]
     [Authorize(Roles = "Operator")]

@@ -5,11 +5,13 @@ import type { PatientDetails, PatientSummary } from './api'
 import { useListScroll } from './listNavigation'
 import type { ListNavigation } from './listNavigation'
 import { patientSex, patientStage, classificationSystem, diseaseState } from './patientDisplay'
+import AssessmentResults from './AssessmentResults'
+import type { PreserveReadingPosition } from './useReadingPosition'
 
 type LoadState = { status: 'loading' } | { status: 'error' } | { status: 'notFound' } |
   { status: 'ready'; data: PatientSummary[] | PatientDetails }
 
-export default function PatientPage({ onExpired, navigation, isVisible }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean }) {
+export default function PatientPage({ onExpired, navigation, isVisible, preserveReadingPosition }: { onExpired: () => void; navigation: ListNavigation; isVisible: boolean; preserveReadingPosition: PreserveReadingPosition }) {
   const { id } = useParams()
   const [state, setState] = useState<LoadState>({ status: 'loading' })
   const [attempt, setAttempt] = useState(0)
@@ -59,6 +61,7 @@ export default function PatientPage({ onExpired, navigation, isVisible }: { onEx
         <div><dt>Classification system</dt><dd>{classificationSystem(patient.stage)}</dd></div>
         <div><dt>Disease state</dt><dd>{diseaseState(patient.diseaseState)}</dd></div>
       </dl>
+      <AssessmentResults key={patient.id} filter="patientId" id={patient.id} onExpired={onExpired} preserveReadingPosition={preserveReadingPosition} />
     </>
   }
 

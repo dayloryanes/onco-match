@@ -87,6 +87,7 @@ details.assessment-major { margin-top: var(--assessment-section-gap); padding-to
 .assessment-row td { padding: 0; background: #f4f9fa; }
 .assessment-row .assessment-detail { margin: 1rem; }
 .assessment-actions { margin: 1rem; }
+.inspection-toggle { overflow-wrap: normal; }
 .inspection-message { padding: 1rem 1.5rem; }
 .match-message { font-size: .85rem; line-height: 1.6; padding: .8rem 1rem; border-radius: 6px; margin: 0 0 1rem; overflow-wrap: anywhere; }
 .match-message[role='status'] { color: #503b16; background: #fff8e8; border-left: 3px solid #b98b38; }

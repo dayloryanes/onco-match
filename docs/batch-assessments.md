@@ -83,9 +83,29 @@ Inspect is available for pairs with an attempt, including failed or interrupted
 work. Attempt history lists each attempt's identity, operation, start/finish,
 status, safe failure explanation, and available route, model, timeout and duration
 metadata. Earlier failures remain after success; only a completed pair has a pair
-summary. Viewers may inspect shared history but cannot run recovery. Patient/Study
-assessment sections remain a later slice. A backend restart clears all imported,
+summary. Viewers may inspect shared history but cannot run recovery. A backend restart clears all imported,
 assessed and attempt-history state.
+
+## Patient and Study perspectives
+
+Patient details list that patient's pairs across imported studies in source import
+order. Study details list that study's pairs in the fictional patient catalog's
+order. Both roles read the same saved states and assessments as Dashboard.
+Only completed pairs have a pair summary; failed, unfinished, and running pairs
+retain their execution states. Inspect is available once a pair has an attempt.
+
+Each detail page places the assessment-limits notice beneath the Assessments
+heading. In-page inspection uses the same findings, evidence, exact input snapshot,
+and attempt-history display as Dashboard. Refresh assessments explicitly rereads
+shared results, preserving an open inspection and snapshot. Failed reads leave
+previously loaded results visible and offer retry. No polling or inference starts
+from these pages, and they provide no execution or recovery controls.
+
+Leaving the initiating Dashboard for either perspective stops its active work
+once disconnection is detected; committed assessments remain. Browsing from an
+independently signed-in session does not cancel another session's operation.
+Patient and Study directories retain their existing navigation and source display;
+there is no separate Results page.
 
 ## Local Ollama setup
 

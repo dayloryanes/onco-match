@@ -48,6 +48,20 @@ public sealed class MatchStore(StudyStore studies, PatientCatalog patients, Matc
             return PairView(pair, true);
         }
     }
+    public object Pairs(string filter, string id)
+    {
+        lock (sync)
+        {
+            if (filter == "patientId" && !patients.Patients.Any(p => p.Id == id))
+                throw new MatchConflict(404, "patient_not_found");
+            if (filter == "nctId" && studies.Find(id) is null)
+                throw new MatchConflict(404, "study_not_found");
+            Discover();
+            return batches.Values.SelectMany(b => b.Pairs)
+                .Where(p => filter == "patientId" ? p.Patient.Id == id : p.Study.NctId == id)
+                .Select(p => PairView(p, false)).ToArray();
+        }
+    }
     private MatchBatch Find(string id) => batches.GetValueOrDefault(id) ?? throw new MatchConflict(404, "batch_not_found");
 
     public ActiveMatch Admit(string id, string action, string version, string session, OperationLifetime lifetime, HttpContext context)

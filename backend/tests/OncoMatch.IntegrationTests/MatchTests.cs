@@ -395,6 +395,11 @@ public class MatchTests
         Assert.Equal(9, saved.GetProperty("completedPairCount").GetInt32());
         Assert.Equal(1, saved.GetProperty("failedPairCount").GetInt32());
         Assert.Equal(JsonValueKind.Null, saved.GetProperty("pairs")[1].GetProperty("pairSummary").ValueKind);
+        var studyView = await client.GetFromJsonAsync<JsonElement>("/api/match/pairs?nctId=NCT00000001");
+        Assert.Equal(saved.GetProperty("pairs").GetRawText(), studyView.GetRawText());
+        var failedPatient = studyView[1].GetProperty("patientId").GetString();
+        var patientView = await client.GetFromJsonAsync<JsonElement>($"/api/match/pairs?patientId={failedPatient}");
+        Assert.Equal(studyView[1].GetRawText(), patientView[0].GetRawText());
         Assert.Equal(10, generated);
     }
 
@@ -520,6 +525,8 @@ public class MatchTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         await reached.Task.WaitAsync(TimeSpan.FromSeconds(5));
         var active = await client.GetFromJsonAsync<JsonElement>($"/api/match/batches/{id}");
+        var activeStudyView = await other.GetFromJsonAsync<JsonElement>("/api/match/pairs?nctId=NCT00000001");
+        Assert.Equal(active.GetProperty("pairs").GetRawText(), activeStudyView.GetRawText());
         var operationId = active.GetProperty("activeOperation").GetProperty("operationId").GetString();
         Assert.Equal(HttpStatusCode.Forbidden, (await AuthTests.PostWithToken(other, $"/api/match/operations/{operationId}/cancel")).StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, (await AuthTests.PostWithToken(other, $"/api/match/batches/{id}/operations",
