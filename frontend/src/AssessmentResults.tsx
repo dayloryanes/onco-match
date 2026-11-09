@@ -64,7 +64,7 @@ export default function AssessmentResults({ filter, id, onExpired, preserveReadi
   }
 
   return <section className="batch-results" aria-label="Stored assessments">
-    <h3>Assessments</h3>
+    <h2 className="results-heading">Assessments</h2>
     <p className="notice">{limits}</p>
     {error && <p role="alert">{error}{pairs && ' Previously loaded results are still shown.'}</p>}
     <button className="quiet-button" disabled={pending} onClick={reload}>{error ? 'Retry assessments' : 'Refresh assessments'}</button>
@@ -81,7 +81,7 @@ export default function AssessmentResults({ filter, id, onExpired, preserveReadi
             {expanded === key(pair) ? 'Close details' : 'Inspect'}</button>}</td></tr>
         {expanded === key(pair) && <tr className="assessment-row"><td colSpan={3}><div id={`result-detail-${key(pair)}`}>
           {detailError && <p role="alert">{detail && 'Showing previously loaded details. '}{detailError}</p>}
-          {detail ? <Assessment detail={detail} /> : !detailError && <p role="status">Loading assessment…</p>}
+          {detail ? <Assessment detail={detail} headingLevel={3} /> : !detailError && <p role="status">Loading assessment…</p>}
           <div className="actions assessment-actions"><button className="quiet-button" onClick={() => close(pair)}>Close assessment</button></div>
         </div></td></tr>}
       </Fragment>)}</tbody>

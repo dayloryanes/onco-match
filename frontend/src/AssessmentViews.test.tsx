@@ -125,3 +125,39 @@ test('A failed detail read offers recovery without hiding the source page', asyn
   await user.click(screen.getByRole('button', { name: 'Inspect P001 NCT00000001' }))
   expect(await screen.findByRole('region', { name: 'Assessment P001 NCT00000001' })).toBeVisible()
 })
+
+test.each(['/', '/patients/P001', '/studies/NCT00000001'])('%s exposes assessment headings in their document hierarchy', async path => {
+  setup(path)
+  const finding = { result: 'alignmentSupported', explanation: 'Constructed finding.', patientEvidence: [], studyEvidence: [], examinedSources: ['study.conditions.0'] }
+  server.use(
+    http.get('*/api/match/batches', () => HttpResponse.json({ batches: [{ batchId: pair.batchId, status: 'completed',
+      totalPairCount: 1, completedPairCount: 1, failedPairCount: 0, unfinishedPairCount: 0, activePairCount: 0, availableActions: [], pairs: [pair] }] })),
+    http.get('*/api/match/batches/test-batch', () => HttpResponse.json({ batchId: pair.batchId, status: 'completed', pairs: [pair] })),
+    http.get('*/api/match/pairs/P001/NCT00000001', () => HttpResponse.json({ ...detail,
+      inputSnapshot: { patient, study: { ...study, conditions: ['Constructed cancer'] } },
+      conditionLabels: [{ conditionLabelId: 'study.conditions.0', result: 'alignmentSupported', requirementSummary: 'Constructed requirement.', explanation: 'Constructed explanation.',
+        cancerType: finding, stage: finding, diseaseState: finding, unassessedQualifiers: [] }],
+      attemptHistory: [{ id: 'test-attempt', operationId: 'test-operation', startedAt: '2026-11-01T12:00:00Z', finishedAt: '2026-11-01T12:00:01Z', status: 'completed' }],
+    })),
+  )
+  const user = userEvent.setup()
+  render(<App />)
+  const dashboard = path === '/'
+  if (dashboard) {
+    await user.click(await screen.findByRole('button', { name: 'View batch 1' }))
+    expect(screen.getByRole('heading', { name: 'Completed import', level: 2 })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Batch 1 · Completed', level: 2 })).toBeVisible()
+    expect(screen.getByRole('heading', { name: 'Batch assessments · Completed', level: 3 })).toBeVisible()
+  } else expect(await screen.findByRole('heading', { name: 'Assessments', level: 2 })).toBeVisible()
+  await user.click(await screen.findByRole('button', { name: 'Inspect P001 NCT00000001' }))
+  const inspection = await screen.findByRole('region', { name: 'Assessment P001 NCT00000001' })
+  expect(within(inspection).getByRole('heading', { name: 'Assessment: P001 · NCT00000001', level: dashboard ? 4 : 3 })).toBeVisible()
+  expect(within(inspection).getByRole('heading', { name: 'Condition 1 · Constructed cancer', level: dashboard ? 5 : 4 })).toBeVisible()
+  expect(within(inspection).getByRole('heading', { name: 'Requirement summary', level: dashboard ? 6 : 5 })).toBeVisible()
+  await user.click(within(inspection).getByText('Exact input snapshot'))
+  await user.click(within(inspection).getByText('Attempt history'))
+  expect(within(inspection).getByRole('heading', { name: 'Patient', level: dashboard ? 5 : 4 })).toBeVisible()
+  expect(within(inspection).getByRole('heading', { name: 'Attempt 1: Completed', level: dashboard ? 5 : 4 })).toBeVisible()
+  const levels = screen.getAllByRole('heading').map(heading => Number(heading.tagName[1]))
+  for (let index = 1; index < levels.length; index++) expect(levels[index]).toBeLessThanOrEqual(levels[index - 1] + 1)
+})

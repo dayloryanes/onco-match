@@ -49,13 +49,15 @@ tr.last-viewed th { box-shadow: inset 4px 0 #16858a; }
 .import-entry:last-child { margin-bottom: 0; }
 .import-attempt { background: white; border: 1px solid #d7e2e7; border-radius: 8px; padding: 1.3rem; margin: 0; overflow-wrap: anywhere; }
 .import-attempt h3 { margin-top: 0; }
-.import-details > h3, .batch-summary > h3 { margin-bottom: 1rem; }
+.history-card-heading { font-size: 1.17em; margin: 0 0 1em; }
+.import-details > .history-card-heading, .batch-summary > .history-card-heading { margin-bottom: 1rem; }
 .import-batch-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .import-batch-columns .import-details { padding-right: 1rem; }
 .batch-summary { border-left: 1px solid #d7e2e7; padding-left: 1rem; min-width: 0; }
 .batch-summary > p > strong { font-weight: 600; }
 .batch-summary .actions { gap: .75rem; margin-top: 1rem; }
 .batch-results { border-top: 1px solid #d7e2e7; margin-top: 1.25rem; padding-top: 1.25rem; }
+.results-heading { font-size: 1.17em; margin: 1em 0; }
 @media (max-width: 700px) {
   .import-batch-columns { grid-template-columns: minmax(0, 1fr); }
   .import-batch-columns .import-details { padding-right: 0; }
@@ -73,11 +75,11 @@ td { overflow-wrap: anywhere; }
 .patient-facts dt, .fact-label { color: #192f40; font-weight: 600; }
 .patient-facts dd { margin: 0; font-weight: 400; overflow-wrap: anywhere; }
 .assessment-detail { background: white; border: 1px solid #93b6bf; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; overflow-wrap: anywhere; }
-.assessment-detail h4, .assessment-detail h5 { margin: 1rem 0 .5rem; }
+.assessment-detail .assessment-title, .assessment-detail .assessment-subheading { margin: 1rem 0 .5rem; }
 .assessment-content { font-size: .95rem; font-weight: 400; line-height: 1.6; }
-.assessment-content h4, .assessment-content h5, .assessment-content p { margin: 0; }
-.assessment-content h4 { font-size: 1rem; font-weight: 700; line-height: 1.4; }
-.assessment-content h5 { font-size: .95rem; font-weight: 600; line-height: 1.4; }
+.assessment-content .assessment-title, .assessment-content .assessment-subheading, .assessment-content p { margin: 0; }
+.assessment-content .assessment-title { font-size: 1rem; font-weight: 700; line-height: 1.4; }
+.assessment-content .assessment-subheading { font-size: .95rem; font-weight: 600; line-height: 1.4; }
 .assessment-content .finding-result { font-weight: 400; }
 .assessment-stack { display: grid; gap: .5rem; }
 .assessment-groups { display: grid; gap: var(--assessment-section-gap); }
@@ -93,7 +95,7 @@ details.assessment-major { margin-top: var(--assessment-section-gap); padding-to
 .match-message[role='status'] { color: #503b16; background: #fff8e8; border-left: 3px solid #b98b38; }
 .match-message.inspection-message { margin: 1rem; }
 .snapshot-section { display: grid; gap: .5rem; margin-top: var(--assessment-section-gap); }
-.snapshot-section h5 { margin: 0; font-size: .95rem; font-weight: 600; line-height: 1.4; }
+.snapshot-section .assessment-subheading { margin: 0; font-size: .95rem; font-weight: 600; line-height: 1.4; }
 .attempt-history { list-style: none; margin: 0; padding: 0; }
 .snapshot-section .patient-facts { margin: 0; }
 .snapshot-section dd > ul { margin: 0; padding: 0; list-style-position: inside; }

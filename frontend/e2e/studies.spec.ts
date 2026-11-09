@@ -91,8 +91,8 @@ test('Operator imports mixed records and retries a failure while Viewer browses 
       const condition = content.querySelector('.condition-assessment')!
       const groups = [...condition.children]
       const finding = groups[3]
-      const heading = condition.querySelector('h4')!
-      const label = finding.querySelector('h5')!
+      const heading = condition.querySelector('.assessment-title')!
+      const label = finding.querySelector('.assessment-subheading')!
       const explanation = finding.querySelector('p')!
       const evidence = finding.querySelector('ul')!
       const divider = getComputedStyle(condition)

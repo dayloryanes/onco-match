@@ -206,9 +206,9 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
         {batchNotices[id] && <MatchMessage notice={batchNotices[id]} />}
         <div className="import-attempt">
         <div className={batch || attempt?.status === 'completed' ? 'import-batch-columns' : undefined}>
-          {attempt ? <ImportAttemptDetails attempt={attempt} /> : <div className="import-details"><h3>Completed import</h3><p>Refresh import history to load this import's details.</p></div>}
+          {attempt ? <ImportAttemptDetails attempt={attempt} /> : <div className="import-details"><h2 className="history-card-heading">Completed import</h2><p>Refresh import history to load this import's details.</p></div>}
           {batch ? <div className="batch-summary">
-            <h3 id={`batch-heading-${id}`}>Batch {number} · {label(batch.status)}</h3>
+            <h2 className="history-card-heading" id={`batch-heading-${id}`}>Batch {number} · {label(batch.status)}</h2>
             <p><strong>{batch.completedPairCount}/{batch.totalPairCount} completed</strong> · {batch.failedPairCount} failed · {batch.unfinishedPairCount} unfinished · {batch.activePairCount} active</p>
             <div className="actions">
               {user.role === 'Operator' && !needsRefresh && [['start', 'Start match'], ['continue', 'Continue unfinished'], ['retryFailed', 'Retry failed']].map(([action, text]) =>
@@ -227,7 +227,7 @@ export default function MatchDashboard({ user, onExpired, imports, importVersion
           <td>{(pair.state === 'completed' || pair.latestAttempt) && <button id={`inspection-toggle-${pairKey(pair)}`} className="quiet-button" aria-expanded={expandedPair === pairKey(pair)} aria-controls={`inspection-${pairKey(pair)}`} onClick={() => openPair(pair)}>{expandedPair === pairKey(pair) ? 'Close details' : 'Inspect'} {pair.patientId} {pair.nctId}</button>}</td></tr>
           {expandedPair === pairKey(pair) && <tr className="assessment-row"><td colSpan={4}><div id={`inspection-${pairKey(pair)}`}>
             {inspectionError && <p role="alert" className="match-message inspection-message">{detail && 'Showing previously loaded details. '}{inspectionError}</p>}
-            {detail && pairKey(detail) === pairKey(pair) ? <Assessment detail={detail} />
+            {detail && pairKey(detail) === pairKey(pair) ? <Assessment detail={detail} headingLevel={4} />
               : !inspectionError && <p role="status" className="inspection-message">Loading assessment…</p>}
             <div className="actions assessment-actions"><button className="quiet-button" onClick={() => closePair(pair)}>Close assessment</button></div>
           </div></td></tr>}

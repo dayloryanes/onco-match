@@ -65,8 +65,13 @@ test(`A countdown warning preserves reading position on ${path} at ${width}px`, 
   await directory(page, path.startsWith('/patients') ? 'patients' : 'studies', 6)
   await page.goto(path)
   await page.locator('tbody tr, .patient-facts > div').first().waitFor()
+  if (path.split('/').length > 2) await expect(page.getByText('No assessments available yet.', { exact: true })).toBeVisible()
   await page.addStyleTag({ content: 'html { overflow-anchor: none; }' })
-  await page.evaluate(() => window.scrollTo(0, 800))
+  // Anchor an actual row: a fixed offset can scroll past every fact on a
+  // short detail page once its assessment section has loaded.
+  await page.locator('tbody tr, .patient-facts > div').nth(4).evaluate(row => {
+    window.scrollTo(0, window.scrollY + row.getBoundingClientRect().top - innerHeight / 3)
+  })
   const before = await page.evaluate(() => {
     const row = [...document.querySelectorAll('tbody tr, .patient-facts > div')].find(element => {
       const rect = element.getBoundingClientRect()
